@@ -14,7 +14,10 @@ import os
 import sys
 import mock
 
-sys.path.insert(0, os.path.abspath('..'))
+# The next line adds the parent folder of "docs" to path
+# This has to be done for autodoc to work 
+sys.path.insert(0, os.path.abspath('../..'))
+
 autodoc_mock_imports = ["numpy", 'matplotlib', 'scipy']
 
 # -- Project information -----------------------------------------------------
