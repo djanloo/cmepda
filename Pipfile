@@ -8,6 +8,8 @@ numpy = "*"
 matplotlib = "*"
 tensorflow = "*"
 keras = "*"
+pytest = "*"
+pytest-cov = "*"
 
 [dev-packages]
 
