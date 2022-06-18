@@ -6,4 +6,4 @@ Hi djanlooha, nice to see ya here.
 ### Lushloo messages & memo
 
 - use pipenv cos it's ice 
-- to build the docs pdf use ``make latexpdf`` in `docs/source` folder
+- to build the docs pdf use ``make latexpdf`` in `docs/` folder
