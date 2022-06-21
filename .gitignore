@@ -1,6 +1,7 @@
 # Lushloo stuff
 # ignore directory for test and code snippets
 omit/
+datasets/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
