@@ -10,6 +10,8 @@ tensorflow = "*"
 keras = "*"
 pytest = "*"
 pytest-cov = "*"
+sklearn = "*"
+pd4ml = {editable = true, git = "https://github.com/erum-data-idt/pd4ml"}
 
 [dev-packages]
 
