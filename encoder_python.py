@@ -1,16 +1,17 @@
 """Script version of the encoder notebook"""
 import numpy as np
-from matplotlib import pyplot as plt 
+from matplotlib import pyplot as plt
 import utils
 
 from rich.progress import track
+from rich import print
 
 # Load the dataset feeders
-test_feeder = utils.data_feeder("splitted_dataset/test_splitted_data/")
+test_feeder = utils.data_feeder("splitted_dataset/test_splitted_data")
 train_feeder = utils.data_feeder("splitted_dataset/train_splitted_data")
 
 ### Plot the dataset
-
+"""
 fig, axes = plt.subplots(3, 3, sharex=True, sharey=True)
 fig.subplots_adjust(wspace=-0.85, hspace=-0.25)
 
@@ -24,6 +25,7 @@ fig.colorbar(image, cax=cbar_ax)
 axes[0,1].set_title("Time of arrival on detectors")
 
 plt.show()
+"""
 
 # Since the data manifest some sort of redundance (angle, height, dispersion angle and average speed
 # give the t.o.a. matrix, 4 parameters to 81 observations)  an encoder network is tested
@@ -40,31 +42,30 @@ layer = layers.Flatten()(input)
 # minlayer = layers.Minimum()([y,z])
 # maxlayer = layers.Maximum()([y,z])
 # sublayer = layers.Subtract()([maxlayer, minlayer])
-layer = layers.Dense(9, activation="relu")(layer) # change it to sublayer if not #
+# layer = layers.Dense(27, activation="relu")(layer)
+layer = layers.Dense(9, activation="relu")(layer)  # change it to sublayer if not #
 layer = layers.Dense(4, activation="relu")(layer)
 layer = layers.Dense(4, activation="relu")(layer)
 layer = layers.Dense(1)(layer)
 
 retino = Model(input, outputs=layer)
-retino.compile( optimizer="adam", 
-                loss="mean_squared_error")
+retino.compile(optimizer="adam", loss="mean_squared_error")
 
-plot_model(retino, 
-            show_shapes=True,
-            show_layer_names=True)
+plot_model(retino, show_shapes=True, show_layer_names=True)
 # retino.summary()
 
-for x,y in track(train_feeder.feed(), description="Training..", total=train_feeder.n_of_parts):
-    retino.fit(
-        x=x,
-        y=y,
-        epochs=50,
-        batch_size=128,
-        shuffle=True,
-        verbose=0
-    )
+# Training
+for _ in [0, 1]:
+    for x, y in track(train_feeder.feed(), total=train_feeder.n_of_parts):
+        retino.fit(x=x, y=y, epochs=25, batch_size=128, shuffle=True, verbose=0)
+
+# Testing
 toa_test, y_test = next(test_feeder.feed())
-errors = np.std( retino.predict(toa_test).squeeze() - y_test )/y_test*100
-print(np.mean(errors))
+error = np.std((retino.predict(toa_test, verbose=0).squeeze() - y_test) / y_test) * 100
+print(f"mean error {error}")
 
-
+print("Prediction examples")
+for i in range(10):
+    print(
+        f"true: [green]{y_test[i]:.1f}[/] \t predicted: [blue]{np.squeeze(retino.predict(toa_test[i], verbose=0)):.1f}"
+    )
