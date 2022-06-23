@@ -6,8 +6,8 @@ import utils
 from rich.progress import track
 
 # Load the dataset feeders
-test_feeder = utils.data_feeder("splitted_dataset/test_splitted_data/").feed()
-train_feeder = utils.data_feeder("splitted_dataset/train_splitted_data").feed()
+test_feeder = utils.data_feeder("splitted_dataset/test_splitted_data/")
+train_feeder = utils.data_feeder("splitted_dataset/train_splitted_data")
 
 ### Plot the dataset
 
@@ -15,7 +15,7 @@ fig, axes = plt.subplots(3, 3, sharex=True, sharey=True)
 fig.subplots_adjust(wspace=-0.85, hspace=-0.25)
 
 for i, ax in enumerate(axes.flatten()):
-    image = ax.imshow(next(test_feeder)[0][i], cmap="plasma", vmin=-3, vmax=3)
+    image = ax.imshow(next(test_feeder.feed())[0][i], cmap="plasma", vmin=-3, vmax=3)
     ax.axis('off')
 
 
@@ -54,7 +54,7 @@ plot_model(retino,
             show_layer_names=True)
 # retino.summary()
 
-for x,y in track(train_feeder, description="Training..", total=100):
+for x,y in track(train_feeder.feed(), description="Training..", total=train_feeder.n_of_parts):
     retino.fit(
         x=x,
         y=y,
@@ -63,7 +63,7 @@ for x,y in track(train_feeder, description="Training..", total=100):
         shuffle=True,
         verbose=0
     )
-toa_test, y_test = next(test_feeder)
+toa_test, y_test = next(test_feeder.feed())
 errors = np.std( retino.predict(toa_test).squeeze() - y_test )/y_test*100
 print(np.mean(errors))
 
