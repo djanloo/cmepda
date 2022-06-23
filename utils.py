@@ -64,7 +64,9 @@ def split_dataset(data, filename, n_of_files, parent=None):
         os.mkdir(join(directory, "y"))
 
     for axis, axis_data in track(
-        zip(["x", "y"], list(data)), description=f"saving files for '{filename}'.."
+        zip(["x", "y"], list(data)), 
+        description=f"saving files for '{filename}'..",
+        total=n_of_files
     ):
         splitted_data = np.array_split(axis_data, n_of_files)
         for i, section in enumerate(splitted_data):

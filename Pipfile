@@ -15,7 +15,6 @@ pd4ml = {editable = true, git = "https://github.com/erum-data-idt/pd4ml"}
 pydot = "*"
 graphviz = "*"
 ipywidgets = "*"
-black = "*"
 
 [dev-packages]
 ipykernel = "*"

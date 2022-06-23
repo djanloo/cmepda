@@ -62,7 +62,7 @@ for _ in [0, 1]:
 # Testing
 toa_test, y_test = next(test_feeder.feed())
 error = np.std((retino.predict(toa_test, verbose=0).squeeze() - y_test) / y_test) * 100
-print(f"mean error {error}")
+print(f"mean error {error:.2f}")
 
 print("Prediction examples")
 for i in range(10):
