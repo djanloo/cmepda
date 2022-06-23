@@ -3,6 +3,9 @@
 omit/
 datasets/
 
+# Splitted datatset
+*_splitted_data/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
