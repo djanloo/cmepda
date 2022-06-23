@@ -1,9 +1,11 @@
 # Lushloo stuff
 # ignore directory for test and code snippets
 omit/
+
+# Dataset
 datasets/
 
-# Splitted datatset
+# Splitted dataset
 *_splitted_data/
 
 # Byte-compiled / optimized / DLL files

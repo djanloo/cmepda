@@ -3,6 +3,7 @@ import numpy as np
 import os
 from os import listdir
 from os.path import isfile, join
+from rich.progress import track 
 
 class data_feeder:
 
@@ -15,8 +16,10 @@ class data_feeder:
         self.data = []
         for ax in self.axes:
             axis_directory = os.path.join(self.directory,ax)
-            print(axis_directory)
-            axis_files = np.sort(afile for afile in listdir(axis_directory) if isfile(join(axis_directory, afile)) )
+            axis_files =  [afile for afile in listdir(axis_directory) if isfile(join(axis_directory, afile))]
+            if not axis_files:
+                raise FileNotFoundError(f"axis {ax} has no files!")
+            axis_files = np.sort(axis_files)
             self.data.append(axis_files)
             self.dataset_n_of_parts = len(axis_files)
 
@@ -32,18 +35,23 @@ class data_feeder:
             raise ValueError("axes have different number of files")
     
     def feed(self):
-        for part in self.dataset_n_of_parts:
+        for part in range(self.dataset_n_of_parts):
             yield tuple([np.load(f"{self.directory}/{axis}/{self.data[ax_index][part]}") for ax_index, axis in enumerate(self.axes)])
 
-def split_dataset(data, filename, n_of_files):
+def split_dataset(data, filename, n_of_files, parent=None):
 
-    directory = f"{filename}_splitted_data"
+    directory = ""
+    if parent is not None:
+        if not os.path.exists(parent):
+            os.mkdir(parent)
+        directory = parent
+    directory = f"{directory}/{filename}_splitted_data"
     if not os.path.exists(directory):
         os.mkdir(directory)
-        os.mkdir(os.path.join(directory,"x"))
-        os.mkdir(os.path.join(directory,"y"))
+        os.mkdir(join(directory,"x"))
+        os.mkdir(join(directory,"y"))
 
-    for axis, axis_data in zip(["x", "y"], list(data)):
+    for axis, axis_data in track(zip(["x", "y"], list(data)), description=f"saving files for '{filename}'.."):
         splitted_data = np.array_split(axis_data, n_of_files)
         for i, section in enumerate(splitted_data):
             np.save(f"{directory}/{axis}/{filename}_part_{i}", section)
