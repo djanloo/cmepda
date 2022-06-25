@@ -30,8 +30,6 @@ def animate(i):
         canvas,
         height,
     )
-
-
 anim = FuncAnimation(fig, animate, interval=0, blit=True)
 plt.show()
 
