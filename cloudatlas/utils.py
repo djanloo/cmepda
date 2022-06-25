@@ -10,7 +10,7 @@ class DataFeeder:
     """Class that prevents memory shortage.
     
     Mainly loads the splitted dataset from the directory yielded by
-    `utils.split_dataset()`.
+    :func:`cloudatlas.utils.split_dataset`.
 
     Attributes
     ----------
@@ -59,7 +59,7 @@ class DataFeeder:
             raise ValueError("axes have different number of files")
 
     def feed(self):
-        """Returns the generator that give the next part of the dataset using `next()`:
+        """Returns the generator that give the next part of the dataset using ``next()``:
         
             >>> feeder = DataFeeder("dataset")
             >>> gen = feeder.feed()
@@ -75,7 +75,7 @@ class DataFeeder:
             )
 
 
-def split_dataset(data, filename, n_of_files, parent=None):
+def split_dataset(data, filename,axes_names, n_of_files, parent=None):
     """Splits the dataset in smaller parts.
     
     Args
@@ -88,9 +88,13 @@ def split_dataset(data, filename, n_of_files, parent=None):
             the root of the files' names.
         n_of_files : int
             the number of parts
+        axes_names : list of str
+            the list of names for the axes
         parent : str, optional
             the folder where the splitted dataset is placed into.
     """
+    if len(axes_names) != len(data):
+        raise ValueError("axes names and data have divverent number of elements")
     directory = ""
     if parent is not None:
         if not os.path.exists(parent):

@@ -18,7 +18,7 @@ import mock
 # This has to be done for autodoc to work
 sys.path.insert(0, os.path.abspath("../.."))
 
-autodoc_mock_imports = ["numpy", "matplotlib", "scipy"]
+autodoc_mock_imports = ["numpy", "matplotlib", "scipy", "rich"]
 
 # -- Project information -----------------------------------------------------
 

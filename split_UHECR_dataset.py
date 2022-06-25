@@ -6,7 +6,7 @@ from pd4ml import Airshower
 from matplotlib import pyplot as plt
 import os
 from os.path import join
-import utils
+import cloudatlas.utils as utils
 
 THINNING = 1  # Thinning factor: takes one sample in every fixed number
 
