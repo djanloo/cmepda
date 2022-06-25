@@ -6,7 +6,25 @@ from os.path import isfile, join
 from rich.progress import track
 
 
-class data_feeder:
+class DataFeeder:
+    """Class that prevents memory shortage.
+    
+    Mainly loads the splitted dataset from the directory yielded by
+    `utils.split_dataset()`.
+
+    Attributes
+    ----------
+        directory : str
+            the main directory of the dataset
+        n_of_parts : int
+            the number of parts the dataset is made of
+        axes : list
+            qualitatively different sub-parts of the dataset, e.g. [input, output] or 
+            [feature1, feature2, output].
+        data : list
+            the path for each sub-part divided by axis e.g.: 
+            [[ax0_file0, ax0_file1],[ax1_file0, ax1_file1]
+    """
     def __init__(self, directory):
 
         self.directory = directory
@@ -41,6 +59,13 @@ class data_feeder:
             raise ValueError("axes have different number of files")
 
     def feed(self):
+        """Returns the generator that give the next part of the dataset using `next()`:
+        
+            >>> feeder = DataFeeder("dataset")
+            >>> gen = feeder.feed()
+            >>> next_block = next(gen) # Gives the next block of the dataset 
+        
+        """
         for part in range(self.n_of_parts):
             yield tuple(
                 [
@@ -51,7 +76,21 @@ class data_feeder:
 
 
 def split_dataset(data, filename, n_of_files, parent=None):
+    """Splits the dataset in smaller parts.
+    
+    Args
+    ----
+        data : tuple
+            the data to be splitted, given in the following format:
 
+                (array1, array2, array3, ... )
+        filename : str
+            the root of the files' names.
+        n_of_files : int
+            the number of parts
+        parent : str, optional
+            the folder where the splitted dataset is placed into.
+    """
     directory = ""
     if parent is not None:
         if not os.path.exists(parent):
