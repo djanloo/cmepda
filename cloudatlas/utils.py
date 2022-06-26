@@ -52,7 +52,7 @@ class DataFeeder:
         self.splitconf = splitConf(directory)
         self.axes = self.splitconf.axes_names
         self.n_axes = len(self.axes)
-        self.data = []
+        self.data = {}
         for ax in self.axes:
             axis_directory = os.path.join(self.directory, ax)
             axis_files = [
@@ -63,7 +63,7 @@ class DataFeeder:
             if not axis_files:
                 raise FileNotFoundError(f"axis {ax} has no files!")
             axis_files = np.sort(axis_files)
-            self.data.append(axis_files)
+            self.data[ax] = axis_files
             self.n_of_parts = len(axis_files)
 
     @property
@@ -86,12 +86,11 @@ class DataFeeder:
         
         """
         for part in range(self.n_of_parts):
-            yield tuple(
-                [
-                    np.load(f"{self.directory}/{axis}/{self.data[ax_index][part]}")
-                    for ax_index, axis in enumerate(self.axes)
-                ]
-            )
+            data_list = [
+                        np.load(f"{self.directory}/{axis}/{self.data[axis][part]}")
+                        for axis in self.axes
+                        ]
+            yield dict(zip(self.axes, data_list))
 
 
 def split_dataset(data, filename, axes_names, n_of_files, parent=None):
