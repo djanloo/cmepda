@@ -1,0 +1,27 @@
+version: 2.1
+
+orbs:
+  codecov: codecov/codecov@3.2.2
+
+jobs:
+  # I did not find a way to execute different jobs in the same container
+  # so building and testing are done in the same job
+  build_and_test:
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - checkout
+      - run: 
+          name: Installing requirements and test modules
+          command: pipenv install
+      # - run: pytest tests
+      - run:
+          name: Code Coverage
+          command: |
+            pytest --cov-report xml --cov="cloudatlas/" tests/
+      - codecov/upload
+
+workflows:
+  build_and_test:
+    jobs:
+      - build_and_test
