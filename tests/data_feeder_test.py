@@ -1,4 +1,4 @@
-# Make posible importing modules from parent directory
+# Make possible importing modules from parent directory
 import sys, os
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import unittest

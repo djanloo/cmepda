@@ -5,13 +5,15 @@ from os import listdir
 from os.path import isfile, join, exists
 from rich.progress import track
 
+
 class splitConf:
     """Class to manage the dataset split"""
+
     def __init__(self, parent_dir):
-        self.cfile = join(parent_dir,"splitconf.rc")
+        self.cfile = join(parent_dir, "splitconf.rc")
         if not exists(self.cfile):
             raise FileNotFoundError("no split config file found")
-        else: 
+        else:
             with open(self.cfile, "r") as conf_file:
                 self.axes_names = conf_file.readlines()
                 self.axes_names = [line.rstrip() for line in self.axes_names]
@@ -21,13 +23,13 @@ class splitConf:
         # Writes to file
         conf_file = join(parent_dir, "splitconf.rc")
         with open(conf_file, "w") as conf_file:
-            conf_file.write('\n'.join(axes_names))
+            conf_file.write("\n".join(axes_names))
         return splitConf(parent_dir)
 
 
 class DataFeeder:
     """Class that prevents memory shortage.
-    
+
     Mainly loads the splitted dataset from the directory yielded by
     :func:`cloudatlas.utils.split_dataset`.
 
@@ -38,12 +40,13 @@ class DataFeeder:
         n_of_parts : int
             the number of parts the dataset is made of
         axes : list
-            qualitatively different sub-parts of the dataset, e.g. [input, output] or 
+            qualitatively different sub-parts of the dataset, e.g. [input, output] or
             [feature1, feature2, output].
         data : list
-            the path for each sub-part divided by axis e.g.: 
+            the path for each sub-part divided by axis e.g.:
             [[ax0_file0, ax0_file1],[ax1_file0, ax1_file1]
     """
+
     def __init__(self, directory):
 
         self.directory = directory
@@ -79,23 +82,23 @@ class DataFeeder:
 
     def feed(self):
         """Returns the generator that give the next part of the dataset using ``next()``:
-        
-            >>> feeder = DataFeeder("dataset")
-            >>> gen = feeder.feed()
-            >>> next_block = next(gen) # Gives the next block of the dataset 
-        
+
+        >>> feeder = DataFeeder("dataset")
+        >>> gen = feeder.feed()
+        >>> next_block = next(gen) # Gives the next block of the dataset
+
         """
         for part in range(self.n_of_parts):
             data_list = [
-                        np.load(f"{self.directory}/{axis}/{self.data[axis][part]}")
-                        for axis in self.axes
-                        ]
+                np.load(f"{self.directory}/{axis}/{self.data[axis][part]}")
+                for axis in self.axes
+            ]
             yield dict(zip(self.axes, data_list))
 
 
 def split_dataset(data, filename, axes_names, n_of_files, parent=None):
     """Splits the dataset in smaller parts.
-    
+
     Args
     ----
         data : tuple
@@ -112,8 +115,10 @@ def split_dataset(data, filename, axes_names, n_of_files, parent=None):
             the folder where the splitted dataset is placed into.
     """
     if len(axes_names) != len(data):
-        raise ValueError(f"axes names and data dimension mismatch:\n"+
-                         f"len(data) = {len(data)}\tlen(axes_names) = {len(axes_names)}")
+        raise ValueError(
+            f"axes names and data dimension mismatch:\n"
+            + f"len(data) = {len(data)}\tlen(axes_names) = {len(axes_names)}"
+        )
     directory = ""
     if parent is not None:
         if not exists(parent):
@@ -126,9 +131,9 @@ def split_dataset(data, filename, axes_names, n_of_files, parent=None):
             os.mkdir(join(directory, ax))
 
     for axis, axis_data in track(
-        zip(axes_names, list(data)), 
+        zip(axes_names, list(data)),
         description=f"saving files for '{filename}'..",
-        total=n_of_files
+        total=n_of_files,
     ):
         splitted_data = np.array_split(axis_data, n_of_files)
         for i, section in enumerate(splitted_data):
@@ -138,18 +143,20 @@ def split_dataset(data, filename, axes_names, n_of_files, parent=None):
     splitConf.FromNames(directory, axes_names)
     return directory
 
+
 def animate_time_series(array):
     import matplotlib.pyplot as plt
     from matplotlib.animation import FuncAnimation
-    vmax, vmin = np.max(array),  np.min(array)
+
+    vmax, vmin = np.max(array), np.min(array)
     fig = plt.figure()
     canvas = plt.imshow(
-        np.random.uniform(0, 1, size=(9, 9)), 
-                                vmin=vmin, vmax=vmax, 
-                                cmap="plasma"
+        np.random.uniform(0, 1, size=(9, 9)), vmin=vmin, vmax=vmax, cmap="plasma"
     )
+
     def animate(i):
         image = array[i]
         canvas.set_array(image)
         return (canvas,)
+
     return FuncAnimation(fig, animate, frames=len(array), interval=0, blit=True)

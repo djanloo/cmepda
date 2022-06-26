@@ -56,16 +56,29 @@ plot_model(retino, show_shapes=True, show_layer_names=True)
 
 # Training
 for _ in [0, 1]:
-    for x, y in track(train_feeder.feed(), total=train_feeder.n_of_parts):
-        retino.fit(x=x, y=y, epochs=25, batch_size=128, shuffle=True, verbose=0)
+    for data_block in track(train_feeder.feed(), total=train_feeder.n_of_parts):
+        retino.fit(
+            x=data_block["toa"],
+            y=data_block["outcome"],
+            epochs=25,
+            batch_size=128,
+            shuffle=True,
+            verbose=0,
+        )
 
 # Testing
-toa_test, y_test = next(test_feeder.feed())
-error = np.std((retino.predict(toa_test, verbose=0).squeeze() - y_test) / y_test) * 100
+test_block = next(test_feeder.feed())
+error = (
+    np.std(
+        (retino.predict(test_block["toa"], verbose=0).squeeze() - test_block["outcome"])
+        / test_block["outcome"]
+    )
+    * 100
+)
 print(f"mean error {error:.2f}")
 
 print("Prediction examples")
 for i in range(10):
     print(
-        f"true: [green]{y_test[i]:.1f}[/] \t predicted: [blue]{np.squeeze(retino.predict(toa_test[i], verbose=0)):.1f}"
+        f"true: [green]{test_block['outcome'][i]:.1f}[/] \t predicted: [blue]{np.squeeze(retino.predict(test_block['toa'][i], verbose=0)):.1f}"
     )
