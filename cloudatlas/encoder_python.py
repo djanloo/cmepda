@@ -7,8 +7,8 @@ from rich.progress import track
 from rich import print
 
 # Load the dataset feeders
-test_feeder = utils.data_feeder("splitted_dataset/test_splitted_data")
-train_feeder = utils.data_feeder("splitted_dataset/train_splitted_data")
+test_feeder = utils.DataFeeder("splitted_dataset/test_splitted_data")
+train_feeder = utils.DataFeeder("splitted_dataset/train_splitted_data")
 
 ### Plot the dataset
 """

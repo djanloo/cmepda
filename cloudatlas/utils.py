@@ -2,8 +2,27 @@
 import numpy as np
 import os
 from os import listdir
-from os.path import isfile, join
+from os.path import isfile, join, exists
 from rich.progress import track
+
+class splitConf:
+    """Class to manage the dataset split"""
+    def __init__(self, parent_dir):
+        self.cfile = join(parent_dir,"splitconf.rc")
+        if not exists(self.cfile):
+            raise FileNotFoundError("no split config file found")
+        else: 
+            with open(self.cfile, "r") as conf_file:
+                self.axes_names = conf_file.readlines()
+                self.axes_names = [line.rstrip() for line in self.axes_names]
+
+    @classmethod
+    def FromNames(cls, parent_dir, axes_names):
+        # Writes to file
+        conf_file = join(parent_dir, "splitconf.rc")
+        with open(conf_file, "w") as conf_file:
+            conf_file.write('\n'.join(axes_names))
+        return splitConf(parent_dir)
 
 
 class DataFeeder:
@@ -29,9 +48,9 @@ class DataFeeder:
 
         self.directory = directory
         self._dataset_n_of_parts = None
-        self.axes = np.sort(
-            [a for a in listdir(self.directory) if not isfile(join(self.directory, a))]
-        )
+
+        self.splitconf = splitConf(directory)
+        self.axes = self.splitconf.axes_names
         self.n_axes = len(self.axes)
         self.data = []
         for ax in self.axes:
@@ -75,7 +94,7 @@ class DataFeeder:
             )
 
 
-def split_dataset(data, filename,axes_names, n_of_files, parent=None):
+def split_dataset(data, filename, axes_names, n_of_files, parent=None):
     """Splits the dataset in smaller parts.
     
     Args
@@ -98,11 +117,11 @@ def split_dataset(data, filename,axes_names, n_of_files, parent=None):
                          f"len(data) = {len(data)}\tlen(axes_names) = {len(axes_names)}")
     directory = ""
     if parent is not None:
-        if not os.path.exists(parent):
+        if not exists(parent):
             os.mkdir(parent)
         directory = parent
     directory = f"{directory}/{filename}_splitted_data"
-    if not os.path.exists(directory):
+    if not exists(directory):
         os.mkdir(directory)
         for ax in axes_names:
             os.mkdir(join(directory, ax))
@@ -115,6 +134,9 @@ def split_dataset(data, filename,axes_names, n_of_files, parent=None):
         splitted_data = np.array_split(axis_data, n_of_files)
         for i, section in enumerate(splitted_data):
             np.save(f"{directory}/{axis}/{filename}_part_{i}", section)
+
+    # Make config file
+    splitConf.FromNames(directory, axes_names)
     return directory
 
 def animate_time_series(array):

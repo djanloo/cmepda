@@ -2,7 +2,7 @@
 
 Has to be executed once.
 
-Reminder: (event,9x9 detectors, 80 ts + 1 toa)
+Reminder: original structure is (event, 9x9 detectors, 80 ts + 1 toa)
 """
 from pd4ml import Airshower
 from matplotlib import pyplot as plt
@@ -22,6 +22,7 @@ for mode in ["test", "train"]:
     toa_test = x["features"][0][::THINNING, :, -1].reshape((-1, 9, 9, 1))
 
     # Time series is stored as a 80-array of 9x9 matrices (for each event)
+    # A swap of axes is then required
     time_series_test = x["features"][0][::THINNING, :, :-1]
     time_series_test = np.swapaxes(time_series_test, 1,2).reshape((-1, 80, 9, 9))
 
@@ -33,6 +34,6 @@ for mode in ["test", "train"]:
     test_directory = utils.split_dataset(
         (toa_test, time_series_test, y), mode,
         ["toa", "time_series", "outcome"],
-        100, 
+        100, # Number of parts
         parent="splitted_dataset"
     )
