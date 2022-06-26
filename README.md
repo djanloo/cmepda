@@ -7,3 +7,4 @@ Hi djanlooha, nice to see ya here.
 
 - use pipenv cos it's ice 
 - to build the docs pdf use ``make latexpdf`` in `docs/` folder
+- test with ``pytest tests``
