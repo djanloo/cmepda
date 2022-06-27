@@ -17,7 +17,7 @@ from rich.progress import track
 from rich import print
 
 # Time of arrival branch
-input_toa = Input(shape=(9, 9, 1), name="Time of arrival")
+input_toa = Input(shape=(9, 9, 1), name="time_of_arrival")
 flat = Flatten()(input_toa)
 enc = Dense(9, activation="relu")(flat)  
 enc = Dense(4, activation="relu")(enc)
@@ -25,7 +25,7 @@ enc = Dense(4, activation="relu")(enc)
 encoder = Model(inputs=input_toa, outputs=enc)
 
 # Time series branch
-input_ts = Input(shape=(80,81), name="Time series" )
+input_ts = Input(shape=(80,81), name="time_series" )
 lstm = LSTM(64)(input_ts)
 dense = Dense(16, activation='relu')(lstm)
 long_short_term_memory = Model(inputs=input_ts, outputs=dense)
