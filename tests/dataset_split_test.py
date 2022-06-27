@@ -9,7 +9,7 @@ sys.path.insert(1, os.path.join(sys.path[0], ".."))
 from cloudatlas.utils import DataFeeder, animate_time_series, split_dataset
 
 TOA_SHAPE = (9, 9, 1)
-TS_SHAPE = (9, 9, 80)
+TS_SHAPE = (80, 9, 9)
 N = 100  # Fake dataset number of events, keep it low
 PARENT_FOLDER = "test_splitted_data"
 
@@ -24,7 +24,7 @@ class dataSplitTest(unittest.TestCase):
         self.time_of_arrival = np.random.uniform(0, 1, size=N * 9 * 9).reshape(
             (-1,) + TOA_SHAPE
         )
-        self.time_series = np.random.uniform(0, 1, size=N * 9 * 9 * 80).reshape(
+        self.time_series = np.random.uniform(0, 1, size=N * 80 * 9 * 9).reshape(
             (-1,) + TS_SHAPE
         )
         self.outcomes = np.random.uniform(0, 1, size=N)
@@ -49,8 +49,8 @@ class datafeederTest(unittest.TestCase):
     def test_order(self):
         # Check for bug #2
         # Since the order is toa, ts, outcome shapes must be
-        self.assertEqual(self.block["toa"].shape[1:], (9, 9, 1))
-        self.assertEqual(self.block["time_series"].shape[1:], (9, 9, 80))
+        self.assertEqual(self.block["toa"].shape[1:], TOA_SHAPE)
+        self.assertEqual(self.block["time_series"].shape[1:], TS_SHAPE)
 
     def test_anim(self):
         # Animation is not shown, only checks for errors
