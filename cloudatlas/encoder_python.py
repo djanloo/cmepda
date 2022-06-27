@@ -35,18 +35,14 @@ from keras.models import Model
 from keras.utils.vis_utils import plot_model
 
 input = layers.Input(shape=(9, 9, 1))
-layer = layers.Flatten()(input)
-# layer = layers.Dense(81, activation="relu")(layer)
-# y = layers.Dense(27, activation="relu")(layer)
-# z = layers.Dense(27, activation="relu")(layer)
-# minlayer = layers.Minimum()([y,z])
-# maxlayer = layers.Maximum()([y,z])
-# sublayer = layers.Subtract()([maxlayer, minlayer])
-# layer = layers.Dense(27, activation="relu")(layer)
-layer = layers.Dense(9, activation="relu")(layer)  # change it to sublayer if not #
+layer = layers.LeakyReLU(alpha=0.2)(input) 
+layer = layers.Dense(16, activation="relu")(layer) 
 layer = layers.Dense(4, activation="relu")(layer)
-layer = layers.Dense(4, activation="relu")(layer)
-layer = layers.Dense(1)(layer)
+layer = layers.Flatten()(layer)
+layer = layers.Dense(4, activation="linear")(layer)
+layer = layers.Dense(16, activation="relu")(layer) 
+layer = layers.LeakyReLU(alpha=0.2)(layer) 
+layer = layers.Dense(1, activation="linear")(layer)
 
 retino = Model(input, outputs=layer)
 retino.compile(optimizer="adam", loss="mean_squared_error")
@@ -60,25 +56,26 @@ for _ in [0, 1]:
         retino.fit(
             x=data_block["toa"],
             y=data_block["outcome"],
-            epochs=25,
+            epochs=5,
             batch_size=128,
             shuffle=True,
             verbose=0,
         )
 
-# Testing
-test_block = next(test_feeder.feed())
-error = (
-    np.std(
-        (retino.predict(test_block["toa"], verbose=0).squeeze() - test_block["outcome"])
-        / test_block["outcome"]
+    # Testing
+    test_block = next(test_feeder.feed())
+    predictions = retino.predict(test_block["toa"], verbose=0).squeeze()
+    error = (
+        np.std(
+            (predictions - test_block["outcome"])
+            / test_block["outcome"]
+        )
+        * 100
     )
-    * 100
-)
-print(f"mean error {error:.2f}")
+    print(f"mean error {error:.2f}")
 
-print("Prediction examples")
-for i in range(10):
-    print(
-        f"true: [green]{test_block['outcome'][i]:.1f}[/] \t predicted: [blue]{np.squeeze(retino.predict(test_block['toa'][i], verbose=0)):.1f}"
-    )
+    print("Prediction examples")
+    for i in range(10):
+        print(
+            f"true: [green]{test_block['outcome'][i]:.1f}[/] \t predicted: [blue]{predictions[i]:.1f}"
+        )
