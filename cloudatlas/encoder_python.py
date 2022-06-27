@@ -42,6 +42,7 @@ layer = layers.Flatten()(layer)
 layer = layers.Dense(4, activation="linear")(layer)
 layer = layers.Dense(16, activation="relu")(layer) 
 layer = layers.LeakyReLU(alpha=0.2)(layer) 
+layer = layers.Dense(4, activation="linear")(layer)
 layer = layers.Dense(1, activation="linear")(layer)
 
 retino = Model(input, outputs=layer)

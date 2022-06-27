@@ -98,6 +98,13 @@ class DataFeeder:
             yield dict(zip(self.axes, data_list))
 
 def ask_load(path): 
+    """Conditionally loads a saved Model.
+    
+    Arguments
+    ---------
+        path : str
+            the path of the Model
+    """
     if os.path.exists(path):
         print("Existing model found. Do you want to load it? (y/n)")
         ans = input()

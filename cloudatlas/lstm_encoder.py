@@ -16,18 +16,21 @@ import utils
 from rich.progress import track
 from rich import print
 
-input_toa = Input(shape=(9, 9, 1))
+# Time of arrival branch
+input_toa = Input(shape=(9, 9, 1), name="Time of arrival")
 flat = Flatten()(input_toa)
 enc = Dense(9, activation="relu")(flat)  
 enc = Dense(4, activation="relu")(enc)
 enc = Dense(4, activation="relu")(enc)
 encoder = Model(inputs=input_toa, outputs=enc)
 
-input_ts = Input(shape=(80,81))
+# Time series branch
+input_ts = Input(shape=(80,81), name="Time series" )
 lstm = LSTM(64)(input_ts)
 dense = Dense(16, activation='relu')(lstm)
 long_short_term_memory = Model(inputs=input_ts, outputs=dense)
 
+# Concatenation
 conc = concatenate([encoder.output, long_short_term_memory.output])
 z = Dense(4, activation="relu")(conc)
 z = Dense(4, activation="linear")(z)
@@ -35,7 +38,7 @@ z = Dense(1, activation="linear")(z)
 global_model = Model(inputs=[encoder.input, long_short_term_memory.input], outputs=z)
 
 global_model.compile(optimizer="adam", loss="mean_squared_error")
-plot_model(global_model)
+plot_model(global_model, show_shapes=True)
 
 # Load the dataset feeders
 test_feeder = utils.DataFeeder("splitted_dataset/test_splitted_data")
@@ -44,16 +47,15 @@ train_feeder = utils.DataFeeder("splitted_dataset/train_splitted_data")
 # Training/Loading
 model = utils.ask_load("trained/lstm_enc")
 if model is None:
-    for _ in [0, 1]:
+    for _ in [0, 1, 2]:
         for data_block in track(train_feeder.feed(), total=train_feeder.n_of_parts):
-
             # Flattens features
             time_series = data_block["time_series"].reshape((-1, 80, 81))
-            
+
             global_model.fit(
                 x=[data_block["toa"], time_series],
                 y=data_block["outcome"],
-                epochs=10,
+                epochs=5,
                 batch_size=128,
                 shuffle=True,
                 verbose=0,
@@ -74,9 +76,8 @@ predictions = global_model.predict([test_block['toa'], test_block['time_series']
 print(f"prediction shape is {predictions.shape}")
 error = (
     np.std(
-        (predictions.squeeze() - test_block["outcome"])/test_block["outcome"]
+        (predictions.squeeze() - test_block["outcome"])
     )
-    * 100
 )
 print(f"mean error {error:.2f}")
 print("Prediction examples")
