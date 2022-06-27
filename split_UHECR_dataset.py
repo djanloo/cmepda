@@ -19,12 +19,12 @@ for mode in ["test", "train"]:
     print(f"dataset shape is {x['features'][0].shape}")
 
     # Time of arrival is stored as a 9x9 matrix (for each event)
-    toa_test = x["features"][0][::THINNING, :, -1].reshape((-1, 9, 9, 1))
+    toa = x["features"][0][::THINNING, :, -1].reshape((-1, 9, 9, 1))
 
     # Time series is stored as a 80-array of 9x9 matrices (for each event)
     # A swap of axes is then required
-    time_series_test = x["features"][0][::THINNING, :, :-1]
-    time_series_test = np.swapaxes(time_series_test, 1,2).reshape((-1, 80, 9, 9))
+    time_series = x["features"][0][::THINNING, :, :-1]
+    time_series = np.swapaxes(time_series, 1,2).reshape((-1, 80, 9, 9))
 
     y = y[::THINNING]
 
@@ -32,7 +32,7 @@ for mode in ["test", "train"]:
     del x
 
     test_directory = utils.split_dataset(
-        (toa_test, time_series_test, y), mode,
+        (toa, time_series, y), mode,
         ["toa", "time_series", "outcome"],
         100, # Number of parts
         parent="splitted_dataset"
