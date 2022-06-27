@@ -4,7 +4,9 @@ import os
 from os import listdir
 from os.path import isfile, join, exists
 from rich.progress import track
+from rich import print
 
+from keras.models import load_model
 
 class splitConf:
     """Class to manage the dataset split"""
@@ -95,6 +97,18 @@ class DataFeeder:
             ]
             yield dict(zip(self.axes, data_list))
 
+def ask_load(path): 
+    if os.path.exists(path):
+        print("Existing model found. Do you want to load it? (y/n)")
+        ans = input()
+        if ans == "y":
+            return load_model(path)
+        elif ans == "n":
+            return None
+        else:
+            return ask_load(path)
+    else:
+        return None
 
 def split_dataset(data, filename, axes_names, n_of_files, parent=None):
     """Splits the dataset in smaller parts.
