@@ -64,6 +64,8 @@ if model is None:
 else:
     global_model = model
 
+global_model.summary()
+
 # Testing at the end of the super-epoch
 test_block = next(test_feeder.feed())
 data_block = next(train_feeder.feed())

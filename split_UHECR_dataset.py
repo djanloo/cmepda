@@ -5,7 +5,6 @@ Has to be executed once.
 Reminder: original structure is (event, 9x9 detectors, 80 ts + 1 toa)
 """
 from pd4ml import Airshower
-from matplotlib import pyplot as plt
 import os
 from os.path import join
 import cloudatlas.utils as utils
