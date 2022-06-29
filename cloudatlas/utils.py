@@ -106,7 +106,7 @@ def ask_load(path):
             the path of the Model
     """
     if os.path.exists(path):
-        print(f"Existing model found at {path}. Do you want to load it? [blue](y/n)")
+        print(f"Existing model found at [green]{path}[\]. Do you want to load it? [blue](y/n)")
         ans = input()
         if ans == "y":
             return load_model(path)

@@ -15,6 +15,7 @@ from keras.utils.vis_utils import plot_model
 import utils
 from rich.progress import track
 from rich import print
+import telegram_send
 
 # Load the dataset feeders
 test_feeder = utils.DataFeeder("splitted_dataset/test_splitted_data")
@@ -35,13 +36,13 @@ def get_net():
 
     # Time series branch
     input_ts = Input(shape=(80,81), name="time_series" )
-    lstm = LSTM(64)(input_ts)
-    dense = Dense(16, activation='relu')(lstm)
+    lstm = LSTM(128)(input_ts)
+    dense = Dense(128, activation='relu')(lstm)
     long_short_term_memory = Model(inputs=input_ts, outputs=dense)
 
     # Concatenation
     conc = concatenate([encoder.output, long_short_term_memory.output])
-    z = Dense(4, activation="relu")(conc)
+    z = Dense(128, activation="relu")(conc)
     z = Dense(4, activation="linear")(z)
     z = Dense(1, activation="linear")(z)
     global_model = Model(inputs=[encoder.input, long_short_term_memory.input], outputs=z)
@@ -55,22 +56,27 @@ def train_and_resolution(path):
     model = utils.ask_load(path)
     if model is None:
         global_model = get_net()
-        for _ in [0, 1, 2]:
+        for _ in [0, 1, 3]:
             for data_block in track(train_feeder.feed(), 
                                     total=train_feeder.n_of_parts,
                                     description=f"Super-epoch {_} of {path}"):
                 # Flattens features
                 time_series = data_block["time_series"].reshape((-1, 80, 81))
 
-                global_model.fit(
+                history = global_model.fit(
                     x=[data_block["toa"], time_series],
                     y=data_block["outcome"],
-                    epochs=5,
+                    epochs=20,
                     batch_size=128,
                     shuffle=True,
                     verbose=0,
                 )
             global_model.save(path)
+            try:
+                telegram_send.send(messages=[f"Ended super-epoch {_} for {path}",
+                                        f"Last sqr loss was {np.sqrt(history.history['loss'][-1])}"])
+            except:
+                print("Network failed")
     else:
         global_model = model
 
