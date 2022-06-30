@@ -4,6 +4,7 @@ omit/
 
 # Dataset
 datasets/
+data_by_entry/
 
 # Splitted dataset
 *_splitted_data/
