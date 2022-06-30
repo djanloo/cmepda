@@ -2,7 +2,6 @@
 I decided to split each entry of the dataset in a single file.
 This will probably cause a slowdown of data generation because of reading times
 """
-
 import numpy as np
 from cloudatlas import utils
 from os import mkdir
@@ -27,17 +26,18 @@ if not exists(DIR):
     mkdir(f"{DIR}/test")
 
 # Brutally use a counter because i'm lazy
-c = 0
-for data_block in track(test_feeder.feed(), total=test_feeder.n_of_parts):
+for mode, feeder in zip(["test", "train"],[test_feeder, train_feeder]):
+    c = 0
+    for data_block in track(feeder.feed(), total=feeder.n_of_parts):
 
-    block_time_series = data_block['time_series'].reshape((-1, 80, 81))
-    block_toas = data_block['toa']
-    block_outcomes = data_block['outcome']
+        block_time_series = data_block['time_series'].reshape((-1, 80, 81))
+        block_toas = data_block['toa']
+        block_outcomes = data_block['outcome']
 
-    for ts, toa, out in zip(block_time_series, block_toas, block_outcomes):
-        entry = np.empty(1, dtype=funky_dtype)
-        entry["toa"] = toa
-        entry["time_series"] = ts
-        entry["outcome"] = out 
-        np.save(f"{DIR}/test/part_{c}", entry)
-        c += 1
+        for ts, toa, out in zip(block_time_series, block_toas, block_outcomes):
+            entry = np.empty(1, dtype=funky_dtype)
+            entry["toa"] = toa
+            entry["time_series"] = ts
+            entry["outcome"] = out 
+            np.save(f"{DIR}/{mode}/part_{c}", entry)
+            c += 1
