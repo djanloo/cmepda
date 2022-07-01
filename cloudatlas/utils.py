@@ -119,7 +119,7 @@ class DataFeederKeras(keras.utils.Sequence):
         ## WARNING: files are not in order, even if ``sorted()`` is applied
         # This should not be a problem
 
-        print(f"Found {len(self.files)}: {[self.files[i] for i in [1,2,3]]}..")
+        print(f"Found {len(self.files)} files in [red]{self.folder}[/red]: {[self.files[i] for i in [1,2,3]]}..")
 
         # Gets the dtype of the saved data form first entry
         self.datum_dtype = np.load(f"{self.folder}/part_0.npy").dtype
