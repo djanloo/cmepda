@@ -1,4 +1,5 @@
 """Utility module"""
+from calendar import firstweekday
 import numpy as np
 import os
 from os import listdir
@@ -114,11 +115,14 @@ class DataFeederKeras(keras.utils.Sequence):
         self.multiple_inputs = hasattr(input_fields, "__iter__")
 
         # Loads files names' preventing to load subfolders
-        self.files = [file for file in os.listdir(folder) if os.path.isfile(join(self.folder, file))]
+        self.files = [file for file in os.listdir(self.folder) if os.path.isfile(join(self.folder, file))]
         ## WARNING: files are not in order, even if ``sorted()`` is applied
         # This should not be a problem
 
         print(f"Found {len(self.files)}: {[self.files[i] for i in [1,2,3]]}..")
+
+        # Gets the dtype of the saved data form first entry
+        self.datum_dtype = np.load(f"{self.folder}/part_0.npy").dtype
 
         # Data must be indexed by continuous integers
         self.datum_indexes = np.arange(len(self.files))
@@ -136,9 +140,6 @@ class DataFeederKeras(keras.utils.Sequence):
 
         # Generate data
         net_input, net_target = self.__data_generation(indexes)
-        print(f"Net in is {net_input}")
-        print(f"Net out is {net_target}")
-
         return net_input, net_target
 
     def on_epoch_end(self):
@@ -149,18 +150,16 @@ class DataFeederKeras(keras.utils.Sequence):
 
     def __data_generation(self, batch_datum_indexes):
         """Loads data and returns a batch"""
-        # Return format must be (array_of_inputs, array_of_targets)
+        # Return format must be ([array_input1, array_input2], array_of_targets)
         # Not array((in, tar))
-        batch_inputs = []
-        batch_targets = []
+        # Neither array([[in1, in2], 
+        #                [in1, in2]], 
+        #                [t1, t2])
+        batch_rows = np.empty(self.batch_size, dtype=self.datum_dtype)
         for row, datum_index  in enumerate(batch_datum_indexes):
-            x = np.load(f"{self.folder}/part_{datum_index}.npy")
-            if self.multiple_inputs:
-                batch_inputs.append([x[input_field] for input_field in self.input_fields])
-            else:
-                batch_inputs.append(x[self.input_fields])
-            batch_targets.append(x[self.target_field])
-
+            batch_rows[row] = np.load(f"{self.folder}/part_{datum_index}.npy")
+        batch_inputs = [batch_rows[input_field] for input_field in self.input_fields]
+        batch_targets = batch_rows[self.target_field]
         return batch_inputs, batch_targets
 
 def ask_load(path): 
