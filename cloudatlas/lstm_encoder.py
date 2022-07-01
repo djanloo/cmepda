@@ -81,13 +81,9 @@ def train_and_resolution(path):
 
     predictions = np.array([])
     true = np.array([])
-    for test_block in track(test_feeder.feed(), 
-                            total=test_feeder.n_of_parts):
-        true = np.concatenate((true, test_block['outcome']))
-        predictions = np.concatenate((predictions,
-                                    global_model.predict([ test_block['toa'], 
-                                                            test_block['time_series'].reshape((-1, 80, 81))], 
-                                                            verbose=0).squeeze()))
+    for inputs, targets in track(test_feeder):
+        true = np.concatenate((true, targets))
+        predictions = np.concatenate((predictions, global_model.predict(inputs,verbose=0).squeeze()))
     error = np.std(predictions - true)
     print(f"mean error is {error}")
     for i in range(10):
