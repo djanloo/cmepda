@@ -16,7 +16,7 @@ from rich import print
 import telegram_send
 
 
-feeder_options = {  "batch_size":4, 
+feeder_options = {  "batch_size":128, 
                     "input_fields": ["toa", "time_series"], 
                     "target_field": "outcome"
                 }
