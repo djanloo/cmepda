@@ -6,7 +6,7 @@ import unittest
 
 # Make possible importing modules from parent directory
 sys.path.insert(1, os.path.join(sys.path[0], ".."))
-from cloudatlas.utils import DataFeeder, animate_time_series, split_dataset
+from cloudatlas.utils import DataFeeder, DataFeederKeras, animate_time_series, split_dataset
 
 TOA_SHAPE = (9, 9, 1)
 TS_SHAPE = (80, 9, 9)
@@ -61,3 +61,4 @@ class datafeederTest(unittest.TestCase):
         # The 'z' in the method name is a workaround to alphabetical
         # test oredering
         rmtree(PARENT_FOLDER)
+

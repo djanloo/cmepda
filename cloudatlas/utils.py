@@ -5,7 +5,7 @@ from os import listdir
 from os.path import isfile, join, exists
 from rich.progress import track
 from rich import print
-
+import keras
 from keras.models import load_model
 
 class splitConf:
@@ -96,6 +96,72 @@ class DataFeeder:
                 for axis in self.axes
             ]
             yield dict(zip(self.axes, data_list))
+
+class DataFeederKeras(keras.utils.Sequence):
+
+    def __init__(self, folder, batch_size=32, shuffle=True, 
+                input_fields=None, target_field=None):
+
+        self.folder = folder
+        self.batch_size = batch_size
+        self.shuffle = shuffle
+
+        # The fields of the array that will be feeded into the net as (in, target)
+        self.input_fields = input_fields
+        self.target_field = target_field
+
+        # Checks for multiple inputs
+        self.multiple_inputs = hasattr(input_fields, "__iter__")
+
+        # Loads files names' preventing to load subfolders
+        self.files = [file for file in os.listdir(folder) if os.path.isfile(join(self.folder, file))]
+        ## WARNING: files are not in order, even if ``sorted()`` is applied
+        # This should not be a problem
+
+        print(f"Found {len(self.files)}: {[self.files[i] for i in [1,2,3]]}..")
+
+        # Data must be indexed by continuous integers
+        self.datum_indexes = np.arange(len(self.files))
+        # Shuffles
+        self.on_epoch_end()
+
+    def __len__(self):
+        """Returns the number of batches per epoch"""
+        return int(np.floor(len(self.files) / self.batch_size))
+
+    def __getitem__(self, batch_index):
+        """Gives one batch of data"""
+        # Gives the daum indexes for the batch_index block in the order specified by the shuffle
+        indexes = self.datum_indexes[batch_index*self.batch_size:(batch_index+1)*self.batch_size]
+
+        # Generate data
+        net_input, net_target = self.__data_generation(indexes)
+        print(f"Net in is {net_input}")
+        print(f"Net out is {net_target}")
+
+        return net_input, net_target
+
+    def on_epoch_end(self):
+        """Shuffles indexes after each epoch"""
+        self.indexes = np.arange(len(self.files))
+        if self.shuffle:
+            np.random.shuffle(self.datum_indexes)
+
+    def __data_generation(self, batch_datum_indexes):
+        """Loads data and returns a batch"""
+        # Return format must be (array_of_inputs, array_of_targets)
+        # Not array((in, tar))
+        batch_inputs = []
+        batch_targets = []
+        for row, datum_index  in enumerate(batch_datum_indexes):
+            x = np.load(f"{self.folder}/part_{datum_index}.npy")
+            if self.multiple_inputs:
+                batch_inputs.append([x[input_field] for input_field in self.input_fields])
+            else:
+                batch_inputs.append(x[self.input_fields])
+            batch_targets.append(x[self.target_field])
+
+        return batch_inputs, batch_targets
 
 def ask_load(path): 
     """Conditionally loads a saved Model.

@@ -4,9 +4,7 @@ For each time series the encoder receives the same time of arrival matrix.
 Perhaps this data redundance will overtrain that part of the net.
 
 """
-from genericpath import exists
 import numpy as np
-import matplotlib.pyplot as plt
 
 from keras.layers import LSTM, Dense, Input, Flatten, concatenate
 from keras.models import Model
@@ -17,9 +15,15 @@ from rich.progress import track
 from rich import print
 import telegram_send
 
+
+feeder_options = {  "batch_size":4, 
+                    "input_fields": ["toa", "time_series"], 
+                    "target_field": "outcome"
+                }
+
 # Load the dataset feeders
-test_feeder = utils.DataFeeder("splitted_dataset/test_splitted_data")
-train_feeder = utils.DataFeeder("splitted_dataset/train_splitted_data")
+test_feeder = utils.DataFeederKeras("data_by_entry/test", **feeder_options)
+train_feeder = utils.DataFeederKeras("data_by_entry/train", **feeder_options)
 
 
 def get_net():
@@ -51,11 +55,7 @@ def get_net():
     # plot_model(global_model, show_shapes=True)
     return global_model
 
-def adapt_fmt(gen):
-    """Adapts the format of DataFeeder to the one required by fit() to fit a generator"""
-    for u in gen:
-        yield ([u['toa'], u['time_series'].reshape((-1, 80, 81))],
-                 u['outcome'])
+
 
 # Training/Loading
 def train_and_resolution(path):
@@ -64,11 +64,10 @@ def train_and_resolution(path):
         global_model = get_net()
         
         history = global_model.fit(
-            x=adapt_fmt(train_feeder.feed()), # fit_generator is deprecated, this can be done
+            x=train_feeder, # fit_generator is deprecated, this can be done
             epochs=3, # This must be so because each block has 300 events (?)
             batch_size=128,
-            shuffle=True,
-            verbose=1,
+            verbose=1
             )
         global_model.save(path)
         try:
