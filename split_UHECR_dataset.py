@@ -29,7 +29,7 @@ for mode in ["test", "train"]:
 
     y = y[::THINNING]
     print(f"outcome has dtype={y.dtype}")
-    exit()
+    
     # Clean useless big file
     del x
 
