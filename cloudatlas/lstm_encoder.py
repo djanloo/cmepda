@@ -65,13 +65,13 @@ def train_and_resolution(path):
         
         history = global_model.fit(
             x=train_feeder, # fit_generator is deprecated, this can be done
-            epochs=3, # This must be so because each block has 300 events (?)
+            epochs=50, 
             batch_size=128,
             verbose=1
             )
         global_model.save(path)
         try:
-            telegram_send.send(messages=[f"Last sqr loss was {np.sqrt(history.history['loss'][-1])}"])
+            telegram_send.send(messages=[f"Last loss was {history.history['loss'][-1]:.1}"])
         except:
             print("Network failed")
     else:

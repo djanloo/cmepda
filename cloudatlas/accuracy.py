@@ -14,4 +14,7 @@ with open("accuracy", "w") as outfile:
         except:
             print("Network failed")
 a = np.loadtxt("accuracy")
-telegram_send.send(messages=[f"Training finished with <u>resolution = {np.mean(a)} +- {np.std(a)}</u>"], parse_mode="HTML")
+try:
+    telegram_send.send(messages=[f"Training finished with <u>resolution = {np.mean(a)} +- {np.std(a)}</u>"], parse_mode="HTML")
+except:
+    print("Network failed")
