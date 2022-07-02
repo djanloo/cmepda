@@ -71,7 +71,7 @@ def train_and_resolution(path):
             )
         global_model.save(path)
         try:
-            telegram_send.send(messages=[f"Last loss was {history.history['loss'][-1]:.1}"])
+            telegram_send.send(messages=[f"Last loss was {history.history['loss'][-1]:.1f}"])
         except:
             print("Network failed")
     else:
