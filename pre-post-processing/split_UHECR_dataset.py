@@ -4,6 +4,10 @@ Has to be executed once.
 
 Reminder: original structure is (event, 9x9 detectors, 80 ts + 1 toa)
 """
+# Make possible importing modules from parent directory
+import sys, os
+sys.path.insert(1, os.path.join(sys.path[0], ".."))
+
 from pd4ml import Airshower
 from os.path import join
 import cloudatlas.utils as utils

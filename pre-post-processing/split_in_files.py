@@ -2,6 +2,10 @@
 I decided to split each entry of the dataset in a single file.
 This will probably cause a slowdown of data generation because of reading times
 """
+# Make possible importing modules from parent directory
+import sys, os
+sys.path.insert(1, os.path.join(sys.path[0], ".."))
+
 import numpy as np
 from cloudatlas import utils
 from os import mkdir
