@@ -58,7 +58,9 @@ def get_net():
 
     # ATM estimation is linearly biased. Try to remove it by another linear layer
     # on what is supposed to be the estimation
-    z = Dense(1, activation="linear")(z)
+    z = Dense(1, activation="relu")(z)
+    z = Dense(1)(z)
+
 
     global_model = Model(
         inputs=[encoder.input, long_short_term_memory.input], outputs=z
@@ -145,4 +147,4 @@ def train_and_resolution(path):
 
 
 if __name__ == "__main__":
-    train_and_resolution("trained/history_backup")
+    train_and_resolution("trained/mariuccio")
