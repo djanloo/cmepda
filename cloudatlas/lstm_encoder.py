@@ -5,9 +5,12 @@ Perhaps this data redundance will overtrain that part of the net.
 
 """
 import numpy as np
+from os.path import exists, join
 
+import keras
 from keras.layers import LSTM, Dense, Input, Flatten, concatenate
 from keras.models import Model
+from keras.metrics import RootMeanSquaredError
 from keras.utils.vis_utils import plot_model
 
 import utils
@@ -15,6 +18,8 @@ from rich.progress import track
 from rich import print
 import telegram_send
 
+# Test
+import matplotlib.pyplot as plt
 
 feeder_options = {  "batch_size":128, 
                     "input_fields": ["toa", "time_series"], 
@@ -41,7 +46,7 @@ def get_net():
     # Time series branch
     input_ts = Input(shape=(80,81), name="time_series" )
     lstm = LSTM(64)(input_ts)
-    dense = Dense(9, activation='relu')(lstm)
+    dense = Dense(16, activation='relu')(lstm)
     long_short_term_memory = Model(inputs=input_ts, outputs=dense)
 
     # Concatenation
@@ -51,10 +56,12 @@ def get_net():
     z = Dense(1, activation="linear")(z)
     global_model = Model(inputs=[encoder.input, long_short_term_memory.input], outputs=z)
 
-    global_model.compile(optimizer="adam", loss="mean_squared_error")
+    global_model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-4),
+                        loss="mean_squared_error",
+                        metrics=[RootMeanSquaredError()])
+
     # plot_model(global_model, show_shapes=True)
     return global_model
-
 
 
 # Training/Loading
@@ -65,17 +72,31 @@ def train_and_resolution(path):
         
         history = global_model.fit(
             x=train_feeder, # fit_generator is deprecated, this can be done
-            epochs=50, 
+            epochs=120,
+            validation_data=test_feeder[0], # Mmmh
             batch_size=128,
             verbose=1
             )
         global_model.save(path)
+
+        # Saves the history
+        np.save(f"{path}/history", history)
+
         try:
             telegram_send.send(messages=[f"Last loss was {history.history['loss'][-1]:.1f}"])
         except:
             print("Network failed")
     else:
         global_model = model
+
+        # Loads the history
+        if exists(join(path, "history.npy")):
+            history = np.load(f"{path}/history.npy", allow_pickle=True).item()
+            # print(history.history)
+        plt.plot(history.history['loss'])
+        plt.plot(history.history['root_mean_squared_error'])
+        plt.show()
+        exit()
 
     global_model.summary()
 
