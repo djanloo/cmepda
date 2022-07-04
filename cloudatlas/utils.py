@@ -9,6 +9,7 @@ from rich import print
 import keras
 from keras.models import load_model
 
+
 class splitConf:
     """Class to manage the dataset split"""
 
@@ -98,10 +99,11 @@ class DataFeeder:
             ]
             yield dict(zip(self.axes, data_list))
 
-class DataFeederKeras(keras.utils.Sequence):
 
-    def __init__(self, folder, batch_size=32, shuffle=True, 
-                input_fields=None, target_field=None):
+class DataFeederKeras(keras.utils.Sequence):
+    def __init__(
+        self, folder, batch_size=32, shuffle=True, input_fields=None, target_field=None
+    ):
 
         self.folder = folder
         self.batch_size = batch_size
@@ -115,11 +117,17 @@ class DataFeederKeras(keras.utils.Sequence):
         self.multiple_inputs = hasattr(input_fields, "__iter__")
 
         # Loads files names' preventing to load subfolders
-        self.files = [file for file in os.listdir(self.folder) if os.path.isfile(join(self.folder, file))]
+        self.files = [
+            file
+            for file in os.listdir(self.folder)
+            if os.path.isfile(join(self.folder, file))
+        ]
         ## WARNING: files are not in order, even if ``sorted()`` is applied
         # This should not be a problem
 
-        print(f"Found {len(self.files)} files in [red]{self.folder}[/red]: {[self.files[i] for i in [1,2,3]]}..")
+        print(
+            f"Found {len(self.files)} files in [red]{self.folder}[/red]: {[self.files[i] for i in [1,2,3]]}.."
+        )
 
         # Gets the dtype of the saved data form first entry
         self.datum_dtype = np.load(f"{self.folder}/part_0.npy").dtype
@@ -136,7 +144,9 @@ class DataFeederKeras(keras.utils.Sequence):
     def __getitem__(self, batch_index):
         """Gives one batch of data"""
         # Gives the daum indexes for the batch_index block in the order specified by the shuffle
-        indexes = self.datum_indexes[batch_index*self.batch_size:(batch_index+1)*self.batch_size]
+        indexes = self.datum_indexes[
+            batch_index * self.batch_size : (batch_index + 1) * self.batch_size
+        ]
 
         # Generate data
         net_input, net_target = self.__data_generation(indexes)
@@ -152,26 +162,29 @@ class DataFeederKeras(keras.utils.Sequence):
         """Loads data and returns a batch"""
         # Return format must be ([array_input1, array_input2], array_of_targets)
         # Not array((in, tar))
-        # Neither array([[in1, in2], 
-        #                [in1, in2]], 
+        # Neither array([[in1, in2],
+        #                [in1, in2]],
         #                [t1, t2])
         batch_rows = np.empty(self.batch_size, dtype=self.datum_dtype)
-        for row, datum_index  in enumerate(batch_datum_indexes):
+        for row, datum_index in enumerate(batch_datum_indexes):
             batch_rows[row] = np.load(f"{self.folder}/part_{datum_index}.npy")
         batch_inputs = [batch_rows[input_field] for input_field in self.input_fields]
         batch_targets = batch_rows[self.target_field]
         return batch_inputs, batch_targets
 
-def ask_load(path): 
+
+def ask_load(path):
     """Conditionally loads a saved Model.
-    
+
     Arguments
     ---------
         path : str
             the path of the Model
     """
     if os.path.exists(path):
-        print(f"Existing model found at [green]{path}[/green]. Do you want to load it? [blue](y/n)")
+        print(
+            f"Existing model found at [green]{path}[/green]. Do you want to load it? [blue](y/n)"
+        )
         ans = input()
         if ans == "y":
             return load_model(path)
@@ -181,6 +194,7 @@ def ask_load(path):
             return ask_load(path)
     else:
         return None
+
 
 def split_dataset(data, filename, axes_names, n_of_files, parent=None):
     """Splits the dataset in smaller parts.

@@ -35,13 +35,13 @@ from keras.models import Model
 from keras.utils.vis_utils import plot_model
 
 input = layers.Input(shape=(9, 9, 1))
-layer = layers.LeakyReLU(alpha=0.2)(input) 
-layer = layers.Dense(16, activation="relu")(layer) 
+layer = layers.LeakyReLU(alpha=0.2)(input)
+layer = layers.Dense(16, activation="relu")(layer)
 layer = layers.Dense(4, activation="relu")(layer)
 layer = layers.Flatten()(layer)
 layer = layers.Dense(4, activation="linear")(layer)
-layer = layers.Dense(16, activation="relu")(layer) 
-layer = layers.LeakyReLU(alpha=0.2)(layer) 
+layer = layers.Dense(16, activation="relu")(layer)
+layer = layers.LeakyReLU(alpha=0.2)(layer)
 layer = layers.Dense(4, activation="linear")(layer)
 layer = layers.Dense(1, activation="linear")(layer)
 
@@ -66,13 +66,7 @@ for _ in [0, 1]:
     # Testing
     test_block = next(test_feeder.feed())
     predictions = retino.predict(test_block["toa"], verbose=0).squeeze()
-    error = (
-        np.std(
-            (predictions - test_block["outcome"])
-            / test_block["outcome"]
-        )
-        * 100
-    )
+    error = np.std((predictions - test_block["outcome"]) / test_block["outcome"]) * 100
     print(f"mean error {error:.2f}")
 
     print("Prediction examples")
