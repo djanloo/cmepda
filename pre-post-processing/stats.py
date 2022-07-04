@@ -15,10 +15,11 @@ from matplotlib import rcParams, cm
 rcParams["font.family"] = "serif"
 
 from rich.progress import track
+from rich import print
 
 FILE = "true_vs_predictions.npy"
 if not os.path.exists(FILE):
-    model = utils.ask_load("trained/accuracy_lstm_enc_0")
+    model = utils.ask_load("trained/albertino")
     if model is None:
         exit("Dumb")
 
@@ -42,6 +43,7 @@ if not os.path.exists(FILE):
     np.save(FILE, np.stack((true_vals, predictions)))
 
 else:
+    print(f"Data loaded from [red]{FILE}[/red]. Delete it if the net is new.")
     true_vals, predictions = np.load(FILE)
 
 
@@ -60,7 +62,7 @@ colormap = cm.get_cmap("plasma")
 
 # Interval percentile estimation
 for i, delta_quant in enumerate(delta_quants):
-    for segment in track(range(N - 1)):
+    for segment in track(range(N - 1), description=f"{delta_quant}-interpercentile:"):
         mask = (true_vals >= vals[segment]) & (true_vals < vals[segment + 1])
         down, up = np.percentile(
             predictions[mask], [50 - delta_quant / 2, 50 + delta_quant / 2]
