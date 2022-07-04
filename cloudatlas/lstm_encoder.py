@@ -54,6 +54,11 @@ def get_net():
     z = Dense(16, activation="relu")(conc)
     z = Dense(4, activation="linear")(z)
     z = Dense(1, activation="linear")(z)
+
+    # ATM estimation is linearly biased. Try to remove it by another linear layer
+    # on what is supposed to be the estimation
+    z = Dense(1, activation="linear")(z)
+
     global_model = Model(inputs=[encoder.input, long_short_term_memory.input], outputs=z)
 
     global_model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-4),
