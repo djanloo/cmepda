@@ -12,7 +12,7 @@ import tensorflow as tf
 from keras.layers import LSTM, Dense, Input, Flatten, concatenate
 from keras.models import Model
 from keras.metrics import RootMeanSquaredError
-
+from keras.utils.vis_utils import plot_model
 import utils
 from rich.progress import track
 from rich import print
@@ -59,7 +59,7 @@ def get_net():
     # ATM estimation is linearly biased. Try to remove it by another linear layer
     # on what is supposed to be the estimation
     z = Dense(1, activation="relu")(z)
-    z = Dense(1)(z)
+    z = Dense(1, activation="linear")(z)
 
 
     global_model = Model(
@@ -72,7 +72,7 @@ def get_net():
         metrics=[RootMeanSquaredError()],
     )
 
-    # plot_model(global_model, show_shapes=True)
+    plot_model(global_model, show_shapes=True)
     return global_model
 
 
