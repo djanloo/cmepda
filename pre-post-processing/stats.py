@@ -1,3 +1,7 @@
+# Make possible importing modules from parent directory
+import sys, os
+sys.path.insert(1, os.path.join(sys.path[0], ".."))
+
 import numpy as np
 import matplotlib.pyplot as plt
 from cloudatlas import utils
@@ -5,7 +9,11 @@ from cloudatlas.utils import DataFeeder
 from rich.progress import track
 from scipy.stats import gaussian_kde
 
-model = utils.ask_load("trained/accuracy_lstm_enc_4")
+from matplotlib import rcParams
+rcParams['font.family'] = 'serif'
+
+
+model = utils.ask_load("trained/accuracy_lstm_enc_1120epochs")
 if model is None:
     exit("Dumb")
 
@@ -34,6 +42,14 @@ plt.xlabel("true")
 plt.ylabel("estimated")
 
 ## Plot the conditional density
+## Since for a given datum omega=(time_of_arrival, time_series) correspond to two values
+## z_true(omega) and z_pred(omega)
+## plotting all z_true and z_pred gives the density distribution p(z_true, z_pred)
+## however we want to visualize the effectiveness of the prediction neglecting the distribution of 
+## z_true (we must thus renormalize the number of predictions p(z_pred)d_omega with the number of true values
+## lying in d_omega = p(z_true)d_omega)
+## What we obtain is p(z_true, z_pred)/p(z_true) = p(z_pred | z_true) that is the conditional
+## distribution, answering to the question "How are the predicted values approximating z_true distributed for a given z_true?"
 plt.figure(2)
 true_kern = gaussian_kde(true_vals)
 Z_true = true_kern(x)
