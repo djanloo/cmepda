@@ -11,3 +11,5 @@ Hi djanlooha, nice to see ya here.
 - to build the docs pdf use ``make latexpdf`` in `docs/` folder
 - test with ``pytest tests``
 - split dataset running ``split_UHECR_dataset.py`` then using ``split_in_files.py``
+
+![interp](pre-post-processing/interpercentile_ranges.png) 
