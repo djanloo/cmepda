@@ -33,20 +33,48 @@ if not exists(DIR):
     mkdir(DIR)
     mkdir(f"{DIR}/train")
     mkdir(f"{DIR}/test")
+    mkdir(f"{DIR}/validation")
 
-# Brutally use a counter because i'm lazy
-for mode, feeder in zip(["test", "train"], [test_feeder, train_feeder]):
-    c = 0
-    for data_block in track(feeder.feed(), total=feeder.n_of_parts):
+## Using 70-15-15 proportions since the original dataset is 70-30
 
-        block_time_series = data_block["time_series"].reshape((-1, 80, 81))
-        block_toas = data_block["toa"]
-        block_outcomes = data_block["outcome"]
+# Test and validation
+c = 0
+# Gets the index that splits the test dataset in half
+mid_index = (len( next(test_feeder.feed())["toa"])*test_feeder.n_of_parts) // 2
+print(f"mid index is {mid_index}")
+for data_block in track(test_feeder.feed(), total=test_feeder.n_of_parts):
 
-        for ts, toa, out in zip(block_time_series, block_toas, block_outcomes):
-            entry = np.empty(1, dtype=funky_dtype)
-            entry["toa"] = toa
-            entry["time_series"] = ts
-            entry["outcome"] = out
-            np.save(f"{DIR}/{mode}/part_{c}", entry)
-            c += 1
+    block_time_series = data_block["time_series"].reshape((-1, 80, 81))
+    block_toas = data_block["toa"]
+    block_outcomes = data_block["outcome"]
+
+    for ts, toa, out in zip(block_time_series, block_toas, block_outcomes):
+        
+        if c < mid_index:
+            path = f"{DIR}/test/part_{c}"
+        else:
+            path = f"{DIR}/validation/part_{c - mid_index}"
+        entry = np.empty(1, dtype=funky_dtype)
+        entry["toa"] = toa
+        entry["time_series"] = ts
+        entry["outcome"] = out
+        np.save(path, entry)
+        c += 1
+
+## Training data
+c = 0
+for data_block in track(train_feeder.feed(), total=train_feeder.n_of_parts):
+
+    block_time_series = data_block["time_series"].reshape((-1, 80, 81))
+    block_toas = data_block["toa"]
+    block_outcomes = data_block["outcome"]
+
+    for ts, toa, out in zip(block_time_series, block_toas, block_outcomes):
+        entry = np.empty(1, dtype=funky_dtype)
+        entry["toa"] = toa
+        entry["time_series"] = ts
+        entry["outcome"] = out
+        np.save(f"{DIR}/train/part_{c}", entry)
+        c += 1
+
+

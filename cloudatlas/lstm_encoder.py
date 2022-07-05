@@ -30,7 +30,7 @@ feeder_options = {
 # Load the dataset feeders
 test_feeder = utils.DataFeederKeras("data_by_entry/test", **feeder_options)
 train_feeder = utils.DataFeederKeras("data_by_entry/train", **feeder_options)
-
+val_feeder = utils.DataFeederKeras("data_by_entry/validation", **feeder_options)
 
 def get_net():
     """Used to reinitialize the model
@@ -79,9 +79,10 @@ def train_and_resolution(path):
         history = global_model.fit(
             x=train_feeder,  # fit_generator is deprecated, this can be done
             epochs=120,
-            validation_data=test_feeder[0],  # Mmmh
+            validation_data=val_feeder,  # Mmmh
             batch_size=128,
             verbose=1,
+            use_multiprocessing=False # For some reasons multiproc doubles the training time
         )
         global_model.save(path)
 
@@ -106,7 +107,8 @@ def train_and_resolution(path):
         plt.plot(history.history["loss"])
         plt.plot(history.history["root_mean_squared_error"])
         plt.show()
-
+        """
+        ### Stuff for tensorboard logging
         @tf.function
         def traceme(x):
             return model(x)
@@ -118,8 +120,7 @@ def train_and_resolution(path):
         traceme([tf.zeros((1, 9, 9, 1)), tf.zeros((1, 80, 81))])
         with writer.as_default():
             tf.summary.trace_export(name="model_trace", step=0, profiler_outdir=logdir)
-
-        exit()
+        """
 
     global_model.summary()
 
