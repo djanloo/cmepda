@@ -1,5 +1,6 @@
 """Utility module"""
 from calendar import firstweekday
+from http.client import NOT_IMPLEMENTED
 import numpy as np
 import os
 from os import listdir
@@ -125,21 +126,22 @@ class DataFeederKeras(keras.utils.Sequence):
         ## WARNING: files are not in order, even if ``sorted()`` is applied
         # This should not be a problem
 
+        self.data_len = len(self.files)
         print(
-            f"Found {len(self.files)} files in [red]{self.folder}[/red]: {[self.files[i] for i in [1,2,3]]}.."
+            f"Found { self.data_len} files in [red]{self.folder}[/red]: {[self.files[i] for i in [1,2,3]]}.."
         )
 
         # Gets the dtype of the saved data form first entry
         self.datum_dtype = np.load(f"{self.folder}/part_0.npy").dtype
 
         # Data must be indexed by continuous integers
-        self.datum_indexes = np.arange(len(self.files))
+        self.datum_indexes = np.arange( self.data_len)
         # Shuffles
         self.on_epoch_end()
 
     def __len__(self):
         """Returns the number of batches per epoch"""
-        return int(np.floor(len(self.files) / self.batch_size))
+        return int(np.floor( self.data_len / self.batch_size))
 
     def __getitem__(self, batch_index):
         """Gives one batch of data"""
@@ -150,11 +152,15 @@ class DataFeederKeras(keras.utils.Sequence):
 
         # Generate data
         net_input, net_target = self.__data_generation(indexes)
+
+        # Test for curriculum learning: save the indexes of the batch
+        self.last_batch_indexes = np.array(indexes)
+
         return net_input, net_target
 
     def on_epoch_end(self):
         """Shuffles indexes after each epoch"""
-        self.indexes = np.arange(len(self.files))
+        self.indexes = np.arange( self.data_len)
         if self.shuffle:
             np.random.shuffle(self.datum_indexes)
 
@@ -172,7 +178,52 @@ class DataFeederKeras(keras.utils.Sequence):
         batch_targets = batch_rows[self.target_field]
         return batch_inputs, batch_targets
 
+class Prof(keras.utils.Sequence):
+    """Curriculum creator"""
 
+    def __init__(self, trained_model, data_feeder=None, uniform_pacing=False):
+        self.model = load_model(trained_model)
+        self.data_feeder = data_feeder
+        if uniform_pacing:
+            # Curriculum with no pacing: each batch has the same size
+            self.pacing = lambda i: data_feeder.batch_size
+        if data_feeder is not None:
+            self.score()
+        
+        self.avg_error = self.model.predict(data_feeder) # This won't work
+
+        # Creates an empty array for the scores
+        # That is long as the dataset
+        self.scores = np.empty(data_feeder.data_len)
+        
+    def pacing(self, epoch):
+        raise NotImplementedError("prof pacing function is user defined")
+    
+    def scoring(self):
+        # Maybe a 1/gaussian ?
+        raise NotImplementedError("prof scoring function is user defined")
+
+    def score_data(self):
+        """Estimates the difficulty of the data.
+
+        Associates the indexes of the batch to a given difficulty score
+        """
+        raise NotImplementedError("I have to finish this @djanloo")
+        for batch in self.data_feeder:
+
+            # Gets the prof model estimates for the batch
+            estimates = self.model.predict(batch)
+
+            # Estimates the difficulty of the batch entries
+            # From how much the prof model fails on the predictions
+            difficulties = self.scoring(estimates - batch_true_values)
+
+            # Set the scores of the data using the dataset indexes
+            self.scores[self.data_feeder.last_batch_indexes] = difficulties
+
+    """Now resample the data using scores"""
+
+    
 def ask_load(path):
     """Conditionally loads a saved Model.
 
