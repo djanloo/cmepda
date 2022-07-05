@@ -63,7 +63,7 @@ def get_net():
     global_model.compile(
         optimizer="adam",  # keras.optimizers.Adam(learning_rate=1e-4),
         loss="mean_squared_error",
-        metrics=[RootMeanSquaredError()],
+        metrics=[RootMeanSquaredError()]
     )
 
     plot_model(global_model, show_shapes=True)
@@ -74,15 +74,30 @@ def get_net():
 def train_and_resolution(path):
     model = utils.ask_load(path)
     if model is None:
+        # If the model does not exist or is not loaded, execute training
         global_model = get_net()
+        
+        # Adding a scheduler for adam
+        def scheduler(epoch, current_lr):
+            # Splits the learning rate after epoch 5
+            # Stops dividing when lr is 'too small'
+            if epoch < 5:
+                return current_lr
+            elif current_lr < 1.0:
+                return current_lr + 0.02
+            else:
+                return current_lr
+
+        lr_scheduler = keras.callbacks.LearningRateScheduler(scheduler)
 
         history = global_model.fit(
-            x=train_feeder,  # fit_generator is deprecated, this can be done
-            epochs=120,
-            validation_data=val_feeder,  # Mmmh
+            x=train_feeder, 
+            epochs=25,
+            validation_data=val_feeder,
             batch_size=128,
             verbose=1,
-            use_multiprocessing=False # For some reasons multiproc doubles the training time
+            use_multiprocessing=False, # For some reasons multiproc doubles the training time
+            callbacks=[lr_scheduler]
         )
         global_model.save(path)
 
@@ -98,6 +113,7 @@ def train_and_resolution(path):
         except:
             print("Network failed")
     else:
+        # If the model is loaded shows history
         global_model = model
 
         # Loads the history
