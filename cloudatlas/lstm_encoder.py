@@ -107,20 +107,6 @@ def train_and_resolution(path):
         plt.plot(history.history["loss"])
         plt.plot(history.history["root_mean_squared_error"])
         plt.show()
-        """
-        ### Stuff for tensorboard logging
-        @tf.function
-        def traceme(x):
-            return model(x)
-
-        logdir = "log"
-        writer = tf.summary.create_file_writer(logdir)
-        tf.summary.trace_on(graph=True, profiler=True)
-        # Forward pass
-        traceme([tf.zeros((1, 9, 9, 1)), tf.zeros((1, 80, 81))])
-        with writer.as_default():
-            tf.summary.trace_export(name="model_trace", step=0, profiler_outdir=logdir)
-        """
 
     global_model.summary()
 
