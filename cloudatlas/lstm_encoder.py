@@ -126,11 +126,12 @@ def train_and_resolution(path):
 
     global_model.summary()
 
-    # Test for issue #6
-    # Since predictiong generator shuffles data indexes at the end
-    # What is the correct way to measure the std of (pred - true) ?
+    # I COMMITTED ON THE WRONG ISSUE
+    # Test for issue #5
+    # Since predictiong generator shuffles data indexes at the end #
+    # What is the correct way to measure the std of (pred - true) ? #
 
-    # Way 1: don't predict generators
+    # Way 1: don't predict generators #
     predictions = np.array([])
     true = np.array([])
     for batch in track(test_feeder):
@@ -143,9 +144,9 @@ def train_and_resolution(path):
     for i in range(10):
         print(f"true: [green]{true[i]:.1f}[/] \t predicted: [blue]{predictions[i]:.1f}")
 
-    # Way 2: predict and get true
-    # THIS IS WRONG: a shuffle happens after predict, so we compare
-    # unmatching pairs pred - true
+    # Way 2: predict and get true #
+    # THIS IS WRONG: a shuffle happens after predict, so we compare #
+    # unmatching pairs pred - true #
     predictions = np.array([])
     true = np.array([])
     predictions = np.array(global_model.predict(test_feeder)).squeeze()
@@ -158,8 +159,8 @@ def train_and_resolution(path):
     for i in range(10):
         print(f"true: [green]{true[i]:.1f}[/] \t predicted: [blue]{predictions[i]:.1f}")
 
-    # Way 3: model.evaluate
-    # Note: the metric used is RMSE. It is different form std.
+    # Way 3: model.evaluate #
+    # Note: the metric used is RMSE. It is different form std. #
     res3 = model.evaluate(test_feeder)[1]
     print(f"Resolution 3 is {res3}")
 
