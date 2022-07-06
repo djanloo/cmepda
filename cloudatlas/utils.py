@@ -135,7 +135,7 @@ class DataFeederKeras(keras.utils.Sequence):
         self.datum_dtype = np.load(f"{self.folder}/part_0.npy").dtype
 
         # Data must be indexed by continuous integers
-        self.datum_indexes = np.arange( self.data_len)
+        self.datum_indexes = np.arange(self.data_len)
         # Shuffles
         self.on_epoch_end()
 
@@ -145,6 +145,7 @@ class DataFeederKeras(keras.utils.Sequence):
 
     def __getitem__(self, batch_index):
         """Gives one batch of data"""
+        # print(f"Using DataFeederKeras __getitem__()")
         # Gives the daum indexes for the batch_index block in the order specified by the shuffle
         indexes = self.datum_indexes[
             batch_index * self.batch_size : (batch_index + 1) * self.batch_size
@@ -160,8 +161,9 @@ class DataFeederKeras(keras.utils.Sequence):
 
     def on_epoch_end(self):
         """Shuffles indexes after each epoch"""
-        self.indexes = np.arange( self.data_len)
+        self.datum_indexes = np.arange(self.data_len)
         if self.shuffle:
+            print(f"[blue]Shuffled indexes[/blue] in DataFeederKeras({self.folder})")
             np.random.shuffle(self.datum_indexes)
 
     def __data_generation(self, batch_datum_indexes):
@@ -178,50 +180,88 @@ class DataFeederKeras(keras.utils.Sequence):
         batch_targets = batch_rows[self.target_field]
         return batch_inputs, batch_targets
 
-class Prof(keras.utils.Sequence):
+class FeederProf(DataFeederKeras):
     """Curriculum creator"""
 
-    def __init__(self, trained_model, data_feeder=None, uniform_pacing=False):
+    def __init__(self, trained_model, data_folder, 
+                    uniform_pacing=True, difficulty_levels = 5, 
+                    **datafeeder_kwargs):
+
+        # Initializes itself as a vanilla DataFeeder
+        # with shuffling turned off since that scoring doesn't need shuffling
+        print(f"Initializing [green]prof[/green] with model [green]{trained_model}[/green] and data [red]{data_folder}[/red] ")
+        datafeeder_kwargs['shuffle'] = False
+        super().__init__(data_folder,**datafeeder_kwargs )
+
         self.model = load_model(trained_model)
-        self.data_feeder = data_feeder
+
         if uniform_pacing:
             # Curriculum with no pacing: each batch has the same size
-            self.pacing = lambda i: data_feeder.batch_size
-        if data_feeder is not None:
-            self.score()
+            self.pacing = lambda i: self.batch_size # this is set in super().__init__()
         
-        self.avg_error = self.model.predict(data_feeder) # This won't work
+        # Uses itself as a feeder to model predict
+        # At this point the generation procedure is the one in
+        # vanilla DataFeederKeras, given by super()
+        # print("Getting average prof error.. ")        # Unnecessary ?
+        # self.avg_error = self.model.evaluate(self)[1] # Unnecessary ?
 
         # Creates an empty array for the scores
         # That is long as the dataset
-        self.scores = np.empty(data_feeder.data_len)
+        self.difficulty_levels = difficulty_levels
+        self.scores = np.empty(self.data_len)
+        self.is_data_scored = False # Flag to score data only once
+        self.score_data()
+
+        # Overrides __getitem__ method in runtime
+        self.__getitem__ = self.__getitem_override__
+
+    def __getitem_override__(self, batch_index):
+        raise RuntimeError("you genius")
         
     def pacing(self, epoch):
         raise NotImplementedError("prof pacing function is user defined")
     
-    def scoring(self):
-        # Maybe a 1/gaussian ?
-        raise NotImplementedError("prof scoring function is user defined")
+    def scoring(self, errors):
+        #raise NotImplementedError("prof scoring function is user defined")
+        return errors
+    
+    def _normalize_scores(self):
+        """Normalizes the scores in the [0,1] interval then generates levels"""
+        self.scores = self.scores - np.min(self.scores)
+        self.scores /= np.max(self.scores)
+
+        # Multiply for the number of levels so that
+        # e.g. score = 0.3 -> score = int(5*0.3) = 1
+        # e.g. score = 0.9 -> score = int(5*0.9) = 4 
+        self.scores = np.int(self.difficulty_levels*self.scores)
 
     def score_data(self):
+        print("Scoring data..")
+        if self.is_data_scored:
+            raise RuntimeError("Prof scores are already generated and __getitem__ method is overriden")
         """Estimates the difficulty of the data.
 
         Associates the indexes of the batch to a given difficulty score
         """
-        raise NotImplementedError("I have to finish this @djanloo")
-        for batch in self.data_feeder:
+        # raise NotImplementedError("I have to finish this @djanloo")
 
-            # Gets the prof model estimates for the batch
-            estimates = self.model.predict(batch)
+        # Gets the prof model estimates for the batch
+        print("[red]getting true values..[/red]")
+        true_vals = np.array([batch[1] for batch in self]).reshape((-1))
+        print("[red]getting estimates..[/red]")
+        estimates = self.model.predict(self, verbose=0, batch_size=self.batch_size).squeeze()
 
-            # Estimates the difficulty of the batch entries
-            # From how much the prof model fails on the predictions
-            difficulties = self.scoring(estimates - batch_true_values)
+        # Estimates the difficulty of the batch entries
+        # From how much the prof model fails on the predictions
+        difficulties = self.scoring(estimates - true_vals)
+        print(f"Estimates have shape {estimates.shape}")
+        print(f"True vals have shape {true_vals.shape}")
+        print(f"Difficulties have shape {difficulties.shape}")
+        # Set the scores of the data using the dataset indexes
+        self.scores[self.datum_indexes[:len(estimates)]] = difficulties
+        self._normalize_scores()
+        self.is_data_scored = True
 
-            # Set the scores of the data using the dataset indexes
-            self.scores[self.data_feeder.last_batch_indexes] = difficulties
-
-    """Now resample the data using scores"""
 
     
 def ask_load(path):
