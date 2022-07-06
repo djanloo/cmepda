@@ -8,3 +8,4 @@ feeder_options = {
 }
 
 prof_alberto = FeederProf('trained/albertino', 'data_by_entry/test', **feeder_options )
+print(prof_alberto[0])
