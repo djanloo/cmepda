@@ -1,5 +1,6 @@
 import numpy as np
-from utils import FeederProf
+from DataFeeders import FeederProf
+import matplotlib.pyplot as plt
 
 feeder_options = {
     "batch_size": 128,
@@ -7,5 +8,9 @@ feeder_options = {
     "target_field": "outcome",
 }
 
-prof_alberto = FeederProf('trained/albertino', 'data_by_entry/test', **feeder_options )
-print(prof_alberto[0])
+prof_alberto = FeederProf('trained/albertino', 'data_by_entry/test', difficulty_levels=5, **feeder_options )
+sc =   prof_alberto[0]['scores']
+plt.hist(sc, bins=15, histtype='step', density=True)
+plt.title("Difficulty distribution")
+plt.xlabel("level")
+plt.show()

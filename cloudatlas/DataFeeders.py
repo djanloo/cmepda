@@ -10,6 +10,9 @@ from rich import print
 import keras
 from keras.models import load_model
 
+# Test
+from matplotlib import pyplot as plt
+
 # Turn off keras warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -36,7 +39,7 @@ class DataFeederKeras(keras.utils.Sequence):
             if os.path.isfile(join(self.folder, file))
         ]
         ## WARNING: files are not in order, even if ``sorted()`` is applied
-        # This should not be a problem
+        # This should not be a problem since indexes and files are one to one
 
         self.data_len = len(self.files)
         print(
@@ -100,7 +103,7 @@ class FeederProf(DataFeederKeras):
                     **datafeeder_kwargs):
 
         # Initializes itself as a vanilla DataFeeder
-        # with shuffling turned off since that scoring doesn't need shuffling
+        # with shuffling turned off since scoring doesn't need it
         print(f"Initializing [green]prof[/green] with model [green]{trained_model}[/green] and data [red]{data_folder}[/red] ")
         datafeeder_kwargs['shuffle'] = False
         super().__init__(data_folder,**datafeeder_kwargs )
@@ -111,21 +114,15 @@ class FeederProf(DataFeederKeras):
             # Curriculum with no pacing: each batch has the same size
             self.pacing = lambda i: self.batch_size # this is set in super().__init__()
         
-        # Uses itself as a feeder to model predict
-        # At this point the generation procedure is the one in
-        # vanilla DataFeederKeras, given by super()
-        # print("Getting average prof error.. ")        # Unnecessary ?
-        # self.avg_error = self.model.evaluate(self)[1] # Unnecessary ?
-
         # Creates an empty array for the scores
         # That is long as the dataset
         self.difficulty_levels = difficulty_levels
         self.scores = np.empty(self.data_len)
-        self.is_data_scored = False # Flag to score data only once7
+        self.scores[:] = np.nan
+        self.is_data_scored = False # Flag to score data only once
 
-        # Tries to load scores
-        if not self.load_scores():
-            self.score_data()
+        # Gets the data score
+        self.score_data()
 
         # Overrides __getitem__ method in runtime since the student 
         # __getitem__ is no longer required
@@ -133,17 +130,23 @@ class FeederProf(DataFeederKeras):
         FeederProf.__getitem__ = FeederProf.__getitem_override__
 
     def __getitem_override__(self, batch_index):
-        raise RuntimeError("you genius")
+        return {'index': self.datum_indexes, 'scores': self.scores}
         
     def pacing(self, epoch):
         raise NotImplementedError("prof pacing function is user defined")
     
     def scoring(self, errors):
         #raise NotImplementedError("prof scoring function is user defined")
-        return errors
+        mean_error = np.mean(np.abs(errors))
+        print(f"MEAN ERR IS {mean_error}")
+        # return errors/mean_error - 1.0
+        return  np.log(np.abs(errors/mean_error) + 1.0)
     
     def _normalize_scores(self):
-        """Normalizes the scores in the [0,1] interval then generates levels"""
+        plt.plot(self.scores)
+        plt.title("Scores before normalization")
+        plt.show()
+        """Generates the difficulty label from the score value lying in [0, 1]"""
         self.scores = self.scores - np.min(self.scores)
         self.scores /= np.max(self.scores)
 
@@ -151,41 +154,64 @@ class FeederProf(DataFeederKeras):
         # e.g. score = 0.3 -> score = floor(5*0.3) = 1
         # e.g. score = 0.9 -> score = floor(5*0.9) = 4 
         self.scores = np.floor(self.difficulty_levels*self.scores)
+        plt.plot(self.scores)
+        plt.title("Scores AFTER normalization")
+        plt.show()
 
     def score_data(self):
-        print("Scoring data..")
-        if self.is_data_scored:
-            raise RuntimeError("Prof scores are already generated and __getitem__ method is overriden")
         """Estimates the difficulty of the data.
 
-        Associates the indexes of the batch to a given difficulty score
+        Associates the indexes of the batch to a given difficulty score.
+        This function must be called BEFORE the __getitem__ override, as it uses ``self`` as
+        the generator.
         """
+        print("Scoring data..")
 
-        # Gets the prof model estimates for the batch
-        print("[red]getting true values..[/red]")
-        true_vals = np.array([batch[1] for batch in track(self)]).reshape((-1))
-        print("[red]getting estimates..[/red]")
-        estimates = self.model.predict(self, verbose=1, batch_size=self.batch_size).squeeze()
+        if self.is_data_scored:
+            raise RuntimeError("Prof scores are already generated and __getitem__ method is overriden")
+        
+        # Tries to load errors
+        if not self.load_errors():
 
-        # Estimates the difficulty of the batch entries
-        # From how much the prof model fails on the predictions
-        difficulties = self.scoring(estimates - true_vals)
+            # Gets the prof model estimates for the batch
+            print("[red]getting true values..[/red]")
+            true_vals = np.array([batch[1] for batch in track(self)]).reshape((-1))
+            print("[red]getting estimates..[/red]")
+            estimates = self.model.predict(self, verbose=1, batch_size=self.batch_size).squeeze()
+
+            # Estimates the difficulty of the batch entries
+            # From how much the prof model fails on the predictions
+            self.errors = estimates - true_vals
+            self.save_errors()
 
         # Set the scores of the data using the dataset indexes
-        self.scores[self.datum_indexes[:len(estimates)]] = difficulties
+        self.scores[self.datum_indexes[:len(self.errors)]] = self.scoring(self.errors)
+        
+        # Removes unscored data
+        self.datum_indexes = self.datum_indexes[np.logical_not(np.isnan(self.scores))]
+        self.scores = self.scores[np.logical_not(np.isnan(self.scores))]
+
         self._normalize_scores()
         self.is_data_scored = True
-        self.save_scores()
         print(f"Prof [green]{self.model_folder}[/green] initialized")
 
-    def save_scores(self):
-        np.save(f"{self.model_folder}/prof_scores.npy", self.scores)
+    def save_errors(self):
+        print(f"[green]Saving errors[/green] ({self.model_folder}/prof_errors.npy)")
+        np.save(f"{self.model_folder}/prof_errors.npy", self.errors)
 
-    def load_scores(self):
-        if exists(f"{self.model_folder}/prof_scores.npy"):
-            self.scores = np.load(f"{self.model_folder}/prof_scores.npy")
-            print("Scores [blue]loaded[/blue] from file")
-            self.is_data_scored = True
+    def load_errors(self):
+        if exists(f"{self.model_folder}/prof_errors.npy"):
+            self.errors = np.load(f"{self.model_folder}/prof_errors.npy")
+            if np.isnan(self.errors).any():
+                print(f"Errors are nan. Deleting file..")
+                os.remove(f"{self.model_folder}/prof_errors.npy")
+                return False
+            print("Errors [blue]loaded[/blue] from file")
             return True
         else:
             return False
+    
+    # def __len__(self):
+    #     raise NotImplementedError()
+
+    
