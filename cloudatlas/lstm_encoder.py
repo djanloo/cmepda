@@ -126,21 +126,44 @@ def train_and_resolution(path):
 
     global_model.summary()
 
+    # Test for issue #6
+    # Since predictiong generator shuffles data indexes at the end
+    # What is the correct way to measure the std of (pred - true) ?
+
+    # Way 1: don't predict generators
     predictions = np.array([])
     true = np.array([])
     for batch in track(test_feeder):
         true = np.concatenate((true, batch[1]))
-        predictions = np.concatenate(
-            (
-                predictions,
-                global_model.predict(batch[0], batch_size=128, verbose=0).squeeze(),
-            )
-        )
-    error = np.std(predictions - true)
-    print(f"mean error is {error}")
+        predictions= np.concatenate((predictions, global_model.predict(batch[0],  batch_size=128).squeeze() ))
+    res1 = np.std(predictions - true)
+    print(f"Resolution 1 is {res1}")
+
+    print("Examples of predictions:")
     for i in range(10):
         print(f"true: [green]{true[i]:.1f}[/] \t predicted: [blue]{predictions[i]:.1f}")
-    return error
+
+    # Way 2: predict and get true
+    # THIS IS WRONG: a shuffle happens after predict, so we compare
+    # unmatching pairs pred - true
+    predictions = np.array([])
+    true = np.array([])
+    predictions = np.array(global_model.predict(test_feeder)).squeeze()
+    for batch in track(test_feeder):
+        true = np.concatenate((true, batch[1]))
+    res2 = np.std(predictions - true)
+    print(f"Resolution 2 is {res2}")
+
+    print("Examples of predictions:")
+    for i in range(10):
+        print(f"true: [green]{true[i]:.1f}[/] \t predicted: [blue]{predictions[i]:.1f}")
+
+    # Way 3: model.evaluate
+    # Note: the metric used is RMSE. It is different form std.
+    res3 = model.evaluate(test_feeder)[1]
+    print(f"Resolution 3 is {res3}")
+
+    return res3
 
 
 if __name__ == "__main__":
