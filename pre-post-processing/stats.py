@@ -35,6 +35,7 @@ if not os.path.exists(FILE):
                 model.predict(
                     [block["toa"], block["time_series"].reshape((-1, 80, 81))],
                     verbose=0,
+                    batch_size=128
                 ).squeeze(),
             )
         )
