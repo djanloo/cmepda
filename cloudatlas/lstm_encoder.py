@@ -134,9 +134,12 @@ def train_and_resolution(path):
     # Way 1: don't predict generators #
     predictions = np.array([])
     true = np.array([])
-    for batch in track(test_feeder):
+    for batch in track(test_feeder, description="getting pred-true couples .."):
         true = np.concatenate((true, batch[1]))
-        predictions= np.concatenate((predictions, global_model.predict(batch[0],  batch_size=128).squeeze() ))
+        predictions= np.concatenate((predictions, global_model.predict(batch[0],  
+                                    batch_size=128, 
+                                    verbose=0).squeeze() 
+                                    ))
     res1 = np.std(predictions - true)
     print(f"Resolution 1 is {res1}")
 
@@ -148,10 +151,9 @@ def train_and_resolution(path):
     # THIS IS WRONG: a shuffle happens after predict, so we compare #
     # unmatching pairs pred - true #
     predictions = np.array([])
-    true = np.array([])
+    true = np.array([batch[1] for batch in track(test_feeder, description="getting true vals ..")]).reshape((-1))
+
     predictions = np.array(global_model.predict(test_feeder)).squeeze()
-    for batch in track(test_feeder):
-        true = np.concatenate((true, batch[1]))
     res2 = np.std(predictions - true)
     print(f"Resolution 2 is {res2}")
 
@@ -168,4 +170,4 @@ def train_and_resolution(path):
 
 
 if __name__ == "__main__":
-    train_and_resolution("trained/mariuccio")
+    train_and_resolution("trained/albertino")
