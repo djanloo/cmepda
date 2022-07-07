@@ -211,21 +211,21 @@ class FeederProf(DataFeederKeras):
             self.errors = estimates - true_vals
             self.save_errors()
 
-        # Sort everything in ascending order of erroneous prediction
-        sort_order = np.argsort(self.errors)
-        self.datum_indexes = self.datum_indexes[sort_order]
-        self.errors = self.errors[sort_order]
+        # Sort everything in ascending order of erroneous prediction #
+        sort_order = np.argsort(self.errors)                        #
+        self.datum_indexes = self.datum_indexes[sort_order]         #
+        self.errors = self.errors[sort_order]                       #
 
         # Since some data is cutted of from prediction because of batch rounding
-        # the scored data is less than the original set
-        self.data_len = len(self.errors)
-        self.scores = np.zeros(self.data_len)
+        # the scored data is less than the original set #
+        self.data_len = len(self.errors)                #
+        self.scores = np.zeros(self.data_len)           #
 
         # Now splits in ``self.difficulty_levels`` equal parts
-        # of increasing difficulty
-        lvl_dim = len(self.errors) // self.difficulty_levels
-        for lvl in range(self.difficulty_levels):
-            self.scores[lvl * lvl_dim : (lvl + 1) * lvl_dim] = lvl
+        # of increasing difficulty                                  #
+        lvl_dim = len(self.errors) // self.difficulty_levels        #
+        for lvl in range(self.difficulty_levels):                   #
+            self.scores[lvl * lvl_dim : (lvl + 1) * lvl_dim] = lvl  #
 
         # Removes unscored data (that is still nan)
         # self.datum_indexes = self.datum_indexes[np.logical_not(np.isnan(self.scores))]

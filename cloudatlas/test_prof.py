@@ -8,11 +8,9 @@ feeder_options = {
     "target_field": "outcome",
 }
 
-prof_alberto = FeederProf('trained/albertino', 'data_by_entry/test', difficulty_levels=5, **feeder_options )
-prof_alberto.learning_level = 1
-print(len(prof_alberto))
+prof_alberto = FeederProf(
+    "trained/albertino", "data_by_entry/test", difficulty_levels=5, **feeder_options
+)
 
 plt.plot(prof_alberto.scores)
 plt.show()
-
-
