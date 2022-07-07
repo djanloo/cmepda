@@ -16,6 +16,7 @@ from matplotlib import pyplot as plt
 # Turn off keras warnings
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
+PROF_SAVEFILE = 'prof_knowledge.npy' # Must have format
 
 class DataFeederKeras(keras.utils.Sequence):
     def __init__(
@@ -118,6 +119,7 @@ class FeederProf(DataFeederKeras):
 
         self.model_folder = trained_model
         self.model = load_model(trained_model)
+        self.savefile = f"{self.model_folder}/{PROF_SAVEFILE}" # Saves (true-predicted) data
 
         # Creates an empty array for the scores
         # That is long as the dataset
@@ -196,55 +198,49 @@ class FeederProf(DataFeederKeras):
             )
 
         # Tries to load errors
-        if not self.load_errors():
+        if not self.load_knowledge():
 
             # Gets the prof model estimates for the batch
             print("[red]getting true values..[/red]")
-            true_vals = np.array([batch[1] for batch in track(self)]).reshape((-1))
+            self._true_vals = np.array([batch[1] for batch in track(self)]).reshape((-1))
             print("[red]getting estimates..[/red]")
-            estimates = self.model.predict(
+            self._estimates = self.model.predict(
                 self, verbose=1, batch_size=self.batch_size
             ).squeeze()
+            self.save_knowledge()
 
-            # Estimates the difficulty of the batch entries
-            # From how much the prof model fails on the predictions
-            self.errors = estimates - true_vals
-            self.save_errors()
-
-        # Sort everything in ascending order of erroneous prediction #
-        sort_order = np.argsort(self.errors)                        #
-        self.datum_indexes = self.datum_indexes[sort_order]         #
-        self.errors = self.errors[sort_order]                       #
+        # Estimates the difficulty of the batch entries
+        # From how much the prof model fails on the predictions
+        self.errors = np.abs(self._estimates - self._true_vals)
+        
+        # Sort everything in ascending order of erroneous prediction
+        sort_order = np.argsort(self.errors)
+        self.datum_indexes = self.datum_indexes[sort_order]
+        self.errors = self.errors[sort_order]
+        self._estimates = self._estimates[sort_order]
+        self._true_vals = self._true_vals[sort_order]
 
         # Since some data is cutted of from prediction because of batch rounding
-        # the scored data is less than the original set #
-        self.data_len = len(self.errors)                #
-        self.scores = np.zeros(self.data_len)           #
+        # the scored data is less than the original set
+        self.data_len = len(self.errors)
+        self.scores = np.zeros(self.data_len)
 
         # Now splits in ``self.difficulty_levels`` equal parts
-        # of increasing difficulty                                  #
-        lvl_dim = len(self.errors) // self.difficulty_levels        #
-        for lvl in range(self.difficulty_levels):                   #
-            self.scores[lvl * lvl_dim : (lvl + 1) * lvl_dim] = lvl  #
-
-        # Removes unscored data (that is still nan)
-        # self.datum_indexes = self.datum_indexes[np.logical_not(np.isnan(self.scores))]
-        # self.scores = self.scores[np.logical_not(np.isnan(self.scores))]
+        # of increasing difficulty
+        lvl_dim = len(self.errors) // self.difficulty_levels
+        for lvl in range(self.difficulty_levels):
+            self.scores[lvl * lvl_dim : (lvl + 1) * lvl_dim] = lvl
 
         self.is_data_scored = True
         print(f"Prof [green]{self.model_folder}[/green] initialized")
 
-    def save_errors(self):
-        print(f"[green]Saving[/green] errors ({self.model_folder}/prof_errors.npy)")
-        np.save(f"{self.model_folder}/prof_errors.npy", self.errors)
+    def save_knowledge(self):
+        print(f"[green]Saving[/green] knowledge ({self.savefile})")
+        np.save(self.savefile, np.stack((self._true_vals, self._estimates)))
 
-    def load_errors(self):
-        if exists(f"{self.model_folder}/prof_errors.npy"):
-            self.errors = np.load(f"{self.model_folder}/prof_errors.npy")
-            if np.isnan(self.errors).any():
-                print(f"Errors are nan. Deleting file..")
-                os.remove(f"{self.model_folder}/prof_errors.npy")
-                return False
+    def load_knowledge(self):
+        if exists(self.savefile):
+            self._true_vals, self._estimates = np.load(self.savefile)
             print("Errors [blue]loaded[/blue] from file")
             return True
         else:
