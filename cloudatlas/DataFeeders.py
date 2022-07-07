@@ -143,7 +143,6 @@ class FeederProf(DataFeederKeras):
 
         # Cuts the dataset by difficulty
         restricted_file_indexes = self.datum_indexes[self.scores >= self.learning_level]
-
         # Selects the indexes inside the restricted dataset
         indexes_of_file_indexes = np.random.randint(
             0, (batch_index + 1) * self.batch_size, size=self.batch_size
