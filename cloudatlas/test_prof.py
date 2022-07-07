@@ -9,8 +9,9 @@ feeder_options = {
 }
 
 prof_alberto = FeederProf('trained/albertino', 'data_by_entry/test', difficulty_levels=5, **feeder_options )
-sc =   prof_alberto[0]['scores']
-plt.hist(sc, bins=15, histtype='step', density=True)
-plt.title("Difficulty distribution")
-plt.xlabel("level")
-plt.show()
+
+prof_alberto.learning_level = 2
+
+print(prof_alberto[0])
+
+

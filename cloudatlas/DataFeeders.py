@@ -67,7 +67,7 @@ class DataFeederKeras(keras.utils.Sequence):
         ]
 
         # Generate data
-        net_input, net_target = self.__data_generation(indexes)
+        net_input, net_target = self.data_generation(indexes)
 
         # Test for curriculum learning: save the indexes of the batch
         self.last_batch_indexes = np.array(indexes)
@@ -81,7 +81,7 @@ class DataFeederKeras(keras.utils.Sequence):
             print(f"[blue]Shuffled indexes[/blue] in DataFeederKeras({self.folder})")
             np.random.shuffle(self.datum_indexes)
 
-    def __data_generation(self, batch_datum_indexes):
+    def data_generation(self, batch_datum_indexes):
         """Loads data and returns a batch"""
         # Return format must be ([array_input1, array_input2], array_of_targets)
         # Not array((in, tar))
@@ -98,8 +98,7 @@ class DataFeederKeras(keras.utils.Sequence):
 class FeederProf(DataFeederKeras):
     """Curriculum creator"""
 
-    def __init__(self, trained_model, data_folder, 
-                    uniform_pacing=True, difficulty_levels = 5, 
+    def __init__(self, trained_model, data_folder, difficulty_levels = 5, 
                     **datafeeder_kwargs):
 
         # Initializes itself as a vanilla DataFeeder
@@ -107,20 +106,17 @@ class FeederProf(DataFeederKeras):
         print(f"Initializing [green]prof[/green] with model [green]{trained_model}[/green] and data [red]{data_folder}[/red] ")
         datafeeder_kwargs['shuffle'] = False
         super().__init__(data_folder,**datafeeder_kwargs )
+
         self.model_folder = trained_model
         self.model = load_model(trained_model)
 
-        if uniform_pacing:
-            # Curriculum with no pacing: each batch has the same size
-            self.pacing = lambda i: self.batch_size # this is set in super().__init__()
-        
         # Creates an empty array for the scores
         # That is long as the dataset
         self.difficulty_levels = difficulty_levels
         self.scores = np.empty(self.data_len)
         self.scores[:] = np.nan
         self.is_data_scored = False # Flag to score data only once
-
+        self._learning_level = 0 # Minimum level of lessons given
         # Gets the data score
         self.score_data()
 
@@ -132,38 +128,56 @@ class FeederProf(DataFeederKeras):
         # FeederProf.__getitem__ = FeederProf.__getitem_override__
 
     def _getitem_override(self, batch_index):
-        return {'index': self.datum_indexes, 'scores': self.scores}
+        """Gives one batch of data but sorted in ascending order of difficulty"""
+        # Following the reference article, increase the size of the data from which
+        # the batch is sampled, increasing difficulty
+        indexes = np.random.randint(0, (batch_index + 1) * self.batch_size, size=self.batch_size)
+
+        # Generate data
+        net_input, net_target = self.data_generation(indexes)
+
+        # Save the indexes of the batch
+        self.last_batch_indexes = np.array(indexes)
+
+        return net_input, net_target
 
     def __getitem__(self, batch_index):
         if self.is_data_scored:
             return self._getitem_override(batch_index)
         else:
             return super().__getitem__(batch_index)
-        
+
+    @property
+    def learning_level(self):
+        return self._learning_level
+    
+    @learning_level.setter
+    def learning_level(self, value):
+        if not isinstance(value, int):
+            raise ValueError("Difficulty must be an integer")
+        if value >= self.difficulty_levels or value < 0:
+            raise ValueError(f"Difficulty must be 0 < lvl < {self.difficulty_levels}")
+        print(f"Learning level set to {value}" \
+              f" ({len(self.scores[self.scores >= value])/len(self.scores)*100 :.0f}% of samples available)" )
+        self._learning_level = value
+
     def pacing(self, epoch):
         raise NotImplementedError("prof pacing function is user defined")
     
     def scoring(self, errors):
         #raise NotImplementedError("prof scoring function is user defined")
         mean_error = np.mean(np.abs(errors))
-        print(f"MEAN ERR IS {mean_error}")
-        # return errors/mean_error - 1.0
         return  np.log(np.abs(errors/mean_error) + 1.0)
     
     def _normalize_scores(self):
-        plt.plot(self.scores)
-        plt.title("Scores before normalization")
-        plt.show()
         """Generates the difficulty label from the score value lying in [0, 1]"""
         self.scores = self.scores - np.min(self.scores)
         self.scores /= np.max(self.scores)
 
-        # Multiply for the number of levels so that
+        # Multiply for the number of levels so that (n lvls = 5)
         # e.g. score = 0.3 -> score = floor(5*0.3) = 1
         # e.g. score = 0.9 -> score = floor(5*0.9) = 4 
         self.scores = np.floor(self.difficulty_levels*self.scores)
-        plt.plot(self.scores)
-        plt.title("Scores AFTER normalization")
         plt.show()
 
     def score_data(self):
@@ -195,16 +209,23 @@ class FeederProf(DataFeederKeras):
         # Set the scores of the data using the dataset indexes
         self.scores[self.datum_indexes[:len(self.errors)]] = self.scoring(self.errors)
         
-        # Removes unscored data
+        # Removes unscored data (that is still nan)
         self.datum_indexes = self.datum_indexes[np.logical_not(np.isnan(self.scores))]
         self.scores = self.scores[np.logical_not(np.isnan(self.scores))]
 
         self._normalize_scores()
+        
+        # Sort everything in ascending order of difficulty
+        sort_order = np.argsort(self.scores)
+        self.datum_indexes = self.datum_indexes[sort_order]
+        self.errors = self.errors[sort_order]
+        self.scores= self.scores[sort_order]
+
         self.is_data_scored = True
         print(f"Prof [green]{self.model_folder}[/green] initialized")
 
     def save_errors(self):
-        print(f"[green]Saving errors[/green] ({self.model_folder}/prof_errors.npy)")
+        print(f"[green]Saving[/green] errors ({self.model_folder}/prof_errors.npy)")
         np.save(f"{self.model_folder}/prof_errors.npy", self.errors)
 
     def load_errors(self):
@@ -218,8 +239,5 @@ class FeederProf(DataFeederKeras):
             return True
         else:
             return False
-    
-    # def __len__(self):
-    #     raise NotImplementedError()
 
     
