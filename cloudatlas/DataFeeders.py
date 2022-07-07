@@ -127,10 +127,18 @@ class FeederProf(DataFeederKeras):
         # Overrides __getitem__ method in runtime since the student 
         # __getitem__ is no longer required
         # (special methods are called by class, not by instance)
-        FeederProf.__getitem__ = FeederProf.__getitem_override__
+        ## NOTE: This overrides the class method from the first initialization onwards
+        # So stick to the if- else version
+        # FeederProf.__getitem__ = FeederProf.__getitem_override__
 
-    def __getitem_override__(self, batch_index):
+    def _getitem_override(self, batch_index):
         return {'index': self.datum_indexes, 'scores': self.scores}
+
+    def __getitem__(self, batch_index):
+        if self.is_data_scored:
+            return self._getitem_override(batch_index)
+        else:
+            return super().__getitem__(batch_index)
         
     def pacing(self, epoch):
         raise NotImplementedError("prof pacing function is user defined")
