@@ -7,8 +7,9 @@ from rich import print
 from keras.models import load_model
 
 # Turn off keras warnings
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-    
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
+
 def ask_load(path):
     """Conditionally loads a saved Model.
 

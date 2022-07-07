@@ -32,6 +32,7 @@ test_feeder = utils.DataFeederKeras("data_by_entry/test", **feeder_options)
 train_feeder = utils.DataFeederKeras("data_by_entry/train", **feeder_options)
 val_feeder = utils.DataFeederKeras("data_by_entry/validation", **feeder_options)
 
+
 def get_net():
     """Used to reinitialize the model
     I am basically lazy.
@@ -63,7 +64,7 @@ def get_net():
     global_model.compile(
         optimizer="adam",  # keras.optimizers.Adam(learning_rate=1e-4),
         loss="mean_squared_error",
-        metrics=[RootMeanSquaredError()]
+        metrics=[RootMeanSquaredError()],
     )
 
     plot_model(global_model, show_shapes=True)
@@ -76,7 +77,7 @@ def train_and_resolution(path):
     if model is None:
         # If the model does not exist or is not loaded, execute training
         global_model = get_net()
-        
+
         # Adding a scheduler for adam
         def scheduler(epoch, current_lr):
             # Splits the learning rate after epoch 5
@@ -91,13 +92,13 @@ def train_and_resolution(path):
         lr_scheduler = keras.callbacks.LearningRateScheduler(scheduler)
 
         history = global_model.fit(
-            x=train_feeder, 
+            x=train_feeder,
             epochs=25,
             validation_data=val_feeder,
             batch_size=128,
             verbose=1,
-            use_multiprocessing=False, # For some reasons multiproc doubles the training time
-            callbacks=[lr_scheduler]
+            use_multiprocessing=False,  # For some reasons multiproc doubles the training time
+            callbacks=[lr_scheduler],
         )
         global_model.save(path)
 
@@ -136,10 +137,12 @@ def train_and_resolution(path):
     true = np.array([])
     for batch in track(test_feeder, description="getting pred-true couples .."):
         true = np.concatenate((true, batch[1]))
-        predictions= np.concatenate((predictions, global_model.predict(batch[0],  
-                                    batch_size=128, 
-                                    verbose=0).squeeze() 
-                                    ))
+        predictions = np.concatenate(
+            (
+                predictions,
+                global_model.predict(batch[0], batch_size=128, verbose=0).squeeze(),
+            )
+        )
     res1 = np.std(predictions - true)
     print(f"Resolution 1 is {res1}")
 
@@ -151,7 +154,9 @@ def train_and_resolution(path):
     # THIS IS WRONG: a shuffle happens after predict, so we compare #
     # unmatching pairs pred - true #
     predictions = np.array([])
-    true = np.array([batch[1] for batch in track(test_feeder, description="getting true vals ..")]).reshape((-1))
+    true = np.array(
+        [batch[1] for batch in track(test_feeder, description="getting true vals ..")]
+    ).reshape((-1))
 
     predictions = np.array(global_model.predict(test_feeder)).squeeze()
     res2 = np.std(predictions - true)

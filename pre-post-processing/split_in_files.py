@@ -40,7 +40,7 @@ if not exists(DIR):
 # Test and validation
 c = 0
 # Gets the index that splits the test dataset in half
-mid_index = (len( next(test_feeder.feed())["toa"])*test_feeder.n_of_parts) // 2
+mid_index = (len(next(test_feeder.feed())["toa"]) * test_feeder.n_of_parts) // 2
 print(f"mid index is {mid_index}")
 for data_block in track(test_feeder.feed(), total=test_feeder.n_of_parts):
 
@@ -49,7 +49,7 @@ for data_block in track(test_feeder.feed(), total=test_feeder.n_of_parts):
     block_outcomes = data_block["outcome"]
 
     for ts, toa, out in zip(block_time_series, block_toas, block_outcomes):
-        
+
         if c < mid_index:
             path = f"{DIR}/test/part_{c}"
         else:
@@ -76,5 +76,3 @@ for data_block in track(train_feeder.feed(), total=train_feeder.n_of_parts):
         entry["outcome"] = out
         np.save(f"{DIR}/train/part_{c}", entry)
         c += 1
-
-
