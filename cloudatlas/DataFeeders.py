@@ -131,7 +131,15 @@ class FeederProf(DataFeederKeras):
         """Gives one batch of data but sorted in ascending order of difficulty"""
         # Following the reference article, increase the size of the data from which
         # the batch is sampled, increasing difficulty
-        indexes = np.random.randint(0, (batch_index + 1) * self.batch_size, size=self.batch_size)
+
+        # Cuts the dataset by difficulty
+        restricted_file_indexes = self.datum_indexes[self.scores >= self.learning_level]
+
+        # Selects the indexes inside the restricted dataset
+        indexes_of_file_indexes = np.random.randint(0, (batch_index + 1) * self.batch_size, size=self.batch_size)
+        
+        # Get the file indexes of the selected data
+        indexes = restricted_file_indexes[indexes_of_file_indexes]
 
         # Generate data
         net_input, net_target = self.data_generation(indexes)
@@ -160,6 +168,7 @@ class FeederProf(DataFeederKeras):
         print(f"Learning level set to {value}" \
               f" ({len(self.scores[self.scores >= value])/len(self.scores)*100 :.0f}% of samples available)" )
         self._learning_level = value
+        self.data_len = len(self.scores[self.scores >= value])
 
     def pacing(self, epoch):
         raise NotImplementedError("prof pacing function is user defined")
@@ -239,5 +248,10 @@ class FeederProf(DataFeederKeras):
             return True
         else:
             return False
+    
+    def __len__(self):
+        # Cutting the dataset by difficulty shortens it
+        return int(np.floor( self.data_len / self.batch_size))
+
 
     
