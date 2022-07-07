@@ -13,7 +13,10 @@ from keras.layers import LSTM, Dense, Input, Flatten, concatenate
 from keras.models import Model
 from keras.metrics import RootMeanSquaredError
 from keras.utils.vis_utils import plot_model
+
+from DataFeeders import DataFeederKeras
 import utils
+
 from rich.progress import track
 from rich import print
 import telegram_send
@@ -28,9 +31,9 @@ feeder_options = {
 }
 
 # Load the dataset feeders
-test_feeder = utils.DataFeederKeras("data_by_entry/test", **feeder_options)
-train_feeder = utils.DataFeederKeras("data_by_entry/train", **feeder_options)
-val_feeder = utils.DataFeederKeras("data_by_entry/validation", **feeder_options)
+test_feeder = DataFeederKeras("data_by_entry/test", **feeder_options)
+train_feeder = DataFeederKeras("data_by_entry/train", **feeder_options)
+val_feeder = DataFeederKeras("data_by_entry/validation", **feeder_options)
 
 
 def get_net():
