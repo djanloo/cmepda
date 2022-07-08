@@ -11,6 +11,7 @@ import numpy as np
 from keras.models import load_model
 from rich import print
 
+import telegram_send
 
 
 class RemoteMonitor:

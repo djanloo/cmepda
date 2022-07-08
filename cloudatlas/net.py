@@ -113,7 +113,7 @@ class LstmEncoder:
         true_vals = np.array(
             [batch[1] for batch in track(feeder, description="Getting true vals ..")]
         ).reshape((-1))
-        predictions = np.array(self.model.predict(test_feeder)).squeeze()
+        predictions = np.array(self.model.predict(feeder)).squeeze()
 
         return np.std(predictions - true_vals)
 
