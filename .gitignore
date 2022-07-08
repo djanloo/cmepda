@@ -12,6 +12,9 @@ data_by_entry/
 # Trained models
 trained/
 
+# Resolution stats
+*.resolutionz
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
