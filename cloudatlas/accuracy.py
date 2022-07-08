@@ -1,4 +1,3 @@
-from lstm_encoder import train_and_resolution
 import numpy as np
 from rich import print
 import telegram_send
