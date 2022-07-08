@@ -16,7 +16,9 @@ import mock
 
 # The next line adds the parent folder of "docs" to path
 # This has to be done for autodoc to work
-sys.path.insert(0, os.path.abspath("../.."))
+sys.path.insert(0, os.path.abspath("../../"))
+sys.path.insert(0, os.path.abspath("../../cloudatlas"))
+print(sys.path)
 
 autodoc_mock_imports = ["numpy", "matplotlib", "scipy", "rich", "keras"]
 

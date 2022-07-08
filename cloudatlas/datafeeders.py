@@ -1,6 +1,4 @@
 """Module for data feeders"""
-from calendar import firstweekday
-from http.client import NOT_IMPLEMENTED
 import numpy as np
 import os
 from os import listdir
@@ -12,6 +10,7 @@ from keras.models import load_model
 
 # Test
 from matplotlib import pyplot as plt
+import utils
 
 # Turn off keras warnings
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
