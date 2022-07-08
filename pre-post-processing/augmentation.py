@@ -20,8 +20,6 @@ class Augument:
 
         for i, file in enumerate(dataset):
             new_record['toa'] =
-            f
-            g
 
 
     @staticmethod
