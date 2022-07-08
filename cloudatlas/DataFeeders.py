@@ -18,7 +18,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 PROF_SAVEFILE = 'prof_knowledge.npy' # Must have format
 
-class DataFeederKeras(keras.utils.Sequence):
+class DataFeeder(keras.utils.Sequence):
     def __init__(
         self, folder, batch_size=32, shuffle=True, input_fields=None, target_field=None
     ):
@@ -98,7 +98,7 @@ class DataFeederKeras(keras.utils.Sequence):
         return batch_inputs, batch_targets
 
 
-class FeederProf(DataFeederKeras):
+class FeederProf(DataFeeder):
     """Curriculum creator.
 
     Takes a pre-trained model and estimates the 'difficulty' of each record.

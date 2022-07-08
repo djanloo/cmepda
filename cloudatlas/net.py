@@ -1,23 +1,22 @@
 """Module for nets generation.
 
-At the moment the best one (the only implemented) is the lstm_encoder one
+At the moment the best one (and the only implemented) is LstmEncoder.
 """
 import numpy as np
 from os.path import exists, join
+import warnings
 
 import keras
-import tensorflow as tf
 from keras.layers import LSTM, Dense, Input, Flatten, concatenate
 from keras.models import Model
 from keras.metrics import RootMeanSquaredError
 from keras.utils.vis_utils import plot_model
 
-from DataFeeders import DataFeederKeras
-import utils
-
 from rich.progress import track
 from rich import print
-import telegram_send
+
+from DataFeeders import DataFeederKeras
+import utils
 
 class LstmEncoder:
     """The net to analyze the AirShower dataset.
@@ -112,6 +111,10 @@ class LstmEncoder:
         predictions = np.array(self.model.predict(test_feeder)).squeeze()
 
         return np.std(predictions - true_vals)
+    
+    def __check_load(self):
+        if exists(self.path):
+            warnings.warn(f"Trained model already present in {self.path}")
 
 
 feeder_options = {
