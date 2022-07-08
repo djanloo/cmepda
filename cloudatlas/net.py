@@ -121,7 +121,7 @@ class LstmEncoder:
         # If it exists an already trained model at self.path, __check_load loads it in self.model
         if exists(self.path):
             warnings.warn(f"Trained model already present in {self.path}")
-            print("Loading the dataset...", end=' ')
+            print("Loading the model...", end=' ')
             self.model = keras.models.load_model(self.path)
             print("done!")
 
