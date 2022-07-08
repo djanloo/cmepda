@@ -1,8 +1,6 @@
-"""Test to see whether the lstm+encoder combo is a good idea
+"""Module for nets generation.
 
-For each time series the encoder receives the same time of arrival matrix.
-Perhaps this data redundance will overtrain that part of the net.
-
+At the moment the best one (the only implemented) is the lstm_encoder one
 """
 import numpy as np
 from os.path import exists, join
@@ -21,8 +19,39 @@ from rich.progress import track
 from rich import print
 import telegram_send
 
-# Test
-import matplotlib.pyplot as plt
+class LstmEncoder:
+
+    def __init__(self, optimizer="adam"):
+        # Time of arrival branch
+        input_toa = Input(shape=(9, 9, 1), name="time_of_arrival")
+        flat = Flatten()(input_toa)
+        enc = Dense(9, activation="relu")(flat)
+        enc = Dense(4, activation="relu")(enc)
+        enc = Dense(4, activation="relu")(enc)
+        encoder = Model(inputs=input_toa, outputs=enc)
+
+        # Time series branch
+        input_ts = Input(shape=(80, 81), name="time_series")
+        lstm = LSTM(64)(input_ts)
+        dense = Dense(16, activation="relu")(lstm)
+        long_short_term_memory = Model(inputs=input_ts, outputs=dense)
+
+        # Concatenation
+        conc = concatenate([encoder.output, long_short_term_memory.output])
+        z = Dense(16, activation="relu")(conc)
+        z = Dense(4, activation="linear")(z)
+        z = Dense(1, activation="linear")(z)
+
+        global_model = Model(
+            inputs=[encoder.input, long_short_term_memory.input], outputs=z
+        )
+
+        global_model.compile(
+            optimizer="adam",  # keras.optimizers.Adam(learning_rate=1e-4),
+            loss="mean_squared_error",
+            metrics=[RootMeanSquaredError()],
+        )
+
 
 feeder_options = {
     "batch_size": 128,
@@ -40,36 +69,7 @@ def get_net():
     """Used to reinitialize the model
     I am basically lazy.
     """
-    # Time of arrival branch
-    input_toa = Input(shape=(9, 9, 1), name="time_of_arrival")
-    flat = Flatten()(input_toa)
-    enc = Dense(9, activation="relu")(flat)
-    enc = Dense(4, activation="relu")(enc)
-    enc = Dense(4, activation="relu")(enc)
-    encoder = Model(inputs=input_toa, outputs=enc)
-
-    # Time series branch
-    input_ts = Input(shape=(80, 81), name="time_series")
-    lstm = LSTM(64)(input_ts)
-    dense = Dense(16, activation="relu")(lstm)
-    long_short_term_memory = Model(inputs=input_ts, outputs=dense)
-
-    # Concatenation
-    conc = concatenate([encoder.output, long_short_term_memory.output])
-    z = Dense(16, activation="relu")(conc)
-    z = Dense(4, activation="linear")(z)
-    z = Dense(1, activation="linear")(z)
-
-    global_model = Model(
-        inputs=[encoder.input, long_short_term_memory.input], outputs=z
-    )
-
-    global_model.compile(
-        optimizer="adam",  # keras.optimizers.Adam(learning_rate=1e-4),
-        loss="mean_squared_error",
-        metrics=[RootMeanSquaredError()],
-    )
-
+    
     plot_model(global_model, show_shapes=True)
     return global_model
 
