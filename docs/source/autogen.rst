@@ -3,6 +3,20 @@ Generated code description
 
 Code description generated automatically from docstrings.
 
+Models
+------
+
+.. automodule:: cloudatlas.net
+	:special-members: __init__
+	:members:
+
+Feeders
+-------
+
+.. automodule:: cloudatlas.datafeeders
+	:special-members: __init__
+	:members:
+
 
 Utilities
 ---------
@@ -10,4 +24,3 @@ Utilities
 .. automodule:: cloudatlas.utils
 	:special-members: __init__
 	:members:
-

@@ -15,8 +15,8 @@ from keras.utils.vis_utils import plot_model
 from rich.progress import track
 from rich import print
 
-from datafeeders import DataFeeder
-import utils
+from .datafeeders import DataFeeder
+from . import utils
 
 
 class LstmEncoder:
@@ -41,7 +41,7 @@ class LstmEncoder:
 
     Args:
         optimizer (keras.optimizers): the optimizer. By default is `Adam` with `learning_rate=0.001` .
-        path (:obj:'str', optional): the folder where the trained model is saved into.
+        path (:obj:`str`, optional): the folder where the trained model is saved into.
 
     Attributes:
         model (keras.models.Model): the (compiled) LstmEncoder network
@@ -121,7 +121,7 @@ class LstmEncoder:
         if exists(self.path):
             warnings.warn(f"Trained model already present in {self.path}")
 
-
+"""
 feeder_options = {
     "batch_size": 128,
     "input_fields": ["toa", "time_series"],
@@ -238,3 +238,4 @@ def train_and_resolution(path):
 
 if __name__ == "__main__":
     train_and_resolution("trained/albertino")
+"""
