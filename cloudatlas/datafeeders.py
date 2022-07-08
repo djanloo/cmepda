@@ -182,6 +182,10 @@ class FeederProf(DataFeeder):
     
     def on_epoch_end(self, *args):
         print(f"Args sent to epoch end {args}")
+    
+    def on_train_end(self, *args):
+        print(f"Args sent to [red]train[/red] end {args}")
+
 
     def __getitem__(self, batch_index):
         if self.is_data_scored:
@@ -200,7 +204,7 @@ class FeederProf(DataFeeder):
         if value >= self.difficulty_levels or value < 0:
             raise ValueError(f"Difficulty must be 0 < lvl < {self.difficulty_levels}")
         print(
-            f"Learning level set to {value}"
+            f"Teaching level set to {value}"
             f" ({len(self.scores[self.scores >= value])/len(self.scores)*100 :.0f}% of samples available)"
         )
         self._teaching_level = value

@@ -19,13 +19,13 @@ prof_alberto.teaching_level = 4
 print(f"Prof has {len(prof_alberto)} lessons to give")
 
 val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
-mariuccio = LstmEncoder(path="trained/mariuccio")
+mariuccio = LstmEncoder(path="trained/cancellami")
 
 mariuccio.train(
     x=prof_alberto,
-    epochs=300,
+    epochs=1,
     validation_data=val_feeder,
     batch_size=128,
-    verbose=1,
+    verbose=0,
     use_multiprocessing=False,
 )

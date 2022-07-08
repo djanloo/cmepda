@@ -12,28 +12,21 @@ from keras.models import load_model
 from rich import print
 
 
-# Checks if telegram_send is installed
-if "telegram_send" in sys.modules:
-    telegram_send_installed = True
-    import telegram_send
-else:
-    warnings.warn(
-        "Module 'telegram_send' not installed. Remote monitoring not available."
-    )
-    telegram_send_installed = False
-
 
 class RemoteMonitor:
     """Class for remote logging using telegram."""
 
     def __init__(self):
-
-        self.available = telegram_send_installed
+        try:
+            import telegram_send
+            print(f"Remote monitor [green]available[/green]")
+        except ImportError:
+            print(f"Remote monitor [red]unavailable[/red]")
 
         # Check if telegram_send is configured
         # ????
 
-    def send(message):
+    def send(self, message):
         """Sends a message."""
         # Check wether it's a message or more than one
         if hasattr(message, "__iter__"):
@@ -42,8 +35,9 @@ class RemoteMonitor:
             msg = [message]
         try:
             telegram_send.send(messages=msg)
-        except:
+        except Exception as e:
             warnings.warn("Network failed while remote monitoring.")
+            print(e)
 
 
 def ask_load(path):
