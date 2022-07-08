@@ -24,7 +24,9 @@ class Augument:
             new_record_rot['toa'] = self.rotate_matrix(dataset['toa'])
             new_record_rot['time_series'] = self.rotate_matrix(dataset['time_series'])
 
-
+            # flips
+            new_record_flip['toa'] = self.flip_matrix(dataset['toa'], mode='left-right')
+            new_record_flip['time_series'] = self.flip_matrix(dataset['time_series'], mode='left-right')
 
 
     @staticmethod
