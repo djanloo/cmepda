@@ -15,7 +15,7 @@ from keras.utils.vis_utils import plot_model
 from rich.progress import track
 from rich import print
 
-from DataFeeders import DataFeederKeras
+from datafeeders import DataFeeder
 import utils
 
 class LstmEncoder:
@@ -124,9 +124,9 @@ feeder_options = {
 }
 
 # Load the dataset feeders
-test_feeder = DataFeederKeras("data_by_entry/test", **feeder_options)
-train_feeder = DataFeederKeras("data_by_entry/train", **feeder_options)
-val_feeder = DataFeederKeras("data_by_entry/validation", **feeder_options)
+test_feeder = DataFeeder("data_by_entry/test", **feeder_options)
+train_feeder = DataFeeder("data_by_entry/train", **feeder_options)
+val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
 
 # Training/Loading
 def train_and_resolution(path):
