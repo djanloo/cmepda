@@ -14,6 +14,10 @@ feeder_options = {
 prof_alberto = FeederProf(
     "trained/albertino", "data_by_entry/train", difficulty_levels=5, **feeder_options
 )
+
+prof_alberto.teaching_level = 4
+print(f"Prof has {len(prof_alberto)} lessons to give")
+
 val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
 mariuccio = LstmEncoder(path="trained/mariuccio")
 
