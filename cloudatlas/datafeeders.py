@@ -19,10 +19,24 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 PROF_SAVEFILE = 'prof_knowledge.npy' # Must have format
 
 class DataFeeder(keras.utils.Sequence):
+    """Data generator that uses a `single-file` splitted dataset of numpy structured arrays.
+    
+    This means that the single record must have fields. Multiple inputs are supported.
+    
+    Args:
+        folder (:obj:`str`): the folder where the dataset is stored.
+        input_fields (:obj:`list`): the list of strings that specify the field names.
+        target_field (:obj:`str`): the name of the target field.
+        batch_size (int, optional): the batch size. Default is 32.
+        shuffle (bool, optional): enable shuffling dataset on_epoch_end
+    """
     def __init__(
-        self, folder, batch_size=32, shuffle=True, input_fields=None, target_field=None
+        self, folder, input_fields=None, target_field=None, batch_size=32, shuffle=True
     ):
-
+        ## TODO: default (in, tar) if no fields are provided
+        if input_fields is None or target_field is None:
+            raise NotImplementedError("input_fields and target_field must be given.")
+            
         self.folder = folder
         self.batch_size = batch_size
         self.shuffle = shuffle
