@@ -70,7 +70,7 @@ class DataFeeder(keras.utils.Sequence):
         # Data must be indexed by continuous integers
         self.datum_indexes = np.arange(self.data_len)
         # Shuffles
-        self.on_epoch_end("dummy")
+        self.on_epoch_end()
 
     def __len__(self):
         """Returns the number of batches per epoch"""
@@ -92,7 +92,7 @@ class DataFeeder(keras.utils.Sequence):
 
         return net_input, net_target
 
-    def on_epoch_end(self, epoch):
+    def on_epoch_end(self):
         """Shuffles indexes after each epoch"""
         self.datum_indexes = np.arange(self.data_len)
         if self.shuffle:
@@ -177,11 +177,11 @@ class FeederProf(DataFeeder):
 
         return net_input, net_target
     
-    def on_epoch_begin(self, epoch):
-        print(f"Starting epoch {epoch}")
-
-    def on_epoch_end(self, epoch):
-        print(f"Ending epoch {epoch}")
+    def on_epoch_begin(self, *args):
+        print(f"Args sent to epoch begin {args}")
+    
+    def on_epoch_end(self, *args):
+        print(f"Args sent to epoch end {args}")
 
     def __getitem__(self, batch_index):
         if self.is_data_scored:
