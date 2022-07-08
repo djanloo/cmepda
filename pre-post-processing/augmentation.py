@@ -19,7 +19,8 @@ class Augument:
         new_record = np.empty(1, dtype=funky_dtype)
 
         for i, file in enumerate(dataset):
-            new_record['toa'] =
+            new_record['toa'] = self.rotate_matrix(dataset['toa'])
+            new_record['time']
 
 
     @staticmethod
