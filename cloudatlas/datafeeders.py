@@ -16,13 +16,14 @@ from matplotlib import pyplot as plt
 # Turn off keras warnings
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
-PROF_SAVEFILE = 'prof_knowledge.npy' # Must have format
+PROF_SAVEFILE = "prof_knowledge.npy"  # Must have format
+
 
 class DataFeeder(keras.utils.Sequence):
     """Data generator that uses a `single-file` splitted dataset of numpy structured arrays.
-    
+
     This means that the single record must have fields. Multiple inputs are supported.
-    
+
     Args:
         folder (:obj:`str`): the folder where the dataset is stored.
         input_fields (:obj:`list`): the list of strings that specify the field names.
@@ -30,13 +31,14 @@ class DataFeeder(keras.utils.Sequence):
         batch_size (int, optional): the batch size. Default is 32.
         shuffle (bool, optional): enable shuffling dataset on_epoch_end
     """
+
     def __init__(
         self, folder, input_fields=None, target_field=None, batch_size=32, shuffle=True
     ):
         ## TODO: default (in, tar) if no fields are provided
         if input_fields is None or target_field is None:
             raise NotImplementedError("input_fields and target_field must be given.")
-            
+
         self.folder = folder
         self.batch_size = batch_size
         self.shuffle = shuffle
@@ -133,7 +135,9 @@ class FeederProf(DataFeeder):
 
         self.model_folder = trained_model
         self.model = load_model(trained_model)
-        self.savefile = f"{self.model_folder}/{PROF_SAVEFILE}" # Saves (true-predicted) data
+        self.savefile = (
+            f"{self.model_folder}/{PROF_SAVEFILE}"  # Saves (true-predicted) data
+        )
 
         # Creates an empty array for the scores
         # That is long as the dataset
@@ -215,7 +219,9 @@ class FeederProf(DataFeeder):
 
             # Gets the prof model estimates for the batch
             print("[red]getting true values..[/red]")
-            self._true_vals = np.array([batch[1] for batch in track(self)]).reshape((-1))
+            self._true_vals = np.array([batch[1] for batch in track(self)]).reshape(
+                (-1)
+            )
             print("[red]getting estimates..[/red]")
             self._estimates = self.model.predict(
                 self, verbose=1, batch_size=self.batch_size
@@ -225,7 +231,7 @@ class FeederProf(DataFeeder):
         # Estimates the difficulty of the batch entries
         # From how much the prof model fails on the predictions
         self.errors = np.abs(self._estimates - self._true_vals)
-        
+
         # Sort everything in ascending order of erroneous prediction
         sort_order = np.argsort(self.errors)
         self.datum_indexes = self.datum_indexes[sort_order]

@@ -18,21 +18,22 @@ from rich import print
 from datafeeders import DataFeeder
 import utils
 
+
 class LstmEncoder:
     """The net to analyze the AirShower dataset.
-    
+
     It is composed by a `time of arrival` branch and a `time series` branch.
 
     The latter is designed as an encoder of dense layers. The hypothesis that brought to this
     design is the information redundancy of the time of arrival matrix. The more a paricle shower is
-    homogeneous the less number of parameters are needed to describe it, such as an incidence angle, 
-    spread angle and height of first collision. 
+    homogeneous the less number of parameters are needed to describe it, such as an incidence angle,
+    spread angle and height of first collision.
     The encoder aims to extract those "homogeneous beam" parameters.
 
     The time series branch is composed of a layer of lstm units and a relu-activated dense layer.
     It processes the time evolution of the detectors activity.
 
-    Finally the output of the two branches are concatenated and porcessed with a small number 
+    Finally the output of the two branches are concatenated and porcessed with a small number
     of relu-activated dense layers. A final linear dense unit serves as the output.
 
     Since the whole net's purpose is a regression task the loss function is by default the
@@ -85,7 +86,7 @@ class LstmEncoder:
         self.model = complete_model
         self.remote = utils.RemoteMonitor()
         self.__check_load()
-    
+
     def train(self, **fit_kwargs):
         """Trains the model and saves history."""
         self.history = self.model.fit(**fit_kwargs)
@@ -95,14 +96,17 @@ class LstmEncoder:
         np.save(f"{self.path}/history", self.history)
 
         # Tries remote monitoring
-        self.remote.send([  f"Training of {self.path} complete",
-                            f"Last val-loss was {self.history.history['val_loss'][-1]:.1f}",
-                            f"Last val-RMSE was {self.history.history['val_root_mean_squared_error'][-1]:.1f}" 
-                        ])
+        self.remote.send(
+            [
+                f"Training of {self.path} complete",
+                f"Last val-loss was {self.history.history['val_loss'][-1]:.1f}",
+                f"Last val-RMSE was {self.history.history['val_root_mean_squared_error'][-1]:.1f}",
+            ]
+        )
 
     def resolution_on(self, feeder):
         """Estimates the resolution on a specified dataset.
-        
+
         Args:
             feeder (DataFeeder): the feeder of the dataset.
         """
@@ -112,7 +116,7 @@ class LstmEncoder:
         predictions = np.array(self.model.predict(test_feeder)).squeeze()
 
         return np.std(predictions - true_vals)
-    
+
     def __check_load(self):
         if exists(self.path):
             warnings.warn(f"Trained model already present in {self.path}")

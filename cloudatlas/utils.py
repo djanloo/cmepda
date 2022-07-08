@@ -1,7 +1,8 @@
 """Utility module"""
-import sys , warnings
+import sys, warnings
 
 import os
+
 # Turn off keras warnings
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 from os.path import join, exists
@@ -12,12 +13,15 @@ from rich import print
 
 
 # Checks if telegram_send is installed
-if 'telegram_send' in sys.modules:
+if "telegram_send" in sys.modules:
     telegram_send_installed = True
     import telegram_send
 else:
-    warnings.warn("Module 'telegram_send' not installed. Remote monitoring not available.")
+    warnings.warn(
+        "Module 'telegram_send' not installed. Remote monitoring not available."
+    )
     telegram_send_installed = False
+
 
 class RemoteMonitor:
     """Class for remote logging using telegram."""
@@ -28,7 +32,7 @@ class RemoteMonitor:
 
         # Check if telegram_send is configured
         # ????
-    
+
     def send(message):
         """Sends a message."""
         # Check wether it's a message or more than one
@@ -63,6 +67,7 @@ def ask_load(path):
             return ask_load(path)
     else:
         return None
+
 
 def animate_time_series(array):
     """Animate the time series for detectors."""

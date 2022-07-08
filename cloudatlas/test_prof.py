@@ -1,4 +1,5 @@
 import os
+
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 from datafeeders import FeederProf, DataFeeder
@@ -14,7 +15,6 @@ prof_alberto = FeederProf(
     "trained/albertino", "data_by_entry/train", difficulty_levels=5, **feeder_options
 )
 val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
-
 mariuccio = LstmEncoder(path="trained/mariuccio")
 
 mariuccio.train(
