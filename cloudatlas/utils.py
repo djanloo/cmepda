@@ -1,13 +1,45 @@
 """Utility module"""
-import numpy as np
-import os
-from os.path import join, exists
-from rich.progress import track
-from rich import print
-from keras.models import load_model
+import sys , warnings
 
+import os
 # Turn off keras warnings
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+from os.path import join, exists
+
+import numpy as np
+from keras.models import load_model
+from rich import print
+
+
+# Checks if telegram_send is installed
+if 'telegram_send' in sys.modules:
+    telegram_send_installed = True
+    import telegram_send
+else:
+    warnings.warn("Module 'telegram_send' not installed. Remote monitoring not available.")
+    telegram_send_installed = False
+
+class RemoteMonitor:
+    """Class for remote logging using telegram."""
+
+    def __init__(self):
+
+        self.available = telegram_send_installed
+
+        # Check if telegram_send is configured
+        # ????
+    
+    def send(message):
+        """Sends a message."""
+        # Check wether it's a message or more than one
+        if hasattr(message, "__iter__"):
+            msg = message
+        else:
+            msg = [message]
+        try:
+            telegram_send.send(messages=msg)
+        except:
+            warnings.warn("Network failed while remote monitoring.")
 
 
 def ask_load(path):
@@ -32,56 +64,8 @@ def ask_load(path):
     else:
         return None
 
-
-def split_dataset(data, filename, axes_names, n_of_files, parent=None):
-    """Splits the dataset in smaller parts.
-
-    Args
-    ----
-        data : tuple
-            the data to be splitted, given in the following format:
-
-                (array1, array2, array3, ... )
-        filename : str
-            the root of the files' names
-        axes_names : list of str
-            the list of names for the axes
-        n_of_files : int
-            the number of parts
-        parent : str, optional
-            the folder where the splitted dataset is placed into.
-    """
-    if len(axes_names) != len(data):
-        raise ValueError(
-            f"axes names and data dimension mismatch:\n"
-            + f"len(data) = {len(data)}\tlen(axes_names) = {len(axes_names)}"
-        )
-    directory = ""
-    if parent is not None:
-        if not exists(parent):
-            os.mkdir(parent)
-        directory = parent
-    directory = f"{directory}/{filename}_splitted_data"
-    if not exists(directory):
-        os.mkdir(directory)
-        for ax in axes_names:
-            os.mkdir(join(directory, ax))
-
-    for axis, axis_data in track(
-        zip(axes_names, list(data)),
-        description=f"saving files for '{filename}'..",
-        total=n_of_files,
-    ):
-        splitted_data = np.array_split(axis_data, n_of_files)
-        for i, section in enumerate(splitted_data):
-            np.save(f"{directory}/{axis}/{filename}_part_{i}", section)
-
-    # Make config file
-    splitConf.FromNames(directory, axes_names)
-    return directory
-
-
 def animate_time_series(array):
+    """Animate the time series for detectors."""
     import matplotlib.pyplot as plt
     from matplotlib.animation import FuncAnimation
 

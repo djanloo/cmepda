@@ -20,8 +20,39 @@ from rich import print
 import telegram_send
 
 class LstmEncoder:
+    """The net to analyze the AirShower dataset.
+    
+    It is composed by a `time of arrival` branch and a `time series` branch.
 
-    def __init__(self, optimizer="adam"):
+    The latter is designed as an encoder of dense layers. The hypothesis that brought to this
+    design is the information redundancy of the time of arrival matrix. The more a paricle shower is
+    homogeneous the less number of parameters are needed to describe it, such as an incidence angle, 
+    spread angle and height of first collision. 
+    The encoder aims to extract those "homogeneous beam" parameters.
+
+    The time series branch is composed of a layer of lstm units and a relu-activated dense layer.
+    It processes the time evolution of the detectors activity.
+
+    Finally the output of the two branches are concatenated and porcessed with a small number 
+    of relu-activated dense layers. A final linear dense unit serves as the output.
+
+    Since the whole net's purpose is a regression task the loss function is by default the
+    mean squared error and the natural metric is the RMSE.
+
+    Args:
+        optimizer (keras.optimizers): the optimizer. By default is `Adam` with `learning_rate=0.001` .
+        path (:obj:'str', optional): the folder where the trained model is saved into.
+
+    Attributes:
+        model (keras.models.Model): the (compiled) LstmEncoder network
+
+    """
+
+    def __init__(self, optimizer="adam", path="trained/LstmEncoder"):
+
+        self.optimizer = optimizer
+        self.path = path
+
         # Time of arrival branch
         input_toa = Input(shape=(9, 9, 1), name="time_of_arrival")
         flat = Flatten()(input_toa)
@@ -42,15 +73,45 @@ class LstmEncoder:
         z = Dense(4, activation="linear")(z)
         z = Dense(1, activation="linear")(z)
 
-        global_model = Model(
+        complete_model = Model(
             inputs=[encoder.input, long_short_term_memory.input], outputs=z
         )
 
-        global_model.compile(
-            optimizer="adam",  # keras.optimizers.Adam(learning_rate=1e-4),
+        complete_model.compile(
+            optimizer=self.optimizer,
             loss="mean_squared_error",
             metrics=[RootMeanSquaredError()],
         )
+
+        self.model = complete_model
+        self.remote = utils.RemoteMonitor()
+    
+    def train(self, **fit_kwargs):
+        """Trains the model and saves history."""
+        self.history = self.model.fit(**fit_kwargs)
+
+        # Saves
+        self.model.save(self.path)
+        np.save(f"{self.path}/history", self.history)
+
+        # Tries remote monitoring
+        self.remote.send([  f"Training of {self.path} complete",
+                            f"Last val-loss was {self.history.history['val_loss'][-1]:.1f}",
+                            f"Last val-RMSE was {self.history.history['val_root_mean_squared_error'][-1]:.1f}" 
+                        ])
+
+    def resolution_on(self, feeder):
+        """Estimates the resolution on a specified dataset.
+        
+        Args:
+            feeder (DataFeeder): the feeder of the dataset.
+        """
+        true_vals = np.array(
+            [batch[1] for batch in track(feeder, description="Getting true vals ..")]
+        ).reshape((-1))
+        predictions = np.array(self.model.predict(test_feeder)).squeeze()
+
+        return np.std(predictions - true_vals)
 
 
 feeder_options = {
@@ -63,16 +124,6 @@ feeder_options = {
 test_feeder = DataFeederKeras("data_by_entry/test", **feeder_options)
 train_feeder = DataFeederKeras("data_by_entry/train", **feeder_options)
 val_feeder = DataFeederKeras("data_by_entry/validation", **feeder_options)
-
-
-def get_net():
-    """Used to reinitialize the model
-    I am basically lazy.
-    """
-    
-    plot_model(global_model, show_shapes=True)
-    return global_model
-
 
 # Training/Loading
 def train_and_resolution(path):
