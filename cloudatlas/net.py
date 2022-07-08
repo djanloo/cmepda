@@ -84,6 +84,7 @@ class LstmEncoder:
 
         self.model = complete_model
         self.remote = utils.RemoteMonitor()
+        self.__check_load()
     
     def train(self, **fit_kwargs):
         """Trains the model and saves history."""

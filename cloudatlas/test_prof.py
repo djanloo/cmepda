@@ -1,7 +1,7 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
-from DataFeeders import FeederProf, DataFeeder
+from datafeeders import FeederProf, DataFeeder
 from net import LstmEncoder
 
 feeder_options = {
