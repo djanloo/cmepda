@@ -26,7 +26,7 @@ class DataFeeder(keras.utils.Sequence):
 
     Args:
         folder (:obj:`str`): the folder where the dataset is stored.
-        input_fields (:obj:`list`): the list of strings that specify the field names.
+        input_fields (:obj:`list` or :obj:`str`): the list of strings that specify the field names.
         target_field (:obj:`str`): the name of the target field.
         batch_size (int, optional): the batch size. Default is 32.
         shuffle (bool, optional): enable shuffling dataset on_epoch_end
@@ -70,7 +70,7 @@ class DataFeeder(keras.utils.Sequence):
         # Data must be indexed by continuous integers
         self.datum_indexes = np.arange(self.data_len)
         # Shuffles
-        self.on_epoch_end()
+        self.on_epoch_end("dummy")
 
     def __len__(self):
         """Returns the number of batches per epoch"""
@@ -92,7 +92,7 @@ class DataFeeder(keras.utils.Sequence):
 
         return net_input, net_target
 
-    def on_epoch_end(self):
+    def on_epoch_end(self, epoch):
         """Shuffles indexes after each epoch"""
         self.datum_indexes = np.arange(self.data_len)
         if self.shuffle:
@@ -143,7 +143,7 @@ class FeederProf(DataFeeder):
         # That is long as the dataset
         self.difficulty_levels = difficulty_levels
         self.is_data_scored = False  # Flag to score data only once
-        self._learning_level = 0  # Minimum level of lessons given
+        self._teaching_level = 0  # Minimum level of lessons given
         # Gets the data score
         self.score_data()
 
@@ -160,7 +160,7 @@ class FeederProf(DataFeeder):
         # the batch is sampled, increasing difficulty
 
         # Cuts the dataset by difficulty
-        restricted_file_indexes = self.datum_indexes[self.scores >= self.learning_level]
+        restricted_file_indexes = self.datum_indexes[self.scores >= self.teaching_level]
         # Selects the indexes inside the restricted dataset
         indexes_of_file_indexes = np.random.randint(
             0, (batch_index + 1) * self.batch_size, size=self.batch_size
@@ -176,6 +176,12 @@ class FeederProf(DataFeeder):
         self.last_batch_indexes = np.array(indexes)
 
         return net_input, net_target
+    
+    def on_epoch_begin(self, epoch):
+        print(f"Starting epoch {epoch}")
+
+    def on_epoch_end(self, epoch):
+        print(f"Ending epoch {epoch}")
 
     def __getitem__(self, batch_index):
         if self.is_data_scored:
@@ -184,11 +190,11 @@ class FeederProf(DataFeeder):
             return super().__getitem__(batch_index)
 
     @property
-    def learning_level(self):
-        return self._learning_level
+    def teaching_level(self):
+        return self._teaching_level
 
-    @learning_level.setter
-    def learning_level(self, value):
+    @teaching_level.setter
+    def teaching_level(self, value):
         if not isinstance(value, int):
             raise ValueError("Difficulty must be an integer")
         if value >= self.difficulty_levels or value < 0:
@@ -197,7 +203,7 @@ class FeederProf(DataFeeder):
             f"Learning level set to {value}"
             f" ({len(self.scores[self.scores >= value])/len(self.scores)*100 :.0f}% of samples available)"
         )
-        self._learning_level = value
+        self._teaching_level = value
         self.data_len = len(self.scores[self.scores >= value])
 
     def score_data(self):
