@@ -1,6 +1,7 @@
 """Module for augmentation of data."""
 import numpy as np
 
+
 def flip_matrix(matrix, mode):
     """Flips the matrix with different axis modes.
     Modes can be 'up-down', 'left-right', 'diagonal'."""
@@ -17,5 +18,10 @@ def flip_matrix(matrix, mode):
         matrix = np.transpose(matrix)
         return matrix
 
-def rotate_matrix(matrix, pi_multiple=0.5):
-    """Rotate the matrix of different multiples of pi."""
+
+def rotate_matrix(matrix, angle=90):
+    """Rotate the matrix of different angles."""
+    if angle == 90:
+        for column in range(len(matrix)):
+            matrix[:, column] = matrix[:, column][::-1]
+            matrix = np.transpose(matrix)
