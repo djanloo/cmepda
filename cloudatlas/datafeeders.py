@@ -111,7 +111,7 @@ class DataFeeder(keras.utils.Sequence):
         batch_inputs = [batch_rows[input_field] for input_field in self.input_fields]
         batch_targets = batch_rows[self.target_field]
         return batch_inputs, batch_targets
-
+    
 
 class FeederProf(DataFeeder):
     """Curriculum creator.
@@ -242,11 +242,11 @@ class FeederProf(DataFeeder):
         self.errors = np.abs(self._estimates - self._true_vals)
 
         # Sort everything in ascending order of erroneous prediction
-        sort_order = np.argsort(self.errors)
-        self.datum_indexes = self.datum_indexes[sort_order]
-        self.errors = self.errors[sort_order]
-        self._estimates = self._estimates[sort_order]
-        self._true_vals = self._true_vals[sort_order]
+        self.sort_order = np.argsort(self.errors)
+        self.datum_indexes = self.datum_indexes[self.sort_order]
+        self.errors = self.errors[self.sort_order]
+        self._estimates = self._estimates[self.sort_order]
+        self._true_vals = self._true_vals[self.sort_order]
 
         # Since some data is cutted of from prediction because of batch rounding
         # the scored data is less than the original set
