@@ -16,11 +16,15 @@ class Augument:
 
     def augment_dataset(self, dataset, tot):
         # Initialize a new record with the custom dtype
-        new_record = np.empty(1, dtype=funky_dtype)
+        new_record_rot = np.empty(1, dtype=funky_dtype)
+        new_record_flip = np.empty(1, dtype=funky_dtype)
 
         for i, file in enumerate(dataset):
-            new_record['toa'] = self.rotate_matrix(dataset['toa'])
-            new_record['time']
+            # rotations
+            new_record_rot['toa'] = self.rotate_matrix(dataset['toa'])
+            new_record_rot['time_series'] = self.rotate_matrix(dataset['time_series'])
+
+
 
 
     @staticmethod
