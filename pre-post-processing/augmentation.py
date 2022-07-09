@@ -3,7 +3,7 @@ import numpy as np
 import constants
 
 
-class Augument:
+class Augment:
     def __init__(self, dataset):
         self.dataset = dataset
         self.augmented_data = None
@@ -15,11 +15,15 @@ class Augument:
 
         for i, file in enumerate(dataset):
 
+            new_record['toa'] = self.augment_matrix(dataset['toa'])
+            new_record['time_series'] = np.array(
+                [self.augment_matrix(_) for _ in dataset['time_series'].reshape(-1, 9, 9)])
+            new_record['output'] = dataset['output']
 
 
-    def augment_matrix(self, matrix, num):
+    def augment_matrix(self, matrix):
         # Initialize a new record with the custom dtype
-        new_rec_rot = np.empty(1)
+        new_rec_rot = np.empty([9, 9], dtype=np.float32)
         new_rec_flip_lr = np.empty([9, 9], dtype=np.float32)
         new_rec_flip_ud = np.empty([9, 9], dtype=np.float32)
         new_rec_flip_diag = np.empty([9, 9], dtype=np.float32)
