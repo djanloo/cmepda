@@ -82,7 +82,6 @@ class DataFeeder(keras.utils.Sequence):
         indexes = self.datum_indexes[
             batch_index * self.batch_size : (batch_index + 1) * self.batch_size
         ]
-
         # Generate data
         net_input, net_target = self.data_generation(indexes)
 
@@ -121,7 +120,7 @@ class FeederProf(DataFeeder):
     """
 
     def __init__(
-        self, trained_model, data_folder, difficulty_levels=5, **datafeeder_kwargs
+        self, trained_model, data_folder, difficulty_levels=5, n_of_epochs=20, **datafeeder_kwargs
     ):
 
         # Initializes itself as a vanilla DataFeeder
@@ -130,8 +129,12 @@ class FeederProf(DataFeeder):
             f"Initializing [green]prof[/green] with model [green]{trained_model}[/green] and data [red]{data_folder}[/red] "
         )
         datafeeder_kwargs["shuffle"] = False
-        super().__init__(data_folder, **datafeeder_kwargs)
 
+        self.epoch = 0
+        self.n_of_epochs = n_of_epochs
+
+        super().__init__(data_folder, **datafeeder_kwargs)
+        print(f"In init self.restr is {self.restricted_data_len}")
         self.model_folder = trained_model
         self.model = load_model(trained_model)
         self.savefile = (
@@ -143,8 +146,10 @@ class FeederProf(DataFeeder):
         self.difficulty_levels = difficulty_levels
         self.is_data_scored = False  # Flag to score data only once
         self._teaching_level = 0  # Minimum level of lessons given
+
         # Gets the data score
         self.score_data()
+        print(f"ENd of init len is {len(self)}")
 
         # Overrides __getitem__ method in runtime since the student
         # __getitem__ is no longer required
@@ -157,34 +162,28 @@ class FeederProf(DataFeeder):
         """Gives one batch of data but sorted in ascending order of difficulty"""
         # Following the reference article, increase the size of the data from which
         # the batch is sampled, increasing difficulty
-
-        # Cuts the dataset by difficulty
-        restricted_file_indexes = self.datum_indexes[self.scores >= self.teaching_level]
-        # Selects the indexes inside the restricted dataset
-        indexes_of_file_indexes = np.random.randint(
-            0, (batch_index + 1) * self.batch_size, size=self.batch_size
-        )
-
-        # Get the file indexes of the selected data
-        indexes = restricted_file_indexes[indexes_of_file_indexes]
-
+        idxs = self.epoch_records[batch_index*self.batch_size:(batch_index + 1)*self.batch_size]
         # Generate data
-        net_input, net_target = self.data_generation(indexes)
-
+        net_input, net_target = self.data_generation(idxs)
+       
         # Save the indexes of the batch
-        self.last_batch_indexes = np.array(indexes)
+        self.last_batch_indexes = np.array(idxs)
 
         return net_input, net_target
-    
-    def on_epoch_begin(self, *args):
-        print(f"Args sent to epoch begin {args}")
-    
-    def on_epoch_end(self, *args):
-        print(f"Args sent to epoch end {args}")
-    
-    def on_train_end(self, *args):
-        print(f"Args sent to [red]train[/red] end {args}")
 
+    def on_epoch_end(self, *args):
+        """Since on_epoch_end is called without args, use a counter to get epoch number"""
+        self.epoch += 1
+        # Before next epoch begins the order of the file that will be
+        # feeded in the net is chosen
+        self.epoch_records = self.datum_indexes.copy()
+        self.epoch_records = self.epoch_records[: int(self.epoch/self.n_of_epochs * self.data_len)]
+        np.random.shuffle(self.epoch_records)
+        self.restricted_data_len = int(self.epoch/self.n_of_epochs * self.data_len)
+        # print(f"Next files that will be feeded are {self.epoch_records}")
+ 
+    def september(self):
+        self.epoch = 0
 
     def __getitem__(self, batch_index):
         if self.is_data_scored:
@@ -276,4 +275,4 @@ class FeederProf(DataFeeder):
 
     def __len__(self):
         # Cutting the dataset by difficulty shortens it
-        return int(np.floor(self.data_len / self.batch_size))
+        return int(np.floor(self.restricted_data_len / self.batch_size))
