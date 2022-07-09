@@ -12,8 +12,9 @@ from cloudatlas import utils
 from os import mkdir
 from os.path import exists, join
 from rich.progress import track
+import constants
 
-DIR = "data_by_entry"
+DIR = constants.DIR_DATA_BY_ENTRY
 
 ## I use the previously splitted dataset because
 # loading the full one happened once and it was a miracle
@@ -21,13 +22,7 @@ test_feeder = utils.DataFeeder("splitted_dataset/test_splitted_data")
 train_feeder = utils.DataFeeder("splitted_dataset/train_splitted_data")
 
 # Save the datum with a specific dtype because I still don't trust indexing on dtype=object
-funky_dtype = np.dtype(
-    [
-        ("outcome", np.float64),
-        ("time_series", np.float32, (80, 81)),
-        ("toa", np.float32, (9, 9, 1)),
-    ]
-)
+funky_dtype = constants.funky_dtype
 
 if not exists(DIR):
     mkdir(DIR)

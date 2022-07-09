@@ -2,6 +2,7 @@
 import numpy as np
 import constants
 
+
 class Augument:
     def __init__(self, dataset):
         self.dataset = dataset
@@ -54,29 +55,44 @@ class Augument:
 
                 # augmenting with all the operations
 
+    def augment_matrix(self, matrix):
+        # Initialize a new record with the custom dtype
+        new_rec_rot = np.empty(1, dtype=constants.funky_dtype)
+        new_rec_flip_lr = np.empty(1, dtype=constants.funky_dtype)
+        new_rec_flip_ud = np.empty(1, dtype=constants.funky_dtype)
+        new_rec_flip_diag = np.empty(1, dtype=constants.funky_dtype)
 
+        new_records = {'rot': [new_rec_rot, self.rotate_matrix()],
+                       'flip_lr': [new_rec_flip_lr, self.flip_matrix(matrix, mode='lr')]}
 
     @staticmethod
-    def rotate_matrix(matrix, angle=90):
+    def rotate_matrix_set(angle=90):
         """Rotate the matrix of different angles."""
-        if angle == 90:
-            matrix = np.flipud(matrix)
-            matrix = np.transpose(matrix)
-            return matrix
+        rot_angle = angle
 
-    @staticmethod
-    def flip_matrix(matrix, mode):
-        """Flips the matrix with different axis modes.
-        Modes can be 'up-down', 'left-right', 'diagonal'."""
-        if mode == "up-down":
-            matrix = np.flipud(matrix)
-            return matrix
-
-        if mode == 'left-right':
-            for row in range(len(matrix)):
-                matrix[row] = np.fliplr(matrix)
+        def rotate(matrix):
+            if angle == 90:
+                matrix = np.rot90(matrix)
                 return matrix
 
-        if mode == 'diagonal':
-            matrix = np.transpose(matrix)
-            return matrix
+            # TODO:evaluate if other rotations are needed
+
+
+    @staticmethod
+    def flip_matrix_set(mode):
+        """Flips the matrix with different axis modes.
+        Modes can be 'up-down', 'left-right', 'diagonal'."""
+        flip_mode = mode
+
+        def flip(matrix):
+            if flip_mode == "up-down":
+                matrix = np.flipud(matrix)
+                return matrix
+
+            if flip_mode == 'left-right':
+                matrix = np.fliplr(matrix)
+                return matrix
+
+            if flip_mode == 'diagonal':
+                matrix = np.transpose(matrix)
+                return matrix
