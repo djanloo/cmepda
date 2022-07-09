@@ -11,15 +11,24 @@ class Augment:
     def augment_dataset(self, dataset, tot):
         # Initialize a new record with the custom dtype
         new_record = np.empty(1, dtype=constants.funky_dtype)
-        keys = ['toa', 'time_series', 'outcome']
+
+        # keys of various types of augmentation
+        keys = ['rot', 'flip_lr', 'flip_ud', 'flip_diag']
+
+        # definitions
+        INDEX_NEW_RECORD = len(dataset) + 1
 
         for i, file in enumerate(dataset):
+            for key in keys:
+                # calling function of augmentation
+                new_record['toa'] = self.augment_matrix(dataset['toa'])[key]
+                new_record['time_series'] = np.array(
+                    [self.augment_matrix(_)[key] for _ in dataset['time_series'].reshape(-1, 9, 9)])
+                new_record['output'] = dataset['output']
 
-            new_record['toa'] = self.augment_matrix(dataset['toa'])
-            new_record['time_series'] = np.array(
-                [self.augment_matrix(_) for _ in dataset['time_series'].reshape(-1, 9, 9)])
-            new_record['output'] = dataset['output']
-
+                # Saving and updating index
+                np.save(f'{constants.DIR_DATA_BY_ENTRY}/part_{INDEX_NEW_RECORD}.npy')
+                INDEX_NEW_RECORD += 1
 
     def augment_matrix(self, matrix):
         # Initialize a new record with the custom dtype
