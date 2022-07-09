@@ -10,89 +10,57 @@ class Augument:
 
     def augment_dataset(self, dataset, tot):
         # Initialize a new record with the custom dtype
-        new_rec_rot = np.empty(1, dtype=constants.funky_dtype)
-        new_rec_flip_lr = np.empty(1, dtype=constants.funky_dtype)
-        new_rec_flip_ud = np.empty(1, dtype=constants.funky_dtype)
-        new_rec_flip_diag = np.empty(1, dtype=constants.funky_dtype)
+        new_record = np.empty(1, dtype=constants.funky_dtype)
+        keys = ['toa', 'time_series', 'outcome']
 
         for i, file in enumerate(dataset):
-            # rotations
-            tot += 1
-            new_rec_rot['toa'] = self.rotate_matrix(dataset['toa'])
-            new_rec_rot['time_series'] = self.rotate_matrix(dataset['time_series'])
-            new_rec_rot['outcome'] = dataset["outcome"]
-            np.save(f'{constants.DIR_DATA_BY_ENTRY}/part_{tot}.npy', new_rec_rot)
 
-            # flips left-right
-            tot += 1
-            new_rec_flip_lr['toa'] = self.flip_matrix(dataset['toa'], mode='left-right')
-            new_rec_flip_lr['time_series'] = self.flip_matrix(dataset['time_series'], mode='left-right')
-            new_rec_flip_lr['outcome'] = dataset["outcome"]
-            np.save(f'part_{tot}.npy', new_rec_flip_lr)
 
-            # flips up-down
-            tot += 1
-            new_rec_flip_ud['toa'] = self.flip_matrix(dataset['toa'], mode='up-down')
-            new_rec_flip_ud['time_series'] = self.flip_matrix(dataset['time_series'], mode='up-down')
-            new_rec_flip_ud['outcome'] = dataset["outcome"]
-            np.save(f'part_{tot}.npy', new_rec_flip_ud)
 
-            # flip diagonal
-            tot += 1
-            new_rec_flip_diag['toa'] = self.flip_matrix(dataset['toa'], mode='diagonal')
-            new_rec_flip_diag['time_series'] = self.flip_matrix(dataset['time_series'], mode='diagonal')
-            new_rec_flip_diag['outcome'] = dataset["outcome"]
-            np.save(f'part_{tot}.npy', new_rec_flip_diag)
-
-            # new records
-            new_records = [new_rec_rot, new_rec_flip_lr, new_rec_flip_ud, new_rec_flip_diag]
-            new_records = {'rot': [new_rec_rot, self.rotate_matrix()],
-                           'flip_lr': [new_rec_flip_lr, ]}
-
-            for n_rec in zip(new_records):
-                # Initialize a new record with the custom dtype
-                n_rec = np.empty(1, dtype=constants.funky_dtype)
-
-                # augmenting with all the operations
-
-    def augment_matrix(self, matrix):
+    def augment_matrix(self, matrix, num):
         # Initialize a new record with the custom dtype
-        new_rec_rot = np.empty(1, dtype=constants.funky_dtype)
-        new_rec_flip_lr = np.empty(1, dtype=constants.funky_dtype)
-        new_rec_flip_ud = np.empty(1, dtype=constants.funky_dtype)
-        new_rec_flip_diag = np.empty(1, dtype=constants.funky_dtype)
+        new_rec_rot = np.empty(1)
+        new_rec_flip_lr = np.empty([9, 9], dtype=np.float32)
+        new_rec_flip_ud = np.empty([9, 9], dtype=np.float32)
+        new_rec_flip_diag = np.empty([9, 9], dtype=np.float32)
 
-        new_records = {'rot': [new_rec_rot, self.rotate_matrix()],
-                       'flip_lr': [new_rec_flip_lr, self.flip_matrix(matrix, mode='lr')]}
+        # dictionary with all types of augment
+        new_record = {'rot': [new_rec_rot, 90],
+                      'flip_lr': [new_rec_flip_lr, 'left-right'],
+                      'flip_ud': [new_rec_flip_ud, 'upside-down'],
+                      'flip_diag': [new_rec_flip_diag, 'diagonal']}
+
+        for key in new_record.keys():
+            if 'rot' in key:
+                new_record[key][0] = self.rotate_matrix(matrix, angle=new_record[key][1])
+            if 'flip' in key:
+                new_record[key][0] = self.flip_matrix(matrix, mode=new_record[key][1])
+
+        return new_record
 
     @staticmethod
-    def rotate_matrix_set(angle=90):
+    def rotate_matrix(matrix, angle=90):
         """Rotate the matrix of different angles."""
-        rot_angle = angle
+        if angle == 90:
+            matrix = np.rot90(matrix)
+            return matrix
 
-        def rotate(matrix):
-            if angle == 90:
-                matrix = np.rot90(matrix)
-                return matrix
-
-            # TODO:evaluate if other rotations are needed
-
+        # TODO:evaluate if other rotations are needed
 
     @staticmethod
-    def flip_matrix_set(mode):
+    def flip_matrix(matrix, flip_mode):
         """Flips the matrix with different axis modes.
-        Modes can be 'up-down', 'left-right', 'diagonal'."""
-        flip_mode = mode
+        Modes can be 'upside-down', 'left-right', 'diagonal'."""
 
-        def flip(matrix):
-            if flip_mode == "up-down":
-                matrix = np.flipud(matrix)
-                return matrix
+        # Check on the flip mode
+        if flip_mode == "upside-down":
+            matrix = np.flipud(matrix)
+            return matrix
 
-            if flip_mode == 'left-right':
-                matrix = np.fliplr(matrix)
-                return matrix
+        if flip_mode == 'left-right':
+            matrix = np.fliplr(matrix)
+            return matrix
 
-            if flip_mode == 'diagonal':
-                matrix = np.transpose(matrix)
-                return matrix
+        if flip_mode == 'diagonal':
+            matrix = np.transpose(matrix)
+            return matrix
