@@ -8,7 +8,7 @@ class Augment:
         self.dataset = dataset
         self.augmented_data = None
 
-    def augment_dataset(self, dataset, tot):
+    def augment_dataset(self, dataset, tot_files):
         # Initialize a new record with the custom dtype
         new_record = np.empty(1, dtype=constants.funky_dtype)
 
@@ -16,19 +16,19 @@ class Augment:
         aug_types = ['rot', 'flip_lr', 'flip_ud', 'flip_diag']
 
         # definitions
-        INDEX_NEW_RECORD = len(dataset) + 1
+        index_record = tot_files + 1
 
-        for i, file in enumerate(dataset):
+        for file in dataset:
             for key in aug_types:
                 # calling function of augmentation
-                new_record['toa'] = self.augment_matrix(dataset['toa'])[key]
+                new_record['toa'] = self.augment_matrix(file['toa'])[key]
                 new_record['time_series'] = np.array(
-                    [self.augment_matrix(_)[key] for _ in dataset['time_series'].reshape(-1, 9, 9)])
-                new_record['output'] = dataset['output']
+                    [self.augment_matrix(_)[key] for _ in file['time_series'].reshape(-1, 9, 9)])
+                new_record['output'] = file['output']
 
                 # Saving and updating index
-                np.save(f'{constants.DIR_DATA_BY_ENTRY}/part_{INDEX_NEW_RECORD}.npy')
-                INDEX_NEW_RECORD += 1
+                np.save(f'{constants.DIR_DATA_BY_ENTRY}/part_{index_record}.npy')
+                index_record += 1
 
     def augment_matrix(self, matrix):
         # Initialize a new record with the custom dtype
@@ -47,7 +47,7 @@ class Augment:
             if 'rot' in key:
                 new_record[key][0] = self.rotate_matrix(matrix, angle=new_record[key][1])
             if 'flip' in key:
-                new_record[key][0] = self.flip_matrix(matrix, mode=new_record[key][1])
+                new_record[key][0] = self.flip_matrix(matrix, flip_mode=new_record[key][1])
 
         return new_record
 
