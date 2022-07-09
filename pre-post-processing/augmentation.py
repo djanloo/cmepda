@@ -13,13 +13,13 @@ class Augment:
         new_record = np.empty(1, dtype=constants.funky_dtype)
 
         # keys of various types of augmentation
-        keys = ['rot', 'flip_lr', 'flip_ud', 'flip_diag']
+        aug_types = ['rot', 'flip_lr', 'flip_ud', 'flip_diag']
 
         # definitions
         INDEX_NEW_RECORD = len(dataset) + 1
 
         for i, file in enumerate(dataset):
-            for key in keys:
+            for key in aug_types:
                 # calling function of augmentation
                 new_record['toa'] = self.augment_matrix(dataset['toa'])[key]
                 new_record['time_series'] = np.array(
