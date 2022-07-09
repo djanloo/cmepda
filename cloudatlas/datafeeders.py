@@ -82,7 +82,6 @@ class DataFeeder(keras.utils.Sequence):
         indexes = self.datum_indexes[
             batch_index * self.batch_size : (batch_index + 1) * self.batch_size
         ]
-
         # Generate data
         net_input, net_target = self.data_generation(indexes)
 
@@ -135,7 +134,7 @@ class FeederProf(DataFeeder):
         self.n_of_epochs = n_of_epochs
 
         super().__init__(data_folder, **datafeeder_kwargs)
-
+        print(f"In init self.restr is {self.restricted_data_len}")
         self.model_folder = trained_model
         self.model = load_model(trained_model)
         self.savefile = (
@@ -150,6 +149,7 @@ class FeederProf(DataFeeder):
 
         # Gets the data score
         self.score_data()
+        print(f"ENd of init len is {len(self)}")
 
         # Overrides __getitem__ method in runtime since the student
         # __getitem__ is no longer required
@@ -162,12 +162,12 @@ class FeederProf(DataFeeder):
         """Gives one batch of data but sorted in ascending order of difficulty"""
         # Following the reference article, increase the size of the data from which
         # the batch is sampled, increasing difficulty
-
+        idxs = self.epoch_records[batch_index*self.batch_size:(batch_index + 1)*self.batch_size]
         # Generate data
-        net_input, net_target = self.data_generation(self.epoch_records[batch_index])
-
+        net_input, net_target = self.data_generation(idxs)
+       
         # Save the indexes of the batch
-        self.last_batch_indexes = np.array(self.epoch_records)
+        self.last_batch_indexes = np.array(idxs)
 
         return net_input, net_target
 
@@ -179,7 +179,8 @@ class FeederProf(DataFeeder):
         self.epoch_records = self.datum_indexes.copy()
         self.epoch_records = self.epoch_records[: int(self.epoch/self.n_of_epochs * self.data_len)]
         np.random.shuffle(self.epoch_records)
-        print(f"Next files that will be feeded are {self.epoch_records}")
+        self.restricted_data_len = int(self.epoch/self.n_of_epochs * self.data_len)
+        # print(f"Next files that will be feeded are {self.epoch_records}")
  
     def september(self):
         self.epoch = 0
@@ -274,4 +275,4 @@ class FeederProf(DataFeeder):
 
     def __len__(self):
         # Cutting the dataset by difficulty shortens it
-        return int(np.floor(self.data_len / self.batch_size))
+        return int(np.floor(self.restricted_data_len / self.batch_size))

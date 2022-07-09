@@ -6,6 +6,8 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 from datafeeders import FeederProf, DataFeeder
 from net import LstmEncoder
 
+from matplotlib import pyplot as plt
+
 feeder_options = {
     "batch_size": 128,
     "input_fields": ["toa", "time_series"],
@@ -17,10 +19,19 @@ prof_alberto = FeederProf(
 )
 
 val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
-mariuccio = LstmEncoder(path="trained/mariuccio_strong")
+claretta = LstmEncoder(path="trained/claretta")
 
-
-mariuccio.train(
+for i in range(5):
+    data = prof_alberto[i]
+    print(f"Len of alberto is {len(prof_alberto)}")
+    idx = prof_alberto.last_batch_indexes
+    norm_est = prof_alberto._estimates[idx]/prof_alberto._true_vals[idx]
+    plt.scatter(prof_alberto._true_vals[idx],norm_est, zorder=100-i, label=f"epoch {i}")
+    prof_alberto.on_epoch_end()
+plt.legend()
+plt.show()
+exit()
+claretta.train(
     x=prof_alberto,
     epochs=25,
     validation_data=val_feeder,
