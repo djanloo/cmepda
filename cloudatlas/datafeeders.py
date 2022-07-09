@@ -167,7 +167,7 @@ class FeederProf(DataFeeder):
         net_input, net_target = self.data_generation(self.epoch_records[batch_index])
 
         # Save the indexes of the batch
-        self.last_batch_indexes = np.array(indexes)
+        self.last_batch_indexes = np.array(self.epoch_records)
 
         return net_input, net_target
 
