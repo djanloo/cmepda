@@ -8,7 +8,7 @@ Reminder: original structure is (event, 9x9 detectors, 80 ts + 1 toa)
 import os
 import sys
 import numpy as np
-import constants
+from cloudatlas import constants
 
 sys.path.insert(1, os.path.join(sys.path[0], ".."))
 
@@ -17,7 +17,7 @@ from os import mkdir
 from os.path import exists
 from rich.progress import track
 
-FILENAME = "part_{name:06}.npy"
+
 THINNING = 1  # Thinning factor: takes one sample in every fixed number
 perc = [0.7, 0.2]  # percentage where to cut for train, test, validation data
 np.random.seed(42)  # seed
@@ -26,7 +26,7 @@ np.random.seed(42)  # seed
 def save_by_line(array, directory):
     """Save a part of the dataset line by line in files"""
     for index, record in track(enumerate(array), description=f"Saving {directory}", total=len(array)):
-        fname = FILENAME.format(name=index)
+        fname = constants.FILENAME.format(name=index)
         np.save(f"{constants.DIR_DATA_BY_ENTRY}/{directory}/{fname}", record)
 
 

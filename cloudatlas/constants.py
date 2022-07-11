@@ -12,3 +12,6 @@ funky_dtype = np.dtype(
         ("toa", np.float32, (9, 9, 1)),
     ]
 )
+
+# File format
+FILENAME = "part_{name:06}.npy"
