@@ -96,13 +96,16 @@ class LstmEncoder:
         np.save(f"{self.path}/history", self.history)
 
         # Tries remote monitoring
-        self.remote.send(
-            [
-                f"Training of {self.path} complete",
-                f"Last val-loss was {self.history.history['val_loss'][-1]:.1f}",
-                f"Last val-RMSE was {self.history.history['val_root_mean_squared_error'][-1]:.1f}",
-            ]
-        )
+        try:
+            self.remote.send(
+                [
+                    f"Training of {self.path} complete",
+                    f"Last val-loss was {self.history.history['val_loss'][-1]:.1f}",
+                    f"Last val-RMSE was {self.history.history['val_root_mean_squared_error'][-1]:.1f}",
+                ]
+            )
+        except Exception as e:
+            print(f"Error occurred while remote monitoring: {e}")
 
     def resolution_on(self, feeder):
         """Estimates the resolution on a specified dataset.
