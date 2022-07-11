@@ -34,7 +34,6 @@ for mode in ["test", "train", "validation"]:
     # Load the dataset
     x, y = Airshower.load_data(mode)
 
-
     # type casting
     entries = np.empty(len(x["features"][0]), dtype=constants.funky_dtype)
 
@@ -56,10 +55,10 @@ for mode in ["test", "train", "validation"]:
     for i, entry in enumerate(entries):
 
         # split test in test and validation
-        if mode == "test" and i > len(entries)//2:
+        if mode == "test" and i > len(entries) // 2:
             folder = "validation"
-            n = i - len(entries)//2
-        elif mode == "test" and i <= len(entries)//2:
+            n = i - len(entries) // 2
+        elif mode == "test" and i <= len(entries) // 2:
             folder = "test"
             n = i
         else:
@@ -67,4 +66,3 @@ for mode in ["test", "train", "validation"]:
             n = i
 
         np.save(f"{constants.DIR_DATA_BY_ENTRY}/{folder}/part_{n:06}.npy", entry)
-

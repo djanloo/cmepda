@@ -1,12 +1,14 @@
 # Make possible importing modules from parent directory
 import sys, os
 
+from sklearn.utils import shuffle
+
 sys.path.insert(1, os.path.join(sys.path[0], ".."))
 
 import numpy as np
 import matplotlib.pyplot as plt
 from cloudatlas import utils
-from cloudatlas.utils import DataFeeder
+from cloudatlas.datafeeders import DataFeeder
 from rich.progress import track
 from scipy.stats import gaussian_kde
 
@@ -18,28 +20,25 @@ from rich.progress import track
 from rich import print
 
 FILE = "true_vs_predictions.npy"
+
+feeder_options = {
+    "batch_size": 128,
+    "shuffle": False,
+    "input_fields": ["toa", "time_series"],
+    "target_field": "outcome",
+}
+
 if not os.path.exists(FILE):
-    model = utils.ask_load("trained/albertino")
+    model = utils.ask_load("trained/mariuccio")
     if model is None:
         exit("Dumb")
 
-    test_feeder = DataFeeder("splitted_dataset/test_splitted_data")
+    test_feeder = DataFeeder("data_by_entry/test", **feeder_options)
 
-    predictions = np.array([])
-    true_vals = np.array([])
-
-    for block in track(test_feeder.feed(), total=test_feeder.n_of_parts):
-        predictions = np.concatenate(
-            (
-                predictions,
-                model.predict(
-                    [block["toa"], block["time_series"].reshape((-1, 80, 81))],
-                    verbose=0,
-                    batch_size=128,
-                ).squeeze(),
-            )
-        )
-        true_vals = np.concatenate((true_vals, block["outcome"]))
+    predictions = model.predict(test_feeder).squeeze()
+    print(predictions)
+    true_vals = np.array([batch[1] for batch in track(test_feeder)]).reshape((-1))
+    print(true_vals)
 
     np.save(FILE, np.stack((true_vals, predictions)))
 
@@ -52,11 +51,11 @@ else:
 print("Quantile band started")
 plt.figure(3)
 predictions /= true_vals
-plt.scatter(true_vals, predictions, s=0.5, alpha=0.1, color="k")
-
-N = 30
+predictions -= 1
+plt.scatter(true_vals, predictions, s=6.0, alpha=0.1, color="k")
+N = 50
 vals = np.linspace(650, 1000, N)
-delta_quants = [80, 50, 25, 10]
+delta_quants = [95, 80, 50, 25, 10]
 ups = np.zeros((len(delta_quants), N))
 downs = np.zeros((len(delta_quants), N))
 colormap = cm.get_cmap("plasma")
@@ -99,12 +98,12 @@ plt.fill_between(
 )
 plt.legend()
 
-plt.xlabel("true height [m]")
-plt.ylabel("Normalized predictions [a.u.]")
+plt.xlabel("True height [m]")
+plt.ylabel("Relative error [a.u.]")
 plt.title("Heteroskedastic interpercentile ranges")
 
 plt.xlim(640, 1010)
-plt.ylim(0.75, 1.15)
+plt.ylim(0.75 - 1, 1.15 - 1)
 
 plt.show()
 exit()

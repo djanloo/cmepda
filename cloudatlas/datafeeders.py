@@ -109,7 +109,7 @@ class DataFeeder(keras.utils.Sequence):
         batch_inputs = [batch_rows[input_field] for input_field in self.input_fields]
         batch_targets = batch_rows[self.target_field]
         return batch_inputs, batch_targets
-    
+
 
 class FeederProf(DataFeeder):
     """Curriculum creator.
@@ -119,7 +119,12 @@ class FeederProf(DataFeeder):
     """
 
     def __init__(
-        self, trained_model, data_folder, difficulty_levels=5, n_of_epochs=20, **datafeeder_kwargs
+        self,
+        trained_model,
+        data_folder,
+        difficulty_levels=5,
+        n_of_epochs=20,
+        **datafeeder_kwargs,
     ):
 
         # Initializes itself as a vanilla DataFeeder
@@ -161,28 +166,30 @@ class FeederProf(DataFeeder):
         # Before next epoch begins the order of the file that will be
         # feeded in the net is chosen
         self.epoch_records = self.datum_indexes.copy()
-        self.epoch_records = self.epoch_records[: int(self.epoch/self.n_of_epochs * self.data_len)]
+        self.epoch_records = self.epoch_records[
+            : int(self.epoch / self.n_of_epochs * self.data_len)
+        ]
         np.random.shuffle(self.epoch_records)
         print(f"len of epoch record is {len(self.epoch_records)}")
-        self.restricted_data_len = int(self.epoch/self.n_of_epochs * self.data_len)
+        self.restricted_data_len = int(self.epoch / self.n_of_epochs * self.data_len)
         print(f"restricted_data_len is {self.restricted_data_len}")
-
 
     def _getitem_override(self, batch_index):
         print(f"batch {batch_index} was requested")
         """Gives one batch of data but sorted in ascending order of difficulty"""
         # Following the reference article, increase the size of the data from which
         # the batch is sampled, increasing difficulty
-        idxs = self.epoch_records[batch_index*self.batch_size:(batch_index + 1)*self.batch_size]
+        idxs = self.epoch_records[
+            batch_index * self.batch_size : (batch_index + 1) * self.batch_size
+        ]
         # Generate data
         net_input, net_target = self.data_generation(idxs)
-       
+
         # Save the indexes of the batch
         self.last_batch_indexes = np.array(idxs)
 
         return net_input, net_target
 
- 
     def september(self):
         self.epoch = 0
 
@@ -275,6 +282,8 @@ class FeederProf(DataFeeder):
             return False
 
     def __len__(self):
-        print(f"Len was called with result {int(np.floor(self.restricted_data_len / self.batch_size))}")
+        print(
+            f"Len was called with result {int(np.floor(self.restricted_data_len / self.batch_size))}"
+        )
         # Cutting the dataset by difficulty shortens it
         return int(np.floor(self.restricted_data_len / self.batch_size))
