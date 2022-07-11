@@ -221,7 +221,7 @@ class FeederProf(DataFeeder):
 
         if self.is_data_scored:
             raise RuntimeError(
-                "Prof scores are already generated and __getitem__ method is overriden"
+                "Prof scores are already generated and __getitem__ method is over-ridden"
             )
 
         # Tries to load errors
