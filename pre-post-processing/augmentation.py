@@ -5,6 +5,7 @@ import os
 sys.path.insert(1, os.path.join(sys.path[0], ".."))
 
 import numpy as np
+from rich.progress import track
 from cloudatlas.datafeeders import FeederProf
 from cloudatlas import constants
 
@@ -14,7 +15,8 @@ class Augment:
         self.data_indexes = prof.datum_indexes[-N:]
         self.dataset = np.empty(N, dtype=constants.funky_dtype)
         self.augmented_data = None
-        self.total = len(prof.data_len)
+        self.start_number = prof.data_len
+        self.N = N
 
         for j, idx in enumerate(self.data_indexes):
             fname = constants.FILENAME.format(name=idx)
@@ -28,17 +30,20 @@ class Augment:
         aug_types = ['rot', 'flip_lr', 'flip_ud', 'flip_diag']
 
         # definitions
-        index_record = self.total + 1
+        index_record = self.start_number + 1
 
-        for record in self.dataset:
+        for record in track(self.dataset, total=self.N):
             # chiamare augment
             toa_dict = self.augment_matrix(record['toa'].squeeze())
-            ts_dict = [self.augment_matrix(_.reshape(9, 9)) for _ in record['time_series']]
+            ts_list_of_dict = [self.augment_matrix(instant.reshape(9, 9)) for instant in record['time_series']]
+
+            # ts_list_of_dict is a list of dictionaries, we want a dictionary of lists
+            ts_dict_of_list = {k: [el[k] for el in ts_list_of_dict] for k in ts_list_of_dict[0]}  # 30L thx
+
             for key in aug_types:
                 # assegnate new_record
-                new_record['toa'] = self.augment_matrix(record['toa'].squeeze())[key][:, :, None]
-                new_record['time_series'] = np.array(
-                    [self.augment_matrix(_.reshape(9, 9))[key].reshape() for _ in record['time_series']])
+                new_record['toa'] = np.array(toa_dict[key]).reshape((9, 9, 1))
+                new_record['time_series'] = np.array(ts_dict_of_list[key]).reshape(80, 81)
                 new_record['output'] = record['output']
 
                 # Saving and updating index
@@ -46,10 +51,7 @@ class Augment:
                 np.save(f'{constants.DIR_DATA_BY_ENTRY_AUG}/{fname}')
                 index_record += 1
 
-    def augment_matrix(self, array):
-        # Reshape array as matrix
-        matrix = array.reshape()
-
+    def augment_matrix(self, matrix):
         # Initialize a new record with the custom dtype
         new_rec_rot = np.empty([9, 9], dtype=np.float32)
         new_rec_flip_lr = np.empty([9, 9], dtype=np.float32)
@@ -57,16 +59,19 @@ class Augment:
         new_rec_flip_diag = np.empty([9, 9], dtype=np.float32)
 
         # dictionary with all types of augment
-        new_record = {'rot': [new_rec_rot, 90],
-                      'flip_lr': [new_rec_flip_lr, 'left-right'],
-                      'flip_ud': [new_rec_flip_ud, 'upside-down'],
-                      'flip_diag': [new_rec_flip_diag, 'diagonal']}
+        new_record = {'rot': new_rec_rot,
+                      'flip_lr': new_rec_flip_lr,
+                      'flip_ud': new_rec_flip_ud,
+                      'flip_diag': new_rec_flip_diag}
 
-        for key in new_record.keys():
+        # arguments
+        args = [90, 'left-right', 'upside-down', 'diagonal']
+
+        for key, arg in zip(new_record.keys(), args):
             if 'rot' in key:
-                new_record[key][0] = self.rotate_matrix(matrix, angle=new_record[key][1])
+                new_record[key] = self.rotate_matrix(matrix, angle=arg)
             if 'flip' in key:
-                new_record[key][0] = self.flip_matrix(matrix, flip_mode=new_record[key][1])
+                new_record[key] = self.flip_matrix(matrix, flip_mode=arg)
 
         return new_record
 
@@ -106,9 +111,12 @@ if __name__ == '__main__':
         "target_field": "outcome",
     }
 
+    # Calling prof Albertino
     prof_train = FeederProf(
         "trained/albertino", constants.DIR_DATA_BY_ENTRY_AUG + "/train", **feeder_options, n_of_epochs=1
     )
     print(prof_train.data_len)
-    
+
+    # initialize and run augmentation
     aug = Augment(prof_train)
+    aug.augment_dataset()
