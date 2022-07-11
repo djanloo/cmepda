@@ -1,7 +1,7 @@
 """Module for data feeders"""
 import numpy as np
 import os
-import constants
+from . import constants
 from os import listdir
 from os.path import isfile, join, exists
 from rich.progress import track

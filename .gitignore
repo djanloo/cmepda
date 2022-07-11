@@ -5,6 +5,7 @@ omit/
 # Dataset
 datasets/
 data_by_entry/
+data_by_entry_aug/
 
 # Splitted dataset
 *_splitted_data/

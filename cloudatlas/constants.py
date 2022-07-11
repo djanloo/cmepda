@@ -3,6 +3,7 @@ import numpy as np
 
 # directory with datas splitted by entries
 DIR_DATA_BY_ENTRY = "data_by_entry"
+DIR_DATA_BY_ENTRY_AUG = "data_by_entry_aug"
 
 # custom numpy dtype
 funky_dtype = np.dtype(

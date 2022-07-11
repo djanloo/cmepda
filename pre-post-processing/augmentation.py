@@ -1,5 +1,11 @@
 """Module for augmentation of data."""
+import sys
+import os
+
+sys.path.insert(1, os.path.join(sys.path[0], ".."))
+
 import numpy as np
+from cloudatlas.datafeeders import FeederProf
 from cloudatlas import constants
 
 
@@ -8,7 +14,8 @@ class Augment:
         self.dataset = dataset
         self.augmented_data = None
 
-    def augment_dataset(self, dataset, tot_files):
+    @staticmethod
+    def augment_dataset(self, dataset, total):
         # Initialize a new record with the custom dtype
         new_record = np.empty(1, dtype=constants.funky_dtype)
 
@@ -16,7 +23,7 @@ class Augment:
         aug_types = ['rot', 'flip_lr', 'flip_ud', 'flip_diag']
 
         # definitions
-        index_record = tot_files + 1
+        index_record = total + 1
 
         for file in dataset:
             for key in aug_types:
@@ -27,9 +34,11 @@ class Augment:
                 new_record['output'] = file['output']
 
                 # Saving and updating index
-                np.save(f'{constants.DIR_DATA_BY_ENTRY}/part_{index_record}.npy')
+                fname = constants.FILENAME.format(name=index_record)
+                np.save(f'{constants.DIR_DATA_BY_ENTRY_AUG}/{fname}')
                 index_record += 1
 
+    @staticmethod
     def augment_matrix(self, matrix):
         # Initialize a new record with the custom dtype
         new_rec_rot = np.empty([9, 9], dtype=np.float32)
@@ -77,3 +86,19 @@ class Augment:
         if flip_mode == 'diagonal':
             matrix = np.transpose(matrix)
             return matrix
+
+
+if __name__ == '__main__':
+
+    feeder_options = {
+        "batch_size": 128,
+        "input_fields": ["toa", "time_series"],
+        "target_field": "outcome",
+    }
+
+    prof_alberto = FeederProf(
+        "trained/albertino", "data_by_entry/train", difficulty_levels=5, n_of_epochs=25, **feeder_options
+    )
+
+    print(prof_alberto.datum_indexes)
+
