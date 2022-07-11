@@ -159,6 +159,7 @@ class FeederProf(DataFeeder):
         # FeederProf.__getitem__ = FeederProf.__getitem_override__
 
     def _getitem_override(self, batch_index):
+        print(f"batch {batch_index} was requested")
         """Gives one batch of data but sorted in ascending order of difficulty"""
         # Following the reference article, increase the size of the data from which
         # the batch is sampled, increasing difficulty
@@ -180,7 +181,6 @@ class FeederProf(DataFeeder):
         self.epoch_records = self.epoch_records[: int(self.epoch/self.n_of_epochs * self.data_len)]
         np.random.shuffle(self.epoch_records)
         self.restricted_data_len = int(self.epoch/self.n_of_epochs * self.data_len)
-        # print(f"Next files that will be feeded are {self.epoch_records}")
  
     def september(self):
         self.epoch = 0
@@ -274,5 +274,6 @@ class FeederProf(DataFeeder):
             return False
 
     def __len__(self):
+        print(f"Len was called with result {int(np.floor(self.restricted_data_len / self.batch_size))}")
         # Cutting the dataset by difficulty shortens it
         return int(np.floor(self.restricted_data_len / self.batch_size))
