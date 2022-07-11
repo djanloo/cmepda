@@ -21,21 +21,21 @@ prof_alberto = FeederProf(
 val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
 claretta = LstmEncoder(path="trained/claretta")
 
-for i in range(5):
-    data = prof_alberto[i]
-    print(f"Len of alberto is {len(prof_alberto)}")
-    idx = prof_alberto.last_batch_indexes
-    norm_est = prof_alberto._estimates[idx]/prof_alberto._true_vals[idx]
-    plt.scatter(prof_alberto._true_vals[idx],norm_est, zorder=100-i, label=f"epoch {i}")
-    prof_alberto.on_epoch_end()
-plt.legend()
-plt.show()
-exit()
+# for i in range(5):
+#     data = prof_alberto[i]
+#     print(f"Len of alberto is {len(prof_alberto)}")
+#     idx = prof_alberto.last_batch_indexes
+#     norm_est = prof_alberto._estimates[idx]/prof_alberto._true_vals[idx]
+#     plt.scatter(prof_alberto._true_vals[idx],norm_est, zorder=100-i, label=f"epoch {i}")
+#     prof_alberto.on_epoch_end()
+# plt.legend()
+# plt.show()
+
 claretta.train(
     x=prof_alberto,
     epochs=25,
-    validation_data=val_feeder,
+    # validation_data=val_feeder,
     batch_size=128,
-    verbose=1,
+    verbose=0,
     use_multiprocessing=False,
 )
