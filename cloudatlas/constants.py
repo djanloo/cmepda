@@ -1,4 +1,6 @@
 """Module for collection of global constants"""
+import numpy as np
+
 # directory with datas splitted by entries
 DIR_DATA_BY_ENTRY = "data_by_entry"
 
@@ -10,3 +12,6 @@ funky_dtype = np.dtype(
         ("toa", np.float32, (9, 9, 1)),
     ]
 )
+
+# File format
+FILENAME = "part_{name:06}.npy"

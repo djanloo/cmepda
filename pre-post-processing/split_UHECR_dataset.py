@@ -8,61 +8,69 @@ Reminder: original structure is (event, 9x9 detectors, 80 ts + 1 toa)
 import os
 import sys
 import numpy as np
-import constants
+from cloudatlas import constants
 
 sys.path.insert(1, os.path.join(sys.path[0], ".."))
 
 from pd4ml import Airshower
 from os import mkdir
-from rich import print
-from os.path import join, exists
+from os.path import exists
 from rich.progress import track
 
 
 THINNING = 1  # Thinning factor: takes one sample in every fixed number
-perc = ()
+perc = [0.7, 0.2]  # percentage where to cut for train, test, validation data
+np.random.seed(42)  # seed
+
+
+def save_by_line(array, directory):
+    """Save a part of the dataset line by line in files"""
+    for index, record in track(enumerate(array), description=f"Saving {directory}", total=len(array)):
+        fname = constants.FILENAME.format(name=index)
+        np.save(f"{constants.DIR_DATA_BY_ENTRY}/{directory}/{fname}", record)
 
 
 if not exists(constants.DIR_DATA_BY_ENTRY):
     mkdir(constants.DIR_DATA_BY_ENTRY)
-    mkdir(f"{constants.DIR_DATA_BY_ENTRY}/train")
-    mkdir(f"{constants.DIR_DATA_BY_ENTRY}/test")
-    mkdir(f"{constants.DIR_DATA_BY_ENTRY}/validation")
 
+directories = ["train", "test", "validation"]
+for dir_name in directories:
+    if not exists(f"{constants.DIR_DATA_BY_ENTRY}/{dir_name}"):
+        mkdir(f"{constants.DIR_DATA_BY_ENTRY}/{dir_name}")
 
-for mode in ["test", "train", "validation"]:
+# type casting
+entries = np.empty(0, dtype=constants.funky_dtype)
+
+for mode in ["test", "train"]:
     # Load the dataset
     x, y = Airshower.load_data(mode)
 
-    # type casting
-    entries = np.empty(len(x["features"][0]), dtype=constants.funky_dtype)
+    # dummy
+    dummy = np.empty(len(x["features"][0]), dtype=constants.funky_dtype)
 
     # Time of arrival is stored as a 9x9 matrix (for each event)
-    entries["toa"] = x["features"][0][::THINNING, :, -1].reshape((-1, 9, 9, 1))
+    dummy["toa"] = x["features"][0][::THINNING, :, -1].reshape((-1, 9, 9, 1))
 
     # Time series is stored as a 80-array of 9x9 matrices (for each event)
     # A swap of axes is then required
     time_series = x["features"][0][::THINNING, :, :-1]
-    entries["time_series"] = np.swapaxes(time_series, 1, 2).reshape((-1, 80, 9, 9))
+    dummy["time_series"] = np.swapaxes(time_series, 1, 2).reshape((-1, 80, 81))
 
     # right values
-    entries["outcome"] = y[::THINNING]
+    dummy["outcome"] = y[::THINNING]
 
-    # Clean useless big file, free some memory
-    del x
+    # appendino
+    entries = np.append(entries, dummy)
 
-    # savings in files called part_num
-    for i, entry in enumerate(entries):
+# shuffle
+np.random.shuffle(entries)
 
-        # split test in test and validation
-        if mode == "test" and i > len(entries) // 2:
-            folder = "validation"
-            n = i - len(entries) // 2
-        elif mode == "test" and i <= len(entries) // 2:
-            folder = "test"
-            n = i
-        else:
-            folder = "train"
-            n = i
+# index where I got to split
+perc = np.cumsum(np.array(perc) * len(entries)).astype(int)
 
-        np.save(f"{constants.DIR_DATA_BY_ENTRY}/{folder}/part_{n:06}.npy", entry)
+# 3MENDO no more
+train, test, validation = np.split(entries, perc)
+
+# savings in files called part_num
+for arr, dir_name in zip([train, test, validation], ["train", "test", "validation"]):
+    save_by_line(arr, dir_name)

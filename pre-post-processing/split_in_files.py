@@ -9,11 +9,10 @@ import sys
 sys.path.insert(1, os.path.join(sys.path[0], ".."))
 
 import numpy as np
-from cloudatlas import datafeeders
+from cloudatlas import datafeeders, constants
 from os import mkdir
 from os.path import exists
 from rich.progress import track
-import constants
 
 DIR = constants.DIR_DATA_BY_ENTRY
 

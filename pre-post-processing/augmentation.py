@@ -1,6 +1,6 @@
 """Module for augmentation of data."""
 import numpy as np
-import constants
+from cloudatlas import constants
 
 
 class Augment:

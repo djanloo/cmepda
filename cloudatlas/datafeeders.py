@@ -1,6 +1,7 @@
 """Module for data feeders"""
 import numpy as np
 import os
+import constants
 from os import listdir
 from os.path import isfile, join, exists
 from rich.progress import track
@@ -63,7 +64,8 @@ class DataFeeder(keras.utils.Sequence):
         )
 
         # Gets the dtype of the saved data form first entry
-        self.datum_dtype = np.load(f"{self.folder}/part_0.npy").dtype
+        fname = constants.FILENAME.format(name=0)
+        self.datum_dtype = np.load(f"{self.folder}/{fname}").dtype
 
         # Data must be indexed by continuous integers
         self.datum_indexes = np.arange(self.data_len)
@@ -105,7 +107,8 @@ class DataFeeder(keras.utils.Sequence):
         #                [t1, t2])
         batch_rows = np.empty(self.batch_size, dtype=self.datum_dtype)
         for row, datum_index in enumerate(batch_datum_indexes):
-            batch_rows[row] = np.load(f"{self.folder}/part_{datum_index}.npy")
+            fname = constants.FILENAME.format(name=datum_index)
+            batch_rows[row] = np.load(f"{self.folder}/{fname}")
         batch_inputs = [batch_rows[input_field] for input_field in self.input_fields]
         batch_targets = batch_rows[self.target_field]
         return batch_inputs, batch_targets
