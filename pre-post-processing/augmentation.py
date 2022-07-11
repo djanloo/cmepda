@@ -49,7 +49,6 @@ class Augment:
 
                 # Saving and updating index
                 fname = constants.FILENAME.format(name=index_record)
-                print(f"{fname}")
                 np.save(f'{self.directory}/{fname}', new_record)
                 index_record += 1
 
