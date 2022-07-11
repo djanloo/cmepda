@@ -8,9 +8,9 @@ from matplotlib import rcParams, cm
 from rich import print
 from rich.progress import track
 
-
 from context import utils
 from context import DataFeeder
+
 
 rcParams["font.family"] = "serif"
 FILE = "true_vs_predictions.npy"

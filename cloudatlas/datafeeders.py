@@ -8,10 +8,7 @@ from keras.models import load_model
 from rich.progress import track
 from rich import print
 
-from . import constants
-
-
-
+import constants
 
 
 PROF_SAVEFILE = "prof_knowledge.npy"  # Must have format
