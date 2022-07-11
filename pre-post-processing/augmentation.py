@@ -3,23 +3,36 @@ import numpy as np
 import constants
 
 
-class Augument:
+class Augment:
     def __init__(self, dataset):
         self.dataset = dataset
         self.augmented_data = None
 
-    def augment_dataset(self, dataset, tot):
+    def augment_dataset(self, dataset, tot_files):
         # Initialize a new record with the custom dtype
         new_record = np.empty(1, dtype=constants.funky_dtype)
-        keys = ['toa', 'time_series', 'outcome']
 
-        for i, file in enumerate(dataset):
+        # keys of various types of augmentation
+        aug_types = ['rot', 'flip_lr', 'flip_ud', 'flip_diag']
 
+        # definitions
+        index_record = tot_files + 1
 
+        for file in dataset:
+            for key in aug_types:
+                # calling function of augmentation
+                new_record['toa'] = self.augment_matrix(file['toa'])[key]
+                new_record['time_series'] = np.array(
+                    [self.augment_matrix(_)[key] for _ in file['time_series'].reshape(-1, 9, 9)])
+                new_record['output'] = file['output']
 
-    def augment_matrix(self, matrix, num):
+                # Saving and updating index
+                np.save(f'{constants.DIR_DATA_BY_ENTRY}/part_{index_record}.npy')
+                index_record += 1
+
+    def augment_matrix(self, matrix):
         # Initialize a new record with the custom dtype
-        new_rec_rot = np.empty(1)
+        new_rec_rot = np.empty([9, 9], dtype=np.float32)
         new_rec_flip_lr = np.empty([9, 9], dtype=np.float32)
         new_rec_flip_ud = np.empty([9, 9], dtype=np.float32)
         new_rec_flip_diag = np.empty([9, 9], dtype=np.float32)
@@ -34,7 +47,7 @@ class Augument:
             if 'rot' in key:
                 new_record[key][0] = self.rotate_matrix(matrix, angle=new_record[key][1])
             if 'flip' in key:
-                new_record[key][0] = self.flip_matrix(matrix, mode=new_record[key][1])
+                new_record[key][0] = self.flip_matrix(matrix, flip_mode=new_record[key][1])
 
         return new_record
 
