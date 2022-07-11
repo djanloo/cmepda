@@ -14,16 +14,13 @@ class Augment:
         self.data_indexes = prof.datum_indexes[-N:]
         self.dataset = np.empty(N, dtype=constants.funky_dtype)
         self.augmented_data = None
+        self.total = len(prof.data_len)
 
         for j, idx in enumerate(self.data_indexes):
             fname = constants.FILENAME.format(name=idx)
             self.dataset[j] = np.load(f"{prof.folder}/{fname}")
-        
-        start_from = len(prof.files)
-        
 
-    @staticmethod
-    def augment_dataset(self, dataset, total):
+    def augment_dataset(self):
         # Initialize a new record with the custom dtype
         new_record = np.empty(1, dtype=constants.funky_dtype)
 
@@ -31,23 +28,28 @@ class Augment:
         aug_types = ['rot', 'flip_lr', 'flip_ud', 'flip_diag']
 
         # definitions
-        index_record = total + 1
+        index_record = self.total + 1
 
-        for file in dataset:
+        for record in self.dataset:
+            # chiamare augment
+            toa_dict = self.augment_matrix(record['toa'].squeeze())
+            ts_dict = [self.augment_matrix(_.reshape(9, 9)) for _ in record['time_series']]
             for key in aug_types:
-                # calling function of augmentation
-                new_record['toa'] = self.augment_matrix(file['toa'])[key]
+                # assegnate new_record
+                new_record['toa'] = self.augment_matrix(record['toa'].squeeze())[key][:, :, None]
                 new_record['time_series'] = np.array(
-                    [self.augment_matrix(_)[key] for _ in file['time_series'].reshape(-1, 9, 9)])
-                new_record['output'] = file['output']
+                    [self.augment_matrix(_.reshape(9, 9))[key].reshape() for _ in record['time_series']])
+                new_record['output'] = record['output']
 
                 # Saving and updating index
                 fname = constants.FILENAME.format(name=index_record)
                 np.save(f'{constants.DIR_DATA_BY_ENTRY_AUG}/{fname}')
                 index_record += 1
 
-    @staticmethod
-    def augment_matrix(self, matrix):
+    def augment_matrix(self, array):
+        # Reshape array as matrix
+        matrix = array.reshape()
+
         # Initialize a new record with the custom dtype
         new_rec_rot = np.empty([9, 9], dtype=np.float32)
         new_rec_flip_lr = np.empty([9, 9], dtype=np.float32)
@@ -105,8 +107,8 @@ if __name__ == '__main__':
     }
 
     prof_train = FeederProf(
-        "trained/albertino", constants.DIR_DATA_BY_ENTRY_AUG + "/train", **feeder_options
+        "trained/albertino", constants.DIR_DATA_BY_ENTRY_AUG + "/train", **feeder_options, n_of_epochs=1
     )
     print(prof_train.data_len)
     
-
+    aug = Augment(prof_train)
