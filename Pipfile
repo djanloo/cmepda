@@ -16,6 +16,8 @@ pydot = "*"
 graphviz = "*"
 ipywidgets = "*"
 telegram-send = "*"
+jupyter = "*"
+jupyterthemes = "*"
 
 [dev-packages]
 ipykernel = "*"
