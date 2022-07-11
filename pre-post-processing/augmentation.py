@@ -44,7 +44,7 @@ class Augment:
                 # assegnate new_record
                 new_record['toa'] = np.array(toa_dict[key]).reshape((9, 9, 1))
                 new_record['time_series'] = np.array(ts_dict_of_list[key]).reshape(80, 81)
-                new_record['output'] = record['output']
+                new_record['outcome'] = record['outcome']
 
                 # Saving and updating index
                 fname = constants.FILENAME.format(name=index_record)
