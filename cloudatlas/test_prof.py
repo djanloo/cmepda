@@ -37,5 +37,6 @@ claretta.train(
     # validation_data=val_feeder,
     batch_size=128,
     verbose=0,
+    # steps_per_epoch = 550,
     use_multiprocessing=False,
 )

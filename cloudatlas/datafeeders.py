@@ -134,7 +134,6 @@ class FeederProf(DataFeeder):
         self.n_of_epochs = n_of_epochs
 
         super().__init__(data_folder, **datafeeder_kwargs)
-        print(f"In init self.restr is {self.restricted_data_len}")
         self.model_folder = trained_model
         self.model = load_model(trained_model)
         self.savefile = (
@@ -149,7 +148,6 @@ class FeederProf(DataFeeder):
 
         # Gets the data score
         self.score_data()
-        print(f"ENd of init len is {len(self)}")
 
         # Overrides __getitem__ method in runtime since the student
         # __getitem__ is no longer required
@@ -157,6 +155,19 @@ class FeederProf(DataFeeder):
         ## NOTE: This overrides the class method from the first initialization onwards
         # So stick to the if- else version
         # FeederProf.__getitem__ = FeederProf.__getitem_override__
+
+    def on_epoch_end(self):
+        """Since on_epoch_end is called without args, use a counter to get epoch number"""
+        self.epoch += 1
+        # Before next epoch begins the order of the file that will be
+        # feeded in the net is chosen
+        self.epoch_records = self.datum_indexes.copy()
+        self.epoch_records = self.epoch_records[: int(self.epoch/self.n_of_epochs * self.data_len)]
+        np.random.shuffle(self.epoch_records)
+        print(f"len of epoch record is {len(self.epoch_records)}")
+        self.restricted_data_len = int(self.epoch/self.n_of_epochs * self.data_len)
+        print(f"restricted_data_len is {self.restricted_data_len}")
+
 
     def _getitem_override(self, batch_index):
         print(f"batch {batch_index} was requested")
@@ -172,15 +183,6 @@ class FeederProf(DataFeeder):
 
         return net_input, net_target
 
-    def on_epoch_end(self, *args):
-        """Since on_epoch_end is called without args, use a counter to get epoch number"""
-        self.epoch += 1
-        # Before next epoch begins the order of the file that will be
-        # feeded in the net is chosen
-        self.epoch_records = self.datum_indexes.copy()
-        self.epoch_records = self.epoch_records[: int(self.epoch/self.n_of_epochs * self.data_len)]
-        np.random.shuffle(self.epoch_records)
-        self.restricted_data_len = int(self.epoch/self.n_of_epochs * self.data_len)
  
     def september(self):
         self.epoch = 0
