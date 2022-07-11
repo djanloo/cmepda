@@ -14,14 +14,14 @@ feeder_options = {
     "target_field": "outcome",
 }
 
-prof_alberto = FeederProf(
-    "trained/albertino",
-    "data_by_entry/train",
-    difficulty_levels=5,
-    n_of_epochs=5,
-    **feeder_options
-)
-
+# prof_alberto = FeederProf(
+#     "trained/albertino",
+#     "data_by_entry/train",
+#     difficulty_levels=5,
+#     n_of_epochs=5,
+#     **feeder_options
+# )
+train_feeder = DataFeeder("data_by_entry_aug/train", **feeder_options)
 val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
 claretta = LstmEncoder(path="trained/claretta")
 
@@ -36,11 +36,11 @@ claretta = LstmEncoder(path="trained/claretta")
 # plt.show()
 
 claretta.train(
-    x=prof_alberto,
+    x=train_feeder,
     epochs=5,
     # validation_data=val_feeder,
     batch_size=128,
-    verbose=0,
+    verbose=1,
     # steps_per_epoch = 550,
     use_multiprocessing=False,
 )
