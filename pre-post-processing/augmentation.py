@@ -48,7 +48,7 @@ class Augment:
 
                 # Saving and updating index
                 fname = constants.FILENAME.format(name=index_record)
-                np.save(f'{constants.DIR_DATA_BY_ENTRY_AUG}/{fname}')
+                np.save(f'{constants.DIR_DATA_BY_ENTRY_AUG}/{fname}', new_record)
                 index_record += 1
 
     def augment_matrix(self, matrix):
