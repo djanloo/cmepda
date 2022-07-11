@@ -10,7 +10,6 @@ from keras.models import load_model
 
 # Test
 from matplotlib import pyplot as plt
-import utils
 
 # Turn off keras warnings
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -96,8 +95,7 @@ class DataFeeder(keras.utils.Sequence):
         if self.shuffle:
             print(f"[blue]Shuffled indexes[/blue] in DataFeederKeras({self.folder})")
             np.random.shuffle(self.datum_indexes)
-            
-    @profile
+
     def data_generation(self, batch_datum_indexes):
         """Loads data and returns a batch"""
         # Return format must be ([array_input1, array_input2], array_of_targets)
