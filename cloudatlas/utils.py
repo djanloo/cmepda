@@ -21,6 +21,7 @@ class RemoteMonitor:
     def __init__(self):
         try:
             import telegram_send
+
             print(f"Remote monitor [green]available[/green]")
         except ImportError:
             print(f"Remote monitor [red]unavailable[/red]")

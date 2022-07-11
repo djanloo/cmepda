@@ -20,7 +20,14 @@ sys.path.insert(0, os.path.abspath("../../"))
 sys.path.insert(0, os.path.abspath("../../cloudatlas"))
 print(sys.path)
 
-autodoc_mock_imports = ["numpy", "matplotlib", "scipy", "rich", "keras", "telegram_send"]
+autodoc_mock_imports = [
+    "numpy",
+    "matplotlib",
+    "scipy",
+    "rich",
+    "keras",
+    "telegram_send",
+]
 
 # -- Project information -----------------------------------------------------
 
