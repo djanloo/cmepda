@@ -27,6 +27,8 @@ class Augment:
         aug_types = ['rot', 'flip_lr', 'flip_ud', 'flip_diag']
 
         # definitions
+        # Files in folder are [0, .., len(files) - 1] (extrema included)
+        # so it should start saving files from index = len(files)
         index_record = self.start_number
 
         for record in track(self.dataset, total=self.N):
@@ -110,7 +112,7 @@ if __name__ == '__main__':
 
     # Calling prof Albertino
     prof_train = FeederProf(
-        "trained/albertino", constants.DIR_DATA_BY_ENTRY_AUG + "/test", **feeder_options, n_of_epochs=1
+        "trained/albertino", constants.DIR_DATA_BY_ENTRY_AUG + "/train", **feeder_options, n_of_epochs=1
     )
     print(prof_train.data_len)
 
