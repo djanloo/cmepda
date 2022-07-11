@@ -16,6 +16,7 @@ class Augment:
         self.dataset = np.empty(N, dtype=constants.funky_dtype)
         self.augmented_data = None
         self.start_number = prof.data_len
+        self.directory = prof.folder
         self.N = N
 
         for j, idx in enumerate(self.data_indexes):
@@ -48,7 +49,8 @@ class Augment:
 
                 # Saving and updating index
                 fname = constants.FILENAME.format(name=index_record)
-                np.save(f'{constants.DIR_DATA_BY_ENTRY_AUG}/{fname}', new_record)
+                print(f"{fname}")
+                np.save(f'{self.directory}/{fname}', new_record)
                 index_record += 1
 
     def augment_matrix(self, matrix):
