@@ -24,7 +24,7 @@ class Augment:
         new_record = np.empty(1, dtype=constants.funky_dtype)
 
         # keys of various types of augmentation
-        aug_types = ['rot', 'flip_lr', 'flip_ud', 'flip_diag']
+        aug_types = ["rot", "flip_lr", "flip_ud", "flip_diag"]
 
         # definitions
         # Files in folder are [0, .., len(files) - 1] (extrema included)
@@ -33,21 +33,28 @@ class Augment:
 
         for record in track(self.dataset, total=self.N):
             # chiamare augment
-            toa_dict = self.augment_matrix(record['toa'].squeeze())
-            ts_list_of_dict = [self.augment_matrix(instant.reshape(9, 9)) for instant in record['time_series']]
+            toa_dict = self.augment_matrix(record["toa"].squeeze())
+            ts_list_of_dict = [
+                self.augment_matrix(instant.reshape(9, 9))
+                for instant in record["time_series"]
+            ]
 
             # ts_list_of_dict is a list of dictionaries, we want a dictionary of lists
-            ts_dict_of_list = {k: [el[k] for el in ts_list_of_dict] for k in ts_list_of_dict[0]}  # 30L thx
+            ts_dict_of_list = {
+                k: [el[k] for el in ts_list_of_dict] for k in ts_list_of_dict[0]
+            }  # 30L thx
 
             for key in aug_types:
                 # assegnate new_record
-                new_record['toa'] = np.array(toa_dict[key]).reshape((9, 9, 1))
-                new_record['time_series'] = np.array(ts_dict_of_list[key]).reshape(80, 81)
-                new_record['outcome'] = record['outcome']
+                new_record["toa"] = np.array(toa_dict[key]).reshape((9, 9, 1))
+                new_record["time_series"] = np.array(ts_dict_of_list[key]).reshape(
+                    80, 81
+                )
+                new_record["outcome"] = record["outcome"]
 
                 # Saving and updating index
                 fname = constants.FILENAME.format(name=index_record)
-                np.save(f'{self.directory}/{fname}', new_record)
+                np.save(f"{self.directory}/{fname}", new_record)
                 index_record += 1
 
     def augment_matrix(self, matrix):
@@ -58,18 +65,20 @@ class Augment:
         new_rec_flip_diag = np.empty([9, 9], dtype=np.float32)
 
         # dictionary with all types of augment
-        new_record = {'rot': new_rec_rot,
-                      'flip_lr': new_rec_flip_lr,
-                      'flip_ud': new_rec_flip_ud,
-                      'flip_diag': new_rec_flip_diag}
+        new_record = {
+            "rot": new_rec_rot,
+            "flip_lr": new_rec_flip_lr,
+            "flip_ud": new_rec_flip_ud,
+            "flip_diag": new_rec_flip_diag,
+        }
 
         # arguments
-        args = [90, 'left-right', 'upside-down', 'diagonal']
+        args = [90, "left-right", "upside-down", "diagonal"]
 
         for key, arg in zip(new_record.keys(), args):
-            if 'rot' in key:
+            if "rot" in key:
                 new_record[key] = self.rotate_matrix(matrix, angle=arg)
-            if 'flip' in key:
+            if "flip" in key:
                 new_record[key] = self.flip_matrix(matrix, flip_mode=arg)
 
         return new_record
@@ -93,16 +102,16 @@ class Augment:
             matrix = np.flipud(matrix)
             return matrix
 
-        if flip_mode == 'left-right':
+        if flip_mode == "left-right":
             matrix = np.fliplr(matrix)
             return matrix
 
-        if flip_mode == 'diagonal':
+        if flip_mode == "diagonal":
             matrix = np.transpose(matrix)
             return matrix
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     feeder_options = {
         "batch_size": 100,
@@ -112,7 +121,10 @@ if __name__ == '__main__':
 
     # Calling prof Albertino
     prof_train = FeederProf(
-        "trained/albertino", constants.DIR_DATA_BY_ENTRY_AUG + "/train", **feeder_options, n_of_epochs=1
+        "trained/albertino",
+        constants.DIR_DATA_BY_ENTRY_AUG + "/train",
+        **feeder_options,
+        n_of_epochs=1,
     )
     print(prof_train.data_len)
 

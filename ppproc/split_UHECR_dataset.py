@@ -22,7 +22,9 @@ np.random.seed(42)  # seed
 
 def save_by_line(array, directory):
     """Save a part of the dataset line by line in files"""
-    for index, record in track(enumerate(array), description=f"Saving {directory}", total=len(array)):
+    for index, record in track(
+        enumerate(array), description=f"Saving {directory}", total=len(array)
+    ):
         fname = constants.FILENAME.format(name=index)
         np.save(f"{constants.DIR_DATA_BY_ENTRY}/{directory}/{fname}", record)
 
