@@ -10,9 +10,17 @@ from cloudatlas import constants
 
 
 class Augment:
-    def __init__(self, dataset):
-        self.dataset = dataset
+    def __init__(self, prof, N=10_000):
+        self.data_indexes = prof.datum_indexes[-N:]
+        self.dataset = np.empty(N, dtype=constants.funky_dtype)
         self.augmented_data = None
+
+        for j, idx in enumerate(self.data_indexes):
+            fname = constants.FILENAME.format(name=idx)
+            self.dataset[j] = np.load(f"{prof.folder}/{fname}")
+        
+        start_from = len(prof.files)
+        
 
     @staticmethod
     def augment_dataset(self, dataset, total):
@@ -91,14 +99,14 @@ class Augment:
 if __name__ == '__main__':
 
     feeder_options = {
-        "batch_size": 128,
+        "batch_size": 100,
         "input_fields": ["toa", "time_series"],
         "target_field": "outcome",
     }
 
-    prof_alberto = FeederProf(
-        "trained/albertino", "data_by_entry/train", difficulty_levels=5, n_of_epochs=25, **feeder_options
+    prof_train = FeederProf(
+        "trained/albertino", constants.DIR_DATA_BY_ENTRY_AUG + "/train", **feeder_options
     )
-
-    print(prof_alberto.datum_indexes)
+    print(prof_train.data_len)
+    
 
