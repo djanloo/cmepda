@@ -1,19 +1,18 @@
 """Module for data feeders"""
-import numpy as np
 import os
-from . import constants
-from os import listdir
-from os.path import isfile, join, exists
-from rich.progress import track
-from rich import print
+from os.path import join, exists
+
+import numpy as np
 import keras
 from keras.models import load_model
+from rich.progress import track
+from rich import print
 
-# Test
-from matplotlib import pyplot as plt
+from . import constants
 
-# Turn off keras warnings
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
+
+
 
 PROF_SAVEFILE = "prof_knowledge.npy"  # Must have format
 

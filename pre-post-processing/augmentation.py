@@ -1,13 +1,9 @@
 """Module for augmentation of data."""
-import sys
-import os
-
-sys.path.insert(1, os.path.join(sys.path[0], ".."))
-
+from asyncio import constants
 import numpy as np
 from rich.progress import track
-from cloudatlas.datafeeders import FeederProf
-from cloudatlas import constants
+from context import FeederProf
+from context import constants
 
 
 class Augment:
@@ -31,7 +27,7 @@ class Augment:
         aug_types = ['rot', 'flip_lr', 'flip_ud', 'flip_diag']
 
         # definitions
-        index_record = self.start_number + 1
+        index_record = self.start_number
 
         for record in track(self.dataset, total=self.N):
             # chiamare augment
@@ -114,7 +110,7 @@ if __name__ == '__main__':
 
     # Calling prof Albertino
     prof_train = FeederProf(
-        "trained/albertino", constants.DIR_DATA_BY_ENTRY_AUG + "/train", **feeder_options, n_of_epochs=1
+        "trained/albertino", constants.DIR_DATA_BY_ENTRY_AUG + "/test", **feeder_options, n_of_epochs=1
     )
     print(prof_train.data_len)
 

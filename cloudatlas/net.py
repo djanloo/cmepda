@@ -15,8 +15,7 @@ from keras.utils.vis_utils import plot_model
 from rich.progress import track
 from rich import print
 
-from datafeeders import DataFeeder
-import utils
+from . import utils
 
 
 class LstmEncoder:

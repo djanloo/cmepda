@@ -4,18 +4,15 @@ Has to be executed once.
 
 Reminder: original structure is (event, 9x9 detectors, 80 ts + 1 toa)
 """
-# Make possible importing modules from parent directory
-import os
-import sys
-import numpy as np
-from cloudatlas import constants
-
-sys.path.insert(1, os.path.join(sys.path[0], ".."))
-
-from pd4ml import Airshower
 from os import mkdir
 from os.path import exists
+
+import numpy as np
 from rich.progress import track
+
+
+from pd4ml import Airshower
+from context import constants
 
 
 THINNING = 1  # Thinning factor: takes one sample in every fixed number

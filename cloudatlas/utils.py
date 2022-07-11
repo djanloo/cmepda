@@ -1,17 +1,13 @@
 """Utility module"""
-import sys, warnings
-
 import os
+import warnings
 
 # Turn off keras warnings
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-from os.path import join, exists
 
 import numpy as np
 from keras.models import load_model
 from rich import print
-
-
 import telegram_send
 
 

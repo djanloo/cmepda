@@ -1,24 +1,18 @@
 # Make possible importing modules from parent directory
-import sys, os
-
-from sklearn.utils import shuffle
-
-sys.path.insert(1, os.path.join(sys.path[0], ".."))
+import os
 
 import numpy as np
 import matplotlib.pyplot as plt
-from cloudatlas import utils
-from cloudatlas.datafeeders import DataFeeder
-from rich.progress import track
 from scipy.stats import gaussian_kde
-
 from matplotlib import rcParams, cm
+from rich import print
+from rich.progress import track
+
+
+from context import utils
+from context import DataFeeder
 
 rcParams["font.family"] = "serif"
-
-from rich.progress import track
-from rich import print
-
 FILE = "true_vs_predictions.npy"
 
 feeder_options = {
@@ -33,7 +27,7 @@ if not os.path.exists(FILE):
     if model is None:
         exit("Dumb")
 
-    test_feeder = DataFeeder("data_by_entry/test", **feeder_options)
+    test_feeder = DataFeeder("data_by_entry_aug/test", **feeder_options)
 
     predictions = model.predict(test_feeder).squeeze()
     print(predictions)
