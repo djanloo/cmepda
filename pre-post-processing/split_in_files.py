@@ -3,23 +3,24 @@ I decided to split each entry of the dataset in a single file.
 This will probably cause a slowdown of data generation because of reading times
 """
 # Make possible importing modules from parent directory
-import sys, os
+import os
+import sys
 
 sys.path.insert(1, os.path.join(sys.path[0], ".."))
 
 import numpy as np
-from cloudatlas import utils
+from cloudatlas import datafeeders
 from os import mkdir
-from os.path import exists, join
+from os.path import exists
 from rich.progress import track
 import constants
 
 DIR = constants.DIR_DATA_BY_ENTRY
 
-## I use the previously splitted dataset because
+# I use the previously splitted dataset because
 # loading the full one happened once and it was a miracle
-test_feeder = utils.DataFeeder("splitted_dataset/test_splitted_data")
-train_feeder = utils.DataFeeder("splitted_dataset/train_splitted_data")
+test_feeder = datafeeders.DataFeeder("splitted_dataset/test_splitted_data")
+train_feeder = datafeeders.DataFeeder("splitted_dataset/train_splitted_data")
 
 # Save the datum with a specific dtype because I still don't trust indexing on dtype=object
 funky_dtype = constants.funky_dtype
@@ -30,7 +31,7 @@ if not exists(DIR):
     mkdir(f"{DIR}/test")
     mkdir(f"{DIR}/validation")
 
-## Using 70-15-15 proportions since the original dataset is 70-30
+# Using 70-15-15 proportions since the original dataset is 70-30
 
 # Test and validation
 c = 0
