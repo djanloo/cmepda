@@ -1,4 +1,6 @@
 """Module for collection of global constants"""
+import numpy as np
+
 # directory with datas splitted by entries
 DIR_DATA_BY_ENTRY = "data_by_entry"
 
