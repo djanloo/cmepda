@@ -18,6 +18,7 @@ ipywidgets = "*"
 telegram-send = "*"
 jupyter = "*"
 jupyterthemes = "*"
+line-profiler = "*"
 
 [dev-packages]
 ipykernel = "*"
