@@ -1,5 +1,5 @@
 import os
-
+import datetime
 from tensorflow import keras
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -29,14 +29,11 @@ test_feeder = DataFeeder("data_by_entry/test", **feeder_options)
 claretta = LstmEncoder(path="trained/claretta")
 
 print(claretta.resolution_on(test_feeder))
-#exit()
+# exit()
 
-# TensorBoard callbacks
-tb_callbacks = [
-    # Write TensorBoard logs to `./logs` directory
-    keras.callbacks.TensorBoard(log_dir='trained/claretta/logs',
-                                histogram_freq=1)
-]
+# TensorBoard callbacks, # Write TensorBoard logs to `./logs` directory
+tb_callbacks = keras.callbacks.TensorBoard(log_dir='trained/claretta/logs',
+                                           histogram_freq=1)
 
 claretta.train(
     x=train_feeder,
