@@ -91,7 +91,9 @@ class LstmEncoder:
         self.history = self.model.fit(**fit_kwargs)
 
         # Saves
+        print("Saving..")
         self.model.save(self.path)
+        print(f"Saved to {self.path}")
         np.save(f"{self.path}/history", self.history)
 
         # Tries remote monitoring

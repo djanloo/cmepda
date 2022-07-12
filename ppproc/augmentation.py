@@ -122,7 +122,7 @@ if __name__ == "__main__":
     # Calling prof Albertino
     prof_train = FeederProf(
         "trained/albertino",
-        constants.DIR_DATA_BY_ENTRY_AUG + "/train",
+        constants.DIR_DATA_BY_ENTRY_AUG + "/test",
         **feeder_options,
         n_of_epochs=1,
     )
