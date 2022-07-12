@@ -70,7 +70,7 @@ def animate_time_series(array):
     vmax, vmin = np.max(array), np.min(array)
     fig = plt.figure()
     canvas = plt.imshow(
-        np.random.uniform(0, 1, size=(9, 9)), vmin=vmin, vmax=vmax, cmap="plasma"
+        np.random.uniform(0, 1, size=(9, 9)), vmin=vmin, vmax=vmax, cmap="viridis"
     )
 
     def animate(i):
@@ -78,4 +78,4 @@ def animate_time_series(array):
         canvas.set_array(image)
         return (canvas,)
 
-    return FuncAnimation(fig, animate, frames=len(array), interval=0, blit=True)
+    return FuncAnimation(fig, animate, frames=len(array), interval=1, blit=True)

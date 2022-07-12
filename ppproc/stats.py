@@ -103,7 +103,7 @@ def interpercentile_plot(net_paths, dataset_path):
         ax.set_title(f"{net_path} (res. = {res :.1f} m)")
 
 
-interpercentile_plot(["trained/claretta", "trained/albertino"], "data_by_entry/test")
+interpercentile_plot(["trained/claretta", "trained/mariuccio"], "data_by_entry/test")
 
 plt.show()
 exit()
