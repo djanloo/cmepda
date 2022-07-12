@@ -112,6 +112,7 @@ class LstmEncoder:
         Args:
             feeder (DataFeeder): the feeder of the dataset.
         """
+        feeder.shuffle = False # Otherwise true - pred are mismatched
         true_vals = np.array(
             [batch[1] for batch in track(feeder, description="Getting true vals ..")]
         ).reshape((-1))
@@ -122,7 +123,7 @@ class LstmEncoder:
     def __check_load(self):
         # If it exists an already trained model at self.path, __check_load loads it in self.model
         if exists(self.path):
-            warnings.warn(f"Trained model already present in {self.path}")
+            print(f"Trained model already present in [yellow]{self.path}[/yellow]")
             print("Loading the model...", end=" ")
             self.model = keras.models.load_model(self.path)
             print("done!")
