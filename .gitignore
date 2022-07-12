@@ -7,6 +7,9 @@ datasets/
 data_by_entry/
 data_by_entry_aug/
 
+# log files
+nohup*
+
 # Splitted dataset
 *_splitted_data/
 

@@ -29,48 +29,46 @@ val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
 test_feeder = DataFeeder("data_by_entry/test", **feeder_options)
 
 
-class ModelLstmEnc:
-    @staticmethod
-    def build(hp):
-        # Time of arrival branch
-        input_toa = Input(shape=(9, 9, 1), name="time_of_arrival")
-        flat = Flatten()(input_toa)
-        enc = Dense(9, activation="relu")(flat)
-        enc = Dense(hp.Int("units enc dense2", min_value=4, max_value=12, step=4),
-                    activation=hp.Choice("activation 2", ["relu", "tanh"]))(enc)
-        enc = Dense(hp.Int("units enc dense3", min_value=4, max_value=12, step=4),
-                    activation=hp.Choice("activation 3", ["relu", "tanh"]))(enc)
-        encoder = Model(inputs=input_toa, outputs=enc)
+def build_model(hp):
+    # Time of arrival branch
+    input_toa = Input(shape=(9, 9, 1), name="time_of_arrival")
+    flat = Flatten()(input_toa)
+    enc = Dense(9, activation="relu")(flat)
+    enc = Dense(hp.Int("units enc dense2", min_value=4, max_value=12, step=4),
+                activation=hp.Choice("activation 2", ["relu", "tanh"]))(enc)
+    enc = Dense(hp.Int("units enc dense3", min_value=4, max_value=12, step=4),
+                activation=hp.Choice("activation 3", ["relu", "tanh"]))(enc)
+    encoder = Model(inputs=input_toa, outputs=enc)
 
-        # Time series branch
-        input_ts = Input(shape=(80, 81), name="time_series")
-        lstm = LSTM(hp.Int("units LSTM", min_value=32, max_value=96, step=32))(input_ts)
-        dense = Dense(hp.Int("units lstm dense", min_value=16, max_value=24, step=4),
-                      activation=hp.Choice("activation lstm dense", ["relu", "tanh"]))(lstm)
-        long_short_term_memory = Model(inputs=input_ts, outputs=dense)
+    # Time series branch
+    input_ts = Input(shape=(80, 81), name="time_series")
+    lstm = LSTM(hp.Int("units LSTM", min_value=32, max_value=96, step=32))(input_ts)
+    dense = Dense(hp.Int("units lstm dense", min_value=16, max_value=24, step=4),
+                  activation=hp.Choice("activation lstm dense", ["relu", "tanh"]))(lstm)
+    long_short_term_memory = Model(inputs=input_ts, outputs=dense)
 
-        # Concatenation
-        conc = concatenate([encoder.output, long_short_term_memory.output])
-        z = Dense(hp.Int("units conc 1", min_value=16, max_value=24, step=4),
-                  activation=hp.Choice("activation conc", ["relu", "tanh"]))(conc)
-        z = Dense(4, activation="linear")(z)
-        z = Dense(1, activation="linear")(z)
+    # Concatenation
+    conc = concatenate([encoder.output, long_short_term_memory.output])
+    z = Dense(hp.Int("units conc 1", min_value=16, max_value=24, step=4),
+              activation=hp.Choice("activation conc", ["relu", "tanh"]))(conc)
+    z = Dense(4, activation="linear")(z)
+    z = Dense(1, activation="linear")(z)
 
-        complete_model = Model(
-            inputs=[encoder.input, long_short_term_memory.input], outputs=z
-        )
+    complete_model = Model(
+        inputs=[encoder.input, long_short_term_memory.input], outputs=z
+    )
 
-        learning_rate = hp.Choice("learning_rate", values=[1e-1, 1e-2, 1e-3])
+    learning_rate = hp.Choice("learning_rate", values=[1e-1, 1e-2, 1e-3])
 
-        opt = Adam(learning_rate=learning_rate)
+    opt = Adam(learning_rate=learning_rate)
 
-        complete_model.compile(
-            optimizer=opt,
-            loss="mean_squared_error",
-            metrics=[RootMeanSquaredError()],
-        )
+    complete_model.compile(
+        optimizer=opt,
+        loss="mean_squared_error",
+        metrics=[RootMeanSquaredError()],
+    )
 
-        return complete_model
+    return complete_model
 
 
 # EARLY STOPPING
@@ -79,10 +77,12 @@ es = EarlyStopping(monitor="val_loss",
                    restore_best_weights=True)
 
 # TUNER
-tuner = keras_tuner.BayesianOptimization(ModelLstmEnc,
+tuner = keras_tuner.BayesianOptimization(hypermodel=build_model,
                                          objective="val_accuracy",
                                          max_trials=10,
-                                         seed=42
+                                         seed=42,
+                                         directory="tuned/hyper_tuning",
+                                         project_name="hyper_tuning_cloudatlas"
                                          )
 
 # PERFORM HYPERPARAMETER SEARCH
@@ -91,7 +91,7 @@ tuner.search(x=train_feeder,
              validation_data=val_feeder,
              batch_size=BATCH_SIZE,
              verbose=1,
-             use_multiprocessing=False, )
+             use_multiprocessing=False)
 
 # print best hyperparameter
 best_hp = tuner.get_best_hyperparameters(num_trials=1)[0]
