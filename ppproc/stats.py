@@ -8,6 +8,7 @@ from matplotlib import rcParams, cm
 from rich import print
 from rich.progress import track
 
+from context import LstmEncoder
 from context import utils
 from context import DataFeeder
 
@@ -15,89 +16,94 @@ from context import DataFeeder
 rcParams["font.family"] = "serif"
 FILE = "true_vs_predictions.npy"
 
-feeder_options = {
-    "batch_size": 128,
-    "shuffle": False,
-    "input_fields": ["toa", "time_series"],
-    "target_field": "outcome",
-}
+def interpercentile_plot(net_paths, dataset_path):
+    feeder_options = {
+        "batch_size": 128,
+        "shuffle": False,
+        "input_fields": ["toa", "time_series"],
+        "target_field": "outcome",
+    }
 
-if not os.path.exists(FILE):
-    model = utils.ask_load("trained/mariuccio")
-    if model is None:
-        exit("Dumb")
+    feeder = DataFeeder(dataset_path, **feeder_options)
 
-    test_feeder = DataFeeder("data_by_entry_aug/test", **feeder_options)
-
-    predictions = model.predict(test_feeder).squeeze()
-    print(predictions)
-    true_vals = np.array([batch[1] for batch in track(test_feeder)]).reshape((-1))
-    print(true_vals)
-
-    np.save(FILE, np.stack((true_vals, predictions)))
-
-else:
-    print(f"Data loaded from [red]{FILE}[/red]. Delete it if the net is new.")
-    true_vals, predictions = np.load(FILE)
+    fig, axes = plt.subplots(1, len(net_paths), sharey=True)
+    axes[0].set_ylabel("Relative error [a.u.]")
 
 
-## Quantile band
-print("Quantile band started")
-plt.figure(3)
-predictions /= true_vals
-predictions -= 1
-plt.scatter(true_vals, predictions, s=6.0, alpha=0.1, color="k")
-N = 50
-vals = np.linspace(650, 1000, N)
-delta_quants = [95, 80, 50, 25, 10]
-ups = np.zeros((len(delta_quants), N))
-downs = np.zeros((len(delta_quants), N))
-colormap = cm.get_cmap("plasma")
+    for net_path, ax in zip(net_paths, axes):
+        net = LstmEncoder(path=net_path)
+        model = net.model
 
-# Interval percentile estimation
-for i, delta_quant in enumerate(delta_quants):
-    for segment in track(range(N - 1), description=f"{delta_quant}-interpercentile:"):
-        mask = (true_vals >= vals[segment]) & (true_vals < vals[segment + 1])
-        down, up = np.percentile(
-            predictions[mask], [50 - delta_quant / 2, 50 + delta_quant / 2]
+        predictions = model.predict(feeder).squeeze()
+        true_vals = np.array([batch[1] for batch in track(feeder)]).reshape((-1))
+        res = np.std(true_vals - predictions)
+        ## Set to relative errors
+        predictions /= true_vals
+        predictions -= 1
+
+        # Plots points
+        ax.scatter(true_vals, predictions, s=6.0, alpha=0.1, color="k")
+
+        # Number of intervals for percentile estimate
+        N = 40
+
+        # Divides the interval of interest (over true values) into N subregions
+        # Then takes the values of predictions that fall into that interval
+        # And computes the percentile of the sample
+        vals = np.linspace(650, 1000, N)
+        delta_quants = [95, 80, 50, 25, 10]
+        ups = np.zeros((len(delta_quants), N))
+        downs = np.zeros((len(delta_quants), N))
+        colormap = cm.get_cmap("plasma")
+
+        # Interval percentile estimation
+        for i, delta_quant in enumerate(delta_quants):
+            for segment in track(range(N - 1), description=f"{delta_quant}-interpercentile:"):
+                mask = (true_vals >= vals[segment]) & (true_vals < vals[segment + 1])
+                down, up = np.percentile(
+                    predictions[mask], [50 - delta_quant / 2, 50 + delta_quant / 2]
+                )
+                m = np.mean(predictions[mask])
+                ups[i, segment] = up
+                downs[i, segment] = down
+
+        # Fill each band
+        for i in range(len(delta_quants) - 1):
+            ax.fill_between(
+                vals[:-1],
+                downs[i, :-1],
+                downs[i + 1, :-1],
+                color=colormap(1 - delta_quants[i] / 100.0),
+                alpha=0.5,
+                label=f"{delta_quants[i]}",
+            )
+            ax.fill_between(
+                vals[:-1],
+                ups[i, :-1],
+                ups[i + 1, :-1],
+                color=colormap(1 - delta_quants[i] / 100.0),
+                alpha=0.5,
+            )
+        # The central one connects ups and downs 
+        # and must be done by hand
+        ax.fill_between(
+            vals[:-1],
+            ups[-1, :-1],
+            downs[-1, :-1],
+            label=f"{delta_quants[-1]}",
+            color=colormap(1 - delta_quants[-1] / 100.0),
+            alpha=0.5,
         )
-        m = np.mean(predictions[mask])
-        ups[i, segment] = up
-        downs[i, segment] = down
+        ax.legend()
 
-# Fill each band
-for i in range(len(delta_quants) - 1):
-    plt.fill_between(
-        vals[:-1],
-        downs[i, :-1],
-        downs[i + 1, :-1],
-        color=colormap(1 - delta_quants[i] / 100.0),
-        alpha=0.5,
-        label=f"{delta_quants[i]}",
-    )
-    plt.fill_between(
-        vals[:-1],
-        ups[i, :-1],
-        ups[i + 1, :-1],
-        color=colormap(1 - delta_quants[i] / 100.0),
-        alpha=0.5,
-    )
-plt.fill_between(
-    vals[:-1],
-    ups[-1, :-1],
-    downs[-1, :-1],
-    label=f"{delta_quants[-1]}",
-    color=colormap(1 - delta_quants[-1] / 100.0),
-    alpha=0.5,
-)
-plt.legend()
+        ax.set_xlabel("True height [m]")
 
-plt.xlabel("True height [m]")
-plt.ylabel("Relative error [a.u.]")
-plt.title("Heteroskedastic interpercentile ranges")
+        ax.set_xlim(640, 1010)
+        ax.set_ylim(0.75 - 1, 1.15 - 1)
+        ax.set_title(f"{net_path} (res. = {res :.1f} m)")
 
-plt.xlim(640, 1010)
-plt.ylim(0.75 - 1, 1.15 - 1)
+
+interpercentile_plot(["trained/claretta", "trained/albertino"], "data_by_entry/test")
 
 plt.show()
 exit()
