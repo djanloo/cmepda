@@ -19,6 +19,9 @@ trained/
 # Stuff
 .DS_Store
 
+# Gifs
+*.gif
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
