@@ -19,6 +19,7 @@ telegram-send = "*"
 jupyter = "*"
 jupyterthemes = "*"
 line-profiler = "*"
+keras-tuner = "*"
 
 [dev-packages]
 ipykernel = "*"
