@@ -39,6 +39,11 @@ class LushlooNet:
         # Since is a template for basic functions
         # this net has no real model
         self.model = None
+        self.compilation_kwargs = {
+            "optimizer": None,
+            "loss":"mean_squared_error",
+            "metrics":[RootMeanSquaredError()],
+        }
 
         self.remote = utils.RemoteMonitor()
 
@@ -106,19 +111,20 @@ class ToaEncoder(LushlooNet):
 
         # Sets net parameters
         self.path = path
-        self.optimizer = optimizer
+        self.compilation_kwargs["optimizer"] = optimizer
 
         input_toa = Input(shape=(9, 9, 1), name="time_of_arrival")
         flat = Flatten()(input_toa)
         enc = Dense(9, activation="relu")(flat)
         enc = Dense(4, activation="relu")(enc)
         enc = Dense(4, activation="relu")(enc)
+
+        # Now adds an output layer
+        # This will be removed when used in LstmEncoder
+        enc = Dense(1, activation="linear")(enc)
+
         self.model = Model(inputs=input_toa, outputs=enc)
-        self.model.compile(
-            optimizer=self.optimizer,
-            loss="mean_squared_error",
-            metrics=[RootMeanSquaredError()],
-        )
+        self.model.compile(**self.compilation_kwargs)
         self._check_load()
 
 
@@ -135,17 +141,18 @@ class TimeSeriesLSTM(LushlooNet):
         super(TimeSeriesLSTM, self).__init__(path=path)
 
         self.path = path
-        self.optimizer = optimizer
+        self.compilation_kwargs["optimizer"] = optimizer
 
         input_ts = Input(shape=(80, 81), name="time_series")
         lstm = LSTM(64)(input_ts)
         dense = Dense(16, activation="relu")(lstm)
+
+        # Now adds an output layer
+        # This will be removed when used in LstmEncoder
+        dense = Dense(1, activation="linear")(dense)
+
         self.model = Model(inputs=input_ts, outputs=dense)
-        self.model.compile(
-            optimizer=self.optimizer,
-            loss="mean_squared_error",
-            metrics=[RootMeanSquaredError()],
-        )
+        self.model.compile(**self.compilation_kwargs)
         self._check_load()
 
 
@@ -180,10 +187,11 @@ class LstmEncoder(LushlooNet):
 
     def __init__(self, optimizer="adam", path="trained/LstmEncoder"):
 
-        self.optimizer = optimizer
+        super(LstmEncoder, self).__init__(path=path)
+
+        self.compilation_kwargs["optimizer"] = optimizer
         self.path = path
 
-        super(LstmEncoder, self).__init__(path=path)
 
         # Time of arrival branch
         encoder = ToaEncoder()
@@ -191,18 +199,15 @@ class LstmEncoder(LushlooNet):
         # Time series branch
         lstm = TimeSeriesLSTM()
 
-        # Concatenation
-        conc = concatenate([encoder.model.output, lstm.model.output])
+        # Concatenation:
+        # Takes the second-last layer of the net
+        conc = concatenate([encoder.model.layers[-2].output, lstm.model.layers[-2].output])
         z = Dense(16, activation="relu")(conc)
         z = Dense(4, activation="linear")(z)
         z = Dense(1, activation="linear")(z)
 
         self.model = Model(inputs=[encoder.model.input, lstm.model.input], outputs=z)
 
-        self.model.compile(
-            optimizer=self.optimizer,
-            loss="mean_squared_error",
-            metrics=[RootMeanSquaredError()],
-        )
+        self.model.compile(**self.compilation_kwargs)
 
         self._check_load()
