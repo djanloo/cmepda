@@ -14,6 +14,6 @@ sys.path.insert(
 )
 
 from cloudatlas.datafeeders import DataFeeder, FeederProf
-from cloudatlas.net import LstmEncoder
+from cloudatlas.net import LstmEncoder, ToaEncoder, TimeSeriesLSTM
 import cloudatlas.constants as constants
 import cloudatlas.utils as utils

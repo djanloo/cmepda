@@ -8,7 +8,7 @@ from matplotlib import rcParams, cm
 from rich import print
 from rich.progress import track
 
-from context import LstmEncoder
+from context import LstmEncoder, ToaEncoder
 from context import utils
 from context import DataFeeder
 
@@ -16,22 +16,15 @@ from context import DataFeeder
 rcParams["font.family"] = "serif"
 FILE = "true_vs_predictions.npy"
 
-def interpercentile_plot(net_paths, dataset_path):
-    feeder_options = {
-        "batch_size": 128,
-        "shuffle": False,
-        "input_fields": ["toa", "time_series"],
-        "target_field": "outcome",
-    }
+def interpercentile_plot(nets, dataset_path, list_of_feeder_options):
 
-    feeder = DataFeeder(dataset_path, **feeder_options)
 
-    fig, axes = plt.subplots(1, len(net_paths), sharey=True)
+    fig, axes = plt.subplots(1, len(nets), sharey=True)
     axes[0].set_ylabel("Relative error [a.u.]")
 
 
-    for net_path, ax in zip(net_paths, axes):
-        net = LstmEncoder(path=net_path)
+    for net, ax , feeder_options in zip(nets, axes, list_of_feeder_options):
+        feeder = DataFeeder(dataset_path, **feeder_options)
         model = net.model
 
         predictions = model.predict(feeder).squeeze()
@@ -100,10 +93,25 @@ def interpercentile_plot(net_paths, dataset_path):
 
         ax.set_xlim(640, 1010)
         ax.set_ylim(0.75 - 1, 1.15 - 1)
-        ax.set_title(f"{net_path} (res. = {res :.1f} m)")
+        ax.set_title(f"{net.path} (res. = {res :.1f} m)")
 
-
-interpercentile_plot(["trained/claretta", "trained/mariuccio"], "data_by_entry/test")
+claretta_feeder_options = {
+        "batch_size": 128,
+        "shuffle": False,
+        "input_fields": ["toa", "time_series"],
+        "target_field": "outcome",
+    }
+encoder_feeder_options = {
+        "batch_size": 128,
+        "shuffle": False,
+        "input_fields": "toa",
+        "target_field": "outcome",
+    }
+claretta = LstmEncoder(path="trained/claretta")
+encoder = ToaEncoder(path="trained/toa_encoder")
+interpercentile_plot([claretta, encoder], 
+                        "data_by_entry/test", 
+                        [claretta_feeder_options, encoder_feeder_options])
 
 plt.show()
 exit()
