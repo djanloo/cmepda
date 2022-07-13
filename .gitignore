@@ -7,6 +7,9 @@ datasets/
 data_by_entry/
 data_by_entry_aug/
 
+# ?? files
+.idea/
+
 # log files
 nohup*
 
