@@ -25,24 +25,16 @@ train_feeder = DataFeeder("data_by_entry/train", **feeder_options)
 val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
 test_feeder = DataFeeder("data_by_entry/test", **feeder_options)
 
-# initializing LstmEncoder class
-lstmenc = LstmEncoder()
-plot_model(lstmenc.model, to_file="assets/lstmencoder.png", show_shapes=True, show_layer_activations=True, show_layer_names=False)
-
 # initializing TimeSeries class
 lstm = TimeSeriesLSTM()
-plot_model(lstm.model, to_file="assets/lstm.png",  show_shapes=True, show_layer_activations=True,show_layer_names=False)
-
-enc = ToaEncoder()
-plot_model(enc.model, to_file="assets/encoder.png", show_shapes=True, show_layer_activations=True,show_layer_names=False)
 
 
 # TensorBoard callbacks, # Write TensorBoard logs to `./logs` directory
 tb_callbacks = keras.callbacks.TensorBoard(
-    log_dir=f"{enc.path}/logs", histogram_freq=1
+    log_dir=f"{lstm.path}/logs", histogram_freq=1
 )
 
-enc.train(
+lstm.train(
     x=train_feeder,
     epochs=EPOCHS,
     validation_data=val_feeder,
