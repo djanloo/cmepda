@@ -38,12 +38,13 @@ class DataFeeder(keras.utils.Sequence):
         self.batch_size = batch_size
         self.shuffle = shuffle
 
-        # The fields of the array that will be feeded into the net as (in, target)
-        self.input_fields = input_fields
-        self.target_field = target_field
-
+        # Creates the fields of the array that will be feeded into the net as (in, target)
         # Checks for multiple inputs
-        self.multiple_inputs = hasattr(input_fields, "__iter__")
+        if isinstance(input_fields, list):
+            self.input_fields = input_fields
+        else:
+            self.input_fields = [input_fields]
+        self.target_field = target_field
 
         # Loads files names' preventing to load subfolders
         self.files = [
