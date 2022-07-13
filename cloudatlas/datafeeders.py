@@ -116,6 +116,13 @@ class FeederProf(DataFeeder):
 
     Takes a pre-trained model and estimates the 'difficulty' of each record.
     Then generates the batches with increasing difficulty.
+
+    Args:
+        trained_model (:obj:`keras.models.Model`): the trained model used to score data.
+        data_folder (:obj:`str`): th folder of the dataset.
+        difficulty_levels (int, optonal): the total number of difficulty levels. Default 5.
+        n_of_epochs (int, optional): the total number of epochs of the training for which the FeederProf is used. Default 20.
+            The difficulty of the feeded data starts from level 0 and increases linearly by a factor epoch/n_of_epochs.
     """
 
     def __init__(
@@ -161,7 +168,7 @@ class FeederProf(DataFeeder):
         # FeederProf.__getitem__ = FeederProf.__getitem_override__
 
     def on_epoch_end(self):
-        """Since on_epoch_end is called without args, use a counter to get epoch number"""
+        """Generates the restricted dataset that will be used in the next epoch."""
         self.epoch += 1
         # Before next epoch begins the order of the file that will be
         # feeded in the net is chosen
@@ -175,8 +182,7 @@ class FeederProf(DataFeeder):
         print(f"restricted_data_len is {self.restricted_data_len}")
 
     def _getitem_override(self, batch_index):
-        print(f"batch {batch_index} was requested")
-        """Gives one batch of data but sorted in ascending order of difficulty"""
+        """Gives one batch of data from the restricted dataset created by :func:`on_epoch_end()`"""
         # Following the reference article, increase the size of the data from which
         # the batch is sampled, increasing difficulty
         idxs = self.epoch_records[
