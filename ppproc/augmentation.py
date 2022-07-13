@@ -19,18 +19,20 @@ class Augment:
         self.height_threshold = height_threshold
 
         # useful
-        dummy = np.empty(N, dtype=constants.funky_dtype)
+        dummy = np.empty(0, dtype=constants.funky_dtype)
         index_n = 0
 
         # augmentation by height
         if height_threshold:
-            for j, fname in enumerate(os.listdir(self.directory)):
-                dummy[j] = np.load(f"{self.directory}/{fname}")  # open all the datas and put it into dummy
-                if dummy[j]['outcome'] > 850:  # check on the height value
-                    self.dataset[index_n] = dummy[j]  # put into dataset
+            for fname in os.listdir(self.directory):
+                dummy = np.load(f"{self.directory}/{fname}")  # open all the datas and put it into dummy
+                if dummy['outcome'] > 850:  # check on the height value
+                    self.dataset[index_n] = dummy  # put into dataset
                     index_n += 1
                     if index_n > self.N:  # breaks when we've got the right number of samples
                         break
+                else:
+                    continue
 
         # augmentation by difficulty
         if not height_threshold:
