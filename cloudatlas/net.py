@@ -5,7 +5,6 @@ and a concatenation of the two (LstmEncoder).
 """
 import numpy as np
 from os.path import exists, join
-import warnings
 
 import keras
 from keras.layers import LSTM, Dense, Input, Flatten, concatenate
@@ -41,8 +40,8 @@ class LushlooNet:
         self.model = None
         self.compilation_kwargs = {
             "optimizer": None,
-            "loss":"mean_squared_error",
-            "metrics":[RootMeanSquaredError()],
+            "loss": "mean_squared_error",
+            "metrics": [RootMeanSquaredError()],
         }
 
         self.remote = utils.RemoteMonitor()
@@ -185,28 +184,33 @@ class LstmEncoder(LushlooNet):
 
     """
 
-    def __init__(self, optimizer="adam", path="trained/LstmEncoder"):
+    def __init__(
+        self, optimizer="adam", path="trained/LstmEncoder", encoder=None, lstm=None
+    ):
 
         super(LstmEncoder, self).__init__(path=path)
 
         self.compilation_kwargs["optimizer"] = optimizer
         self.path = path
 
-
         # Time of arrival branch
-        encoder = ToaEncoder()
+        self.encoder = ToaEncoder() if encoder is None else encoder
 
         # Time series branch
-        lstm = TimeSeriesLSTM()
+        self.lstm = TimeSeriesLSTM() if lstm is None else lstm
 
         # Concatenation:
         # Takes the second-last layer of the net
-        conc = concatenate([encoder.model.layers[-2].output, lstm.model.layers[-2].output])
+        conc = concatenate(
+            [self.encoder.model.layers[-2].output, self.lstm.model.layers[-2].output]
+        )
         z = Dense(16, activation="relu")(conc)
         z = Dense(4, activation="linear")(z)
         z = Dense(1, activation="linear")(z)
 
-        self.model = Model(inputs=[encoder.model.input, lstm.model.input], outputs=z)
+        self.model = Model(
+            inputs=[self.encoder.model.input, self.lstm.model.input], outputs=z
+        )
 
         self.model.compile(**self.compilation_kwargs)
 
