@@ -2,6 +2,7 @@
 
 At the moment the best one (and the only implemented) is LstmEncoder.
 """
+from re import S
 import numpy as np
 from os.path import exists, join
 import warnings
@@ -18,7 +19,102 @@ from rich import print
 import utils
 
 
-class LstmEncoder:
+class LushlooNet:
+    """The basis class for other nets. 
+    
+    It has no real model definition, just utility methods.
+    """
+    def __init_(self, path="trained/LstmEncoder"):
+
+        self.path = path
+
+        # Since is a template for basic functions
+        # this net has no real model
+        self.model = None
+
+        self.remote = utils.RemoteMonitor()
+
+    def train(self, **fit_kwargs):
+        """Trains the model and saves history."""
+        self.history = self.model.fit(**fit_kwargs)
+
+        # Saves
+        print("Saving..")
+        self.model.save(self.path)
+        print(f"Saved to {self.path}")
+        np.save(f"{self.path}/history", self.history)
+
+        # Tries remote monitoring
+        try:
+            self.remote.send(
+                [
+                    f"Training of {self.path} complete",
+                    f"Last val-loss was {self.history.history['val_loss'][-1]:.1f}",
+                    f"Last val-RMSE was {self.history.history['val_root_mean_squared_error'][-1]:.1f}",
+                ]
+            )
+        except Exception as e:
+            print(f"Error occurred while remote monitoring: {e}")
+
+    def resolution_on(self, feeder):
+        """Estimates the resolution on a specified dataset.
+
+        Args:
+            feeder (DataFeeder): the feeder of the dataset.
+        """
+        feeder.shuffle = False  # Otherwise true - pred are mismatched
+        true_vals = np.array(
+            [batch[1] for batch in track(feeder, description="Getting true vals ..")]
+        ).reshape((-1))
+        predictions = np.array(self.model.predict(feeder)).squeeze()
+
+        return np.std(predictions - true_vals)
+
+    def __check_load(self):
+        # If it exists an already trained model at self.path, __check_load loads it in self.model
+        if exists(self.path):
+            print(f"Trained model already present in [yellow]{self.path}[/yellow]")
+            print("Loading the model...", end=" ")
+            self.model = keras.models.load_model(self.path)
+            print("done!")
+
+
+class ToaEncoder(LushlooNet):
+    """The encoder that processes time of arrival matrices."""
+    def __init__(self, path="train/ToaEncoder", optimizer="adam"):
+
+        super().__init__(path=path, optimizer=optimizer)
+
+        # Sets net parameters
+        self.path = path
+        self.optimizer = optimizer
+
+        input_toa = Input(shape=(9, 9, 1), name="time_of_arrival")
+        flat = Flatten()(input_toa)
+        enc = Dense(9, activation="relu")(flat)
+        enc = Dense(4, activation="relu")(enc)
+        enc = Dense(4, activation="relu")(enc)
+        self.model = Model(inputs=input_toa, outputs=enc)
+        self.__check_load()
+
+
+class TimeSeriesLSTM(LushlooNet):
+    """The lstm net that processes time series matrices."""
+    def __init__(self, path="trained/TimeSeriesLSTM", optimizer="adam"):
+
+        super().__init__(path=path, optimizer=optimizer)
+
+        self.path = path
+        self.optimizer = optimizer
+
+        input_ts = Input(shape=(80, 81), name="time_series")
+        lstm = LSTM(64)(input_ts)
+        dense = Dense(16, activation="relu")(lstm)
+        self.model = Model(inputs=input_ts, outputs=dense)
+        self.__check_load()
+
+
+class LstmEncoder(LushlooNet):
     """The net to analyze the AirShower dataset.
 
     It is composed by a `time of arrival` branch and a `time series` branch.
@@ -53,79 +149,23 @@ class LstmEncoder:
         self.path = path
 
         # Time of arrival branch
-        input_toa = Input(shape=(9, 9, 1), name="time_of_arrival")
-        flat = Flatten()(input_toa)
-        enc = Dense(9, activation="relu")(flat)
-        enc = Dense(4, activation="relu")(enc)
-        enc = Dense(4, activation="relu")(enc)
-        encoder = Model(inputs=input_toa, outputs=enc)
+        encoder = ToaEncoder()
 
         # Time series branch
-        input_ts = Input(shape=(80, 81), name="time_series")
-        lstm = LSTM(64)(input_ts)
-        dense = Dense(16, activation="relu")(lstm)
-        long_short_term_memory = Model(inputs=input_ts, outputs=dense)
+        lstm = TimeSeriesLSTM()
 
         # Concatenation
-        conc = concatenate([encoder.output, long_short_term_memory.output])
+        conc = concatenate([encoder.model.output, lstm.model.output])
         z = Dense(16, activation="relu")(conc)
         z = Dense(4, activation="linear")(z)
         z = Dense(1, activation="linear")(z)
 
-        complete_model = Model(
-            inputs=[encoder.input, long_short_term_memory.input], outputs=z
-        )
+        self.model = Model(inputs=[encoder.model.input, lstm.model.input], outputs=z)
 
-        complete_model.compile(
+        self.model.compile(
             optimizer=self.optimizer,
             loss="mean_squared_error",
             metrics=[RootMeanSquaredError()],
         )
 
-        self.model = complete_model
-        self.remote = utils.RemoteMonitor()
         self.__check_load()
-
-    def train(self, **fit_kwargs):
-        """Trains the model and saves history."""
-        self.history = self.model.fit(**fit_kwargs)
-
-        # Saves
-        print("Saving..")
-        self.model.save(self.path)
-        print(f"Saved to {self.path}")
-        np.save(f"{self.path}/history", self.history)
-
-        # Tries remote monitoring
-        try:
-            self.remote.send(
-                [
-                    f"Training of {self.path} complete",
-                    f"Last val-loss was {self.history.history['val_loss'][-1]:.1f}",
-                    f"Last val-RMSE was {self.history.history['val_root_mean_squared_error'][-1]:.1f}",
-                ]
-            )
-        except Exception as e:
-            print(f"Error occurred while remote monitoring: {e}")
-
-    def resolution_on(self, feeder):
-        """Estimates the resolution on a specified dataset.
-
-        Args:
-            feeder (DataFeeder): the feeder of the dataset.
-        """
-        feeder.shuffle = False # Otherwise true - pred are mismatched
-        true_vals = np.array(
-            [batch[1] for batch in track(feeder, description="Getting true vals ..")]
-        ).reshape((-1))
-        predictions = np.array(self.model.predict(feeder)).squeeze()
-
-        return np.std(predictions - true_vals)
-
-    def __check_load(self):
-        # If it exists an already trained model at self.path, __check_load loads it in self.model
-        if exists(self.path):
-            print(f"Trained model already present in [yellow]{self.path}[/yellow]")
-            print("Loading the model...", end=" ")
-            self.model = keras.models.load_model(self.path)
-            print("done!")
