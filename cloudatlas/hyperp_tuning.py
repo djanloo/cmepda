@@ -78,7 +78,7 @@ es = EarlyStopping(monitor="val_loss",
 
 # TUNER
 tuner = keras_tuner.BayesianOptimization(hypermodel=build_model,
-                                         objective="val_accuracy",
+                                         objective=keras_tuner.Objective("root_mean_squared_error", direction="min"),
                                          max_trials=10,
                                          seed=42,
                                          directory="tuned/hyper_tuning",
