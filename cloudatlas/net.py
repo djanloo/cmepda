@@ -105,7 +105,7 @@ class ToaEncoder(LushlooNet):
 
     """
 
-    def __init__(self, path="train/ToaEncoder", optimizer="adam"):
+    def __init__(self, path="trained/ToaEncoder", optimizer="adam"):
 
         super(ToaEncoder, self).__init__(path=path)
 
