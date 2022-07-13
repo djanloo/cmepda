@@ -3,7 +3,6 @@
 The three design proposed are a small encoder (ToaEncoder) a time series LSTM (TimeSeriesLSTM) 
 and a concatenation of the two (LstmEncoder).
 """
-from re import S
 import numpy as np
 from os.path import exists, join
 import warnings
