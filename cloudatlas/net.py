@@ -1,6 +1,6 @@
 """Module for nets generation.
 
-The three design proposed are a small encoder (ToaEncoder) a time series LSTM (TimeSeriesLSTM) 
+The three proposed designs are a small encoder (ToaEncoder) a time series LSTM (TimeSeriesLSTM) 
 and a concatenation of the two (LstmEncoder).
 """
 import numpy as np
