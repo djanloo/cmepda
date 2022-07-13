@@ -1,6 +1,7 @@
 """Module for nets generation.
 
-At the moment the best one (and the only implemented) is LstmEncoder.
+The three design proposed are a small encoder (ToaEncoder) a time series LSTM (TimeSeriesLSTM) 
+and a concatenation of the two (LstmEncoder).
 """
 from re import S
 import numpy as np
