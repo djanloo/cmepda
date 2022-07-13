@@ -37,14 +37,12 @@ enc = ToaEncoder()
 plot_model(enc.model, to_file="assets/encoder.png", show_shapes=True, show_layer_activations=True,show_layer_names=False)
 
 
-net = enc
-
 # TensorBoard callbacks, # Write TensorBoard logs to `./logs` directory
 tb_callbacks = keras.callbacks.TensorBoard(
-    log_dir=f"{net.path}/logs", histogram_freq=1
+    log_dir=f"{enc.path}/logs", histogram_freq=1
 )
 
-net.train(
+enc.train(
     x=train_feeder,
     epochs=EPOCHS,
     validation_data=val_feeder,
