@@ -1,4 +1,6 @@
 """Module for augmentation of data."""
+import os
+
 import numpy as np
 from rich.progress import track
 
@@ -7,17 +9,34 @@ from context import constants
 
 
 class Augment:
-    def __init__(self, prof, N=10_000):
+    def __init__(self, prof, N=10_000, height_threshold=False):
         self.data_indexes = prof.datum_indexes[-N:]
         self.dataset = np.empty(N, dtype=constants.funky_dtype)
         self.augmented_data = None
         self.start_number = prof.data_len
         self.directory = prof.folder
         self.N = N
+        self.height_threshold = height_threshold
 
-        for j, idx in enumerate(self.data_indexes):
-            fname = constants.FILENAME.format(name=idx)
-            self.dataset[j] = np.load(f"{prof.folder}/{fname}")
+        # useful
+        dummy = np.empty(N, dtype=constants.funky_dtype)
+        index_n = 0
+
+        # augmentation by height
+        if height_threshold:
+            for j, fname in enumerate(os.listdir(self.directory)):
+                dummy[j] = np.load(f"{self.directory}/{fname}")  # open all the datas and put it into dummy
+                if dummy[j]['outcome'] > 850:  # check on the height value
+                    self.dataset[index_n] = dummy[j]  # put into dataset
+                    index_n += 1
+                    if index_n > self.N:  # breaks when we've got the right number of samples
+                        break
+
+        # augmentation by difficulty
+        if not height_threshold:
+            for j, idx in enumerate(self.data_indexes):
+                fname = constants.FILENAME.format(name=idx)
+                self.dataset[j] = np.load(f"{self.directory}/{fname}")
 
     def augment_dataset(self):
         # Initialize a new record with the custom dtype
@@ -26,12 +45,18 @@ class Augment:
         # keys of various types of augmentation
         aug_types = ["rot", "flip_lr", "flip_ud", "flip_diag"]
 
-        # definitions
+        # definition
         # Files in folder are [0, .., len(files) - 1] (extrema included)
         # so it should start saving files from index = len(files)
         index_record = self.start_number
 
         for record in track(self.dataset, total=self.N):
+
+            # check on the height threshold
+            if self.height_threshold:
+                if record["outcome"] < 850:
+                    continue
+
             # chiamare augment
             toa_dict = self.augment_matrix(record["toa"].squeeze())
             ts_list_of_dict = [
@@ -112,7 +137,6 @@ class Augment:
 
 
 if __name__ == "__main__":
-
     feeder_options = {
         "batch_size": 100,
         "input_fields": ["toa", "time_series"],
