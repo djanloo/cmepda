@@ -22,7 +22,14 @@ import utils
 class LushlooNet:
     """The basis class for other nets.
 
-    It has no real model definition, just utility methods.
+    It has no real model definition, just shared utility methods.
+
+    Args:
+        path (:obj:`str`): the folder where to save the model.
+
+    Attributes:
+        path (:obj:`str`): the path of the folder.
+        model (:obj:`keras.models.Model`)
     """
 
     def __init__(self, path="trained/LstmEncoder"):
@@ -85,7 +92,13 @@ class LushlooNet:
 
 
 class ToaEncoder(LushlooNet):
-    """The encoder that processes time of arrival matrices."""
+    """The encoder that processes time of arrival matrices.
+
+    Args:
+        path (:obj:`str`): the folder where to save the model.
+        optimizer (:obj:`str` or :obj:`keras.optimizers.Optimizer`): the optimizer for the training stage. Default is Adam(lr=0.001).
+
+    """
 
     def __init__(self, path="train/ToaEncoder", optimizer="adam"):
 
@@ -110,7 +123,12 @@ class ToaEncoder(LushlooNet):
 
 
 class TimeSeriesLSTM(LushlooNet):
-    """The lstm net that processes time series matrices."""
+    """The lstm net that processes time series matrices.
+
+    Args:
+        path (:obj:`str`): the folder where to save the model.
+        optimizer (:obj:`str` or :obj:`keras.optimizers.Optimizer`): the optimizer for the training stage. Default is Adam(lr=0.001).
+    """
 
     def __init__(self, path="trained/TimeSeriesLSTM", optimizer="adam"):
 
@@ -152,8 +170,8 @@ class LstmEncoder(LushlooNet):
     mean squared error and the natural metric is the RMSE.
 
     Args:
-        optimizer (keras.optimizers): the optimizer. By default is `Adam` with `learning_rate=0.001` .
         path (:obj:`str`, optional): the folder where the trained model is saved into.
+        optimizer (:obj:`str` or :obj:`keras.optimizers.Optimizer`): the optimizer for the training stage. Default is Adam(lr=0.001).
 
     Attributes:
         model (keras.models.Model): the (compiled) LstmEncoder network
