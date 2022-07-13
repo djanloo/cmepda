@@ -20,11 +20,12 @@ import utils
 
 
 class LushlooNet:
-    """The basis class for other nets. 
-    
+    """The basis class for other nets.
+
     It has no real model definition, just utility methods.
     """
-    def __init_(self, path="trained/LstmEncoder"):
+
+    def __init__(self, path="trained/LstmEncoder"):
 
         self.path = path
 
@@ -70,20 +71,25 @@ class LushlooNet:
 
         return np.std(predictions - true_vals)
 
-    def __check_load(self):
+    def _check_load(self):
         # If it exists an already trained model at self.path, __check_load loads it in self.model
         if exists(self.path):
-            print(f"Trained model already present in [yellow]{self.path}[/yellow]")
-            print("Loading the model...", end=" ")
-            self.model = keras.models.load_model(self.path)
-            print("done!")
+            print(f"Trained model folder found in [yellow]{self.path}[/yellow]")
+            try:
+                print("Loading the model...", end=" ")
+                self.model = keras.models.load_model(self.path)
+            except OSError:
+                print("empty model folder: model was not loaded")
+            else:
+                print("done!")
 
 
 class ToaEncoder(LushlooNet):
     """The encoder that processes time of arrival matrices."""
+
     def __init__(self, path="train/ToaEncoder", optimizer="adam"):
 
-        super().__init__(path=path, optimizer=optimizer)
+        super(ToaEncoder, self).__init__(path=path)
 
         # Sets net parameters
         self.path = path
@@ -95,14 +101,20 @@ class ToaEncoder(LushlooNet):
         enc = Dense(4, activation="relu")(enc)
         enc = Dense(4, activation="relu")(enc)
         self.model = Model(inputs=input_toa, outputs=enc)
-        self.__check_load()
+        self.model.compile(
+            optimizer=self.optimizer,
+            loss="mean_squared_error",
+            metrics=[RootMeanSquaredError()],
+        )
+        self._check_load()
 
 
 class TimeSeriesLSTM(LushlooNet):
     """The lstm net that processes time series matrices."""
+
     def __init__(self, path="trained/TimeSeriesLSTM", optimizer="adam"):
 
-        super().__init__(path=path, optimizer=optimizer)
+        super(TimeSeriesLSTM, self).__init__(path=path)
 
         self.path = path
         self.optimizer = optimizer
@@ -111,7 +123,12 @@ class TimeSeriesLSTM(LushlooNet):
         lstm = LSTM(64)(input_ts)
         dense = Dense(16, activation="relu")(lstm)
         self.model = Model(inputs=input_ts, outputs=dense)
-        self.__check_load()
+        self.model.compile(
+            optimizer=self.optimizer,
+            loss="mean_squared_error",
+            metrics=[RootMeanSquaredError()],
+        )
+        self._check_load()
 
 
 class LstmEncoder(LushlooNet):
@@ -148,6 +165,8 @@ class LstmEncoder(LushlooNet):
         self.optimizer = optimizer
         self.path = path
 
+        super(LstmEncoder, self).__init__(path=path)
+
         # Time of arrival branch
         encoder = ToaEncoder()
 
@@ -168,4 +187,4 @@ class LstmEncoder(LushlooNet):
             metrics=[RootMeanSquaredError()],
         )
 
-        self.__check_load()
+        self._check_load()
