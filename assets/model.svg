@@ -9,7 +9,7 @@
    id="svg5"
    inkscape:version="1.2 (56b05e47e7, 2022-06-09, custom)"
    sodipodi:docname="model.svg"
-   inkscape:export-filename="../6269bc3e/model.png"
+   inkscape:export-filename="../7e4a00f9/model_2.png"
    inkscape:export-xdpi="163"
    inkscape:export-ydpi="163"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -28,9 +28,9 @@
      inkscape:deskcolor="#505050"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="0.98110353"
-     inkscape:cx="333.29816"
-     inkscape:cy="298.13367"
+     inkscape:zoom="0.95914472"
+     inkscape:cx="560.91639"
+     inkscape:cy="284.10728"
      inkscape:window-width="1322"
      inkscape:window-height="704"
      inkscape:window-x="44"
@@ -1589,7 +1589,8 @@
        y1="39.60454"
        x2="140.42128"
        y2="39.60454"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.1082732,0,0,1,-13.002629,0)" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient12098"
@@ -2412,13 +2413,13 @@
          x="39.842678"
          y="41.140278">Flatten</tspan></text>
     <rect
-       style="fill:url(#linearGradient12046);fill-opacity:1;stroke:none;stroke-width:0.23848;paint-order:fill markers stroke;opacity:1"
+       style="opacity:1;fill:url(#linearGradient12046);fill-opacity:1;stroke:none;stroke-width:0.25106;paint-order:fill markers stroke"
        id="rect698-5"
-       width="53.626522"
+       width="59.432838"
        height="12.898168"
-       x="86.794754"
+       x="83.189674"
        y="33.155457"
-       rx="1.5"
+       rx="1.6624099"
        ry="1.5" />
     <text
        xml:space="preserve"
