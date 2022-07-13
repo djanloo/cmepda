@@ -1,12 +1,11 @@
 import os
-import datetime
 from pyexpat import model
 from tensorflow import keras
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
-from datafeeders import FeederProf, DataFeeder
-from net import LstmEncoder, ToaEncoder, TimeSeriesLSTM
+from context import FeederProf, DataFeeder
+from context import LstmEncoder, ToaEncoder, TimeSeriesLSTM
 
 from matplotlib import pyplot as plt
 
@@ -28,6 +27,7 @@ test_feeder = DataFeeder("data_by_entry/test", **feeder_options)
 
 # initializing LstmEncoder class
 model = TimeSeriesLSTM(path="trained/lstm")
+
 
 # TensorBoard callbacks, # Write TensorBoard logs to `./logs` directory
 tb_callbacks = keras.callbacks.TensorBoard(
