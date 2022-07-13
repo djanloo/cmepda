@@ -18,7 +18,7 @@ BATCH_SIZE = 128
 feeder_options = {
     "shuffle": True,
     "batch_size": BATCH_SIZE,
-    "input_fields": "toa",
+    "input_fields": "time_series",
     "target_field": "outcome",
 }
 
@@ -27,7 +27,7 @@ val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
 test_feeder = DataFeeder("data_by_entry/test", **feeder_options)
 
 # initializing LstmEncoder class
-model = ToaEncoder(path="trained/toa_encoder")
+model = TimeSeriesLSTM(path="trained/lstm")
 
 # TensorBoard callbacks, # Write TensorBoard logs to `./logs` directory
 tb_callbacks = keras.callbacks.TensorBoard(
