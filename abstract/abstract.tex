@@ -26,7 +26,7 @@ The first step to take is the splitting of the dataset into the different featur
 A first sight of the dataset showed the need for augmentation of data at high values of height,
  so we built the \textit{Augmentation} class to perform that: it consists in increasing the 
  number of those data applying rotations and symmetry-flips on the various matrices.\\
-Another important class is \textit{DataFeeder} that 
+Another important class is \textit{DataFeeder}, the principle method gives back a \textit{Sequence} with whom  
 The network we built is a Concatenation of an LSTM (Long Short Term Memory) network 
 for the \textit{time series} and an Encoder network for the \textit{time of arrival} as 
 shown in Fig \ref{fig:network}, ended with a series of dense layers.
