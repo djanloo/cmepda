@@ -31,7 +31,9 @@ class LushlooNet:
         model (:obj:`keras.models.Model`)
     """
 
-    def __init__(self, path="trained/LstmEncoder"):
+    def __init__(
+        self, path="trained/LstmEncoder", tensorboard=False, earlystopping=False
+    ):
 
         self.path = path
 
@@ -44,10 +46,40 @@ class LushlooNet:
             "metrics": [RootMeanSquaredError()],
         }
 
+        # Callbacks
+        self.callbacks = []
+        
+        if tensorboard:
+            ## TensorBoard callbacks
+            ## Write TensorBoard logs to `./logs` directory
+            self.callbacks.append(
+                keras.callbacks.TensorBoard(
+                    log_dir=f"{self.path}/logs", histogram_freq=1
+                )
+            )
+
+        if earlystopping:
+            ## EarlyStopping callback
+            ## By default monitor = val_loss
+            self.callbacks.append(
+                keras.callbacks.EarlyStopping(min_delta=0.1, patience=3)
+            )
+
+        # If no callback is used
+        # sets callbacks to None
+        if not self.callbacks:
+            self.callbacks = None
+
+        # Initializes remote monitoring
         self.remote = utils.RemoteMonitor()
 
     def train(self, **fit_kwargs):
         """Trains the model and saves history."""
+
+        # Sets the callbacks if nothing is specified
+        fit_kwargs.setdefault("callbacks", self.callbacks)
+
+        # Fit model
         self.history = self.model.fit(**fit_kwargs)
 
         # Saves
@@ -104,12 +136,12 @@ class ToaEncoder(LushlooNet):
 
     """
 
-    def __init__(self, path="trained/ToaEncoder", optimizer="adam"):
+    def __init__(self, optimizer="adam", **net_kwargs):
 
-        super(ToaEncoder, self).__init__(path=path)
+        super(ToaEncoder, self).__init__(**net_kwargs)
 
         # Sets net parameters
-        self.path = path
+        self.path = net_kwargs.get("path", "trained/ToaEncoder")
         self.compilation_kwargs["optimizer"] = optimizer
 
         input_toa = Input(shape=(9, 9, 1), name="time_of_arrival")
@@ -136,11 +168,11 @@ class TimeSeriesLSTM(LushlooNet):
         optimizer (:obj:`str` or :obj:`keras.optimizers.Optimizer`): the optimizer for the training stage. Default is Adam(lr=0.001).
     """
 
-    def __init__(self, path="trained/TimeSeriesLSTM", optimizer="adam"):
+    def __init__(self, optimizer="adam", **net_kwargs):
 
-        super(TimeSeriesLSTM, self).__init__(path=path)
+        super(TimeSeriesLSTM, self).__init__(**net_kwargs)
 
-        self.path = path
+        self.path = net_kwargs.get("path", "trained/TimeSeriesLSTM")
         self.compilation_kwargs["optimizer"] = optimizer
 
         input_ts = Input(shape=(80, 81), name="time_series")
@@ -186,13 +218,13 @@ class LstmEncoder(LushlooNet):
     """
 
     def __init__(
-        self, optimizer="adam", path="trained/LstmEncoder", encoder=None, lstm=None
+        self, optimizer="adam", encoder=None, lstm=None, **net_kwargs
     ):
 
-        super(LstmEncoder, self).__init__(path=path)
+        super(LstmEncoder, self).__init__(**net_kwargs)
 
         self.compilation_kwargs["optimizer"] = optimizer
-        self.path = path
+        self.path = net_kwargs.get("path", "trained/LstmEncoder")
 
         # Time of arrival branch
         self.encoder = ToaEncoder() if encoder is None else encoder
