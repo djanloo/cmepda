@@ -111,7 +111,7 @@ class LushlooNet:
             [batch[1] for batch in track(feeder, description="Getting true vals ..")]
         ).reshape((-1))
         predictions = np.array(self.model.predict(feeder)).squeeze()
-
+        print(f"mean error is {np.mean(predictions - true_vals)}")
         return np.std(predictions - true_vals)
 
     def _check_load(self):
