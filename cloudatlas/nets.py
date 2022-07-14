@@ -114,7 +114,8 @@ class ToaEncoder(LushlooNet):
 
         input_toa = Input(shape=(9, 9, 1), name="time_of_arrival")
         flat = Flatten()(input_toa)
-        enc = Dense(9, activation="relu")(flat)
+        enc = Dense(16, activation="relu")(flat)
+        enc = Dense(9, activation="relu")(enc)
         enc = Dense(4, activation="relu")(enc)
         enc = Dense(4, activation="relu")(enc)
 
