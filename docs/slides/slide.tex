@@ -58,6 +58,7 @@
 %---------------------------------------------------------
 \begin{frame}{UHECR Airshowers}
 
+Questo lo fa la Lush
 
 \end{frame}
 
@@ -66,7 +67,23 @@
 
 %---------------------------------------------------------
 \begin{frame}{Dataset, first glance}
-    Description of dataset
+
+    The dataset is composed of $10^5$ simulated events:
+
+    \begin{itemize}
+        \item $9 x 9$ grid of detectors
+        \item most intense detector at the center 
+        \item 80 frames of time series ($40$ $M$Hz sampling rate)
+        \item 1 frame of times of first arrival 
+    \end{itemize}
+
+    The single record shape is then $(80 + 1 , 81)$
+
+    The grid is hexagonal (adjacency matrix available) but we neglect the structure
+    of the detector since the net can learn it.
+
+
+    The \texttt{pd4ml} package splits by default in $70\%$ train $30\%$ test.
 
 \end{frame}
 
@@ -76,12 +93,41 @@
 
 %---------------------------------------------------------
 \begin{frame}{Split the dataset}
-    funky\_dtype e compagnia
+    Using a generator (\texttt{keras.utils.Sequence})
+    \begin{itemize}
+        \item inherit multiprocessing features
+        \item has default callbacks
+    \end{itemize}
+    The dataset is splitted \emph{record by record} for index shuffling
+
+    The effect of the high reading time from memory ($\approx 3 m$s) is mitigated
+    by \texttt{keras} multiprocessing
+    
+    For the design of the net it is convenient using \texttt{numpy} structured arrays
 \end{frame}
 
 %---------------------------------------------------------
-\begin{frame}{Split the dataset}
-    non so ma forse seriviranno 2 slide
+\begin{frame}{Split the dataset: \texttt{funky\_dtype}}
+
+    Data is extracted: from a conceptually \emph{ihomogeneous} list 
+    (activity time series together with times of arrival) to
+    $(80 + 1, 81) \rightarrow [("toa", (9, 9, 1)), ("timeseries", (80, 9,9))]$
+
+    Data can be accessed depending on what is needed
+
+\end{frame}
+
+
+%---------------------------------------------------------
+\begin{frame}{DataFeeder class}
+
+    
+\end{frame}
+
+%---------------------------------------------------------
+\begin{frame}{DataFeeder class}
+
+    
 \end{frame}
 
 %---------------------------------------------------------
@@ -90,21 +136,27 @@
     
 \end{frame}
 
+\begin{frame}{Resolution}
+
+    The reference article suggest using the resolution:
+    \begin{block}{resolution}
+        defined as the standard deviation of the distribution bla bla bla
+    \end{block}
+
+    We point out that 
+    \[\sigma^2 = \frac{1}{N}\sum_i (\delta_i - \bar{\delta})^2\]
+    is a valid %valid in che senzo
+    estimator only if $\bar{\delta} = 0$, for which the adopted resolution is equal 
+    to the $RMSE$ of the distribution
+    \[ RMSE^2 = \frac{1}{N}\sum_i(x_i - \hat{x}_i)^2 \]
+    Thus we preferred the latter as a measure of the esimate.
+
+\end{frame}
+
 
 
 \section{Neural Network building}
 
-%---------------------------------------------------------
-\begin{frame}{DataFeeder class}
-
-    
-\end{frame}
-
-%---------------------------------------------------------
-\begin{frame}{DataFeeder class}
-
-    
-\end{frame}
 
 %---------------------------------------------------------
 \begin{frame}{Overview on the network}
@@ -162,6 +214,11 @@ si fa vedere come abbiamo fatto noi
 
 %---------------------------------------------------------
 \begin{frame}{Whole Network performance}
+
+    
+\end{frame}
+
+\begin{frame}{Test setup on CircleCI}
 
     
 \end{frame}
