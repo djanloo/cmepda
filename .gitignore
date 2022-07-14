@@ -28,6 +28,16 @@ trained/
 # Gifs
 *.gif
 
+# Latex stuff
+*.aux
+*.fdb_latexmk
+*.fls
+*.nav
+*.out
+*.snm
+*.toc
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
