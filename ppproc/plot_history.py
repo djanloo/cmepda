@@ -2,6 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 from rich import print
+from matplotlib import rcParams
+
+rcParams["font.family"] = "serif"
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--path', type=str, required=True)
