@@ -144,18 +144,18 @@ class ToaEncoder(LushlooNet):
         self.path = net_kwargs.get("path", "trained/ToaEncoder")
         self.compilation_kwargs["optimizer"] = optimizer
 
-        input_toa = Input(shape=(9, 9, 1), name="time_of_arrival")
-        flat = Flatten()(input_toa)
-        enc = Dense(16, activation="relu")(flat)
-        enc = Dense(9, activation="relu")(enc)
-        enc = Dense(4, activation="relu")(enc)
-        enc = Dense(4, activation="relu")(enc)
+        input_toa = Input(shape=(9, 9, 1), name="toa_input")
+        flat = Flatten(name="enc_flatten")(input_toa)
+        enc = Dense(16, activation="relu", name="enc_dense_1")(flat)
+        enc = Dense(9, activation="relu", name="enc_dense_2")(enc)
+        enc = Dense(4, activation="relu", name="enc_dense_3")(enc)
+        enc = Dense(4, activation="relu", name="enc_dense_4")(enc)
 
         # Now adds an output layer
         # This will be removed when used in LstmEncoder
-        enc = Dense(1, activation="linear")(enc)
+        enc = Dense(1, activation="linear", name="enc_out")(enc)
 
-        self.model = Model(inputs=input_toa, outputs=enc)
+        self.model = Model(inputs=input_toa, outputs=enc, name="ToAEncoder")
         self.model.compile(**self.compilation_kwargs)
         self._check_load()
 
@@ -175,15 +175,15 @@ class TimeSeriesLSTM(LushlooNet):
         self.path = net_kwargs.get("path", "trained/TimeSeriesLSTM")
         self.compilation_kwargs["optimizer"] = optimizer
 
-        input_ts = Input(shape=(80, 81), name="time_series")
-        lstm = LSTM(64)(input_ts)
-        dense = Dense(16, activation="relu")(lstm)
+        input_ts = Input(shape=(80, 81), name="ts_input")
+        lstm = LSTM(64, name="lstm_lstm")(input_ts)
+        dense = Dense(16, activation="relu", name="lstm_dense")(lstm)
 
         # Now adds an output layer
         # This will be removed when used in LstmEncoder
-        dense = Dense(1, activation="linear")(dense)
+        dense = Dense(1, activation="linear", name="lstm_out")(dense)
 
-        self.model = Model(inputs=input_ts, outputs=dense)
+        self.model = Model(inputs=input_ts, outputs=dense, name="TSLstm")
         self.model.compile(**self.compilation_kwargs)
         self._check_load()
 
@@ -235,14 +235,16 @@ class LstmEncoder(LushlooNet):
         # Concatenation:
         # Takes the second-last layer of the net
         conc = concatenate(
-            [self.encoder.model.layers[-2].output, self.lstm.model.layers[-2].output]
+            [self.encoder.model.layers[-2].output, self.lstm.model.layers[-2].output],
+            name="concatenate"
         )
-        z = Dense(16, activation="relu")(conc)
-        z = Dense(4, activation="linear")(z)
-        z = Dense(1, activation="linear")(z)
+        z = Dense(16, activation="relu", name="lstmenc_dense_1")(conc)
+        z = Dense(4, activation="linear", name="lstmenc_dense_2")(z)
+        z = Dense(1, activation="linear", name="lstmenc_out")(z)
 
         self.model = Model(
-            inputs=[self.encoder.model.input, self.lstm.model.input], outputs=z
+            inputs=[self.encoder.model.input, self.lstm.model.input], outputs=z,
+            name="LstmEncoder"
         )
 
         self.model.compile(**self.compilation_kwargs)
