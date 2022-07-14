@@ -106,13 +106,11 @@ class LushlooNet:
         Args:
             feeder (DataFeeder): the feeder of the dataset.
         """
-        feeder.shuffle = False  # Otherwise true - pred are mismatched
-        true_vals = np.array(
-            [batch[1] for batch in track(feeder, description="Getting true vals ..")]
-        ).reshape((-1))
-        predictions = np.array(self.model.predict(feeder)).squeeze()
-        print(f"mean error is {np.mean(predictions - true_vals)}")
-        return np.std(predictions - true_vals)
+        # feeder.shuffle = False  # Otherwise true - pred are mismatched
+        print(f"Evaluating [blue]RMSE[/blue] for [yellow]{self.path}[/yellow]")
+        self.eval = self.model.evaluate(x=feeder)
+        print(self.eval)
+        return self.eval[1]
 
     def _check_load(self):
         # If it exists an already trained model at self.path, __check_load loads it in self.model

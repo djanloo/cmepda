@@ -7,6 +7,7 @@ from rich import print
 
 from context import FeederProf, DataFeeder
 from context import LstmEncoder, ToaEncoder, TimeSeriesLSTM
+from context import stats
 
 # constants
 EPOCHS = 50
@@ -16,41 +17,58 @@ BATCH_SIZE = 128
 
 # options for feeders
 # Note that the input field is different for the subnets
-feeder_options = {
+encoder_feeder_options = {
     "shuffle": True,
     "batch_size": BATCH_SIZE,
     "input_fields": "toa",
     "target_field": "outcome",
 }
 
-train_feeder = DataFeeder("data_by_entry/train", **feeder_options)
-val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
+train_feeder = DataFeeder("data_by_entry/train", **encoder_feeder_options)
+val_feeder = DataFeeder("data_by_entry/validation", **encoder_feeder_options)
+test_feeder = DataFeeder("data_by_entry/test", **encoder_feeder_options)
 
 # initializing TimeSeries class
 enc = ToaEncoder(earlystopping=True, tensorboard=True)
 
-enc.train(
-    x=train_feeder,
-    epochs=EPOCHS,
-    validation_data=val_feeder,
-    batch_size=BATCH_SIZE,
-    verbose=1,
-    use_multiprocessing=False,
-)
+# TRAIN ONCE
+# enc.train(
+#     x=train_feeder,
+#     epochs=EPOCHS,
+#     validation_data=val_feeder,
+#     batch_size=BATCH_SIZE,
+#     verbose=1,
+#     use_multiprocessing=False,
+# )
 
 # LSTM subnet
-feeder_options["input_fields"] = "time_series"
+lstm_feeder_options = {
+    "shuffle": True,
+    "batch_size": BATCH_SIZE,
+    "input_fields": "time_series",
+    "target_field": "outcome",
+}
 
-train_feeder = DataFeeder("data_by_entry/train", **feeder_options)
-val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
+train_feeder = DataFeeder("data_by_entry/train", **lstm_feeder_options)
+val_feeder = DataFeeder("data_by_entry/validation", **lstm_feeder_options)
+test_feeder = DataFeeder("data_by_entry/test", **lstm_feeder_options)
 
 lstm = TimeSeriesLSTM(earlystopping=True, tensorboard=True)
 
-lstm.train(
-    x=train_feeder,
-    epochs=EPOCHS,
-    validation_data=val_feeder,
-    batch_size=BATCH_SIZE,
-    verbose=1,
-    use_multiprocessing=False,
-)
+# TRAIN ONCE
+# lstm.train(
+#     x=train_feeder,
+#     epochs=EPOCHS,
+#     validation_data=val_feeder,
+#     batch_size=BATCH_SIZE,
+#     verbose=1,
+#     use_multiprocessing=False,
+# )
+
+stats.interpercentile_plot([enc, lstm], 
+                            "data_by_entry/test", 
+                            [encoder_feeder_options, lstm_feeder_options],
+                            relative_error=False )
+
+plt.show()
+

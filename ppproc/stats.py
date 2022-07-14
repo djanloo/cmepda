@@ -14,25 +14,36 @@ from context import DataFeeder
 
 
 rcParams["font.family"] = "serif"
+rcParams["font.size"] = 10
+
 FILE = "true_vs_predictions.npy"
 
-def interpercentile_plot(nets, dataset_path, list_of_feeder_options):
+def interpercentile_plot(nets, dataset_path, list_of_feeder_options, relative_error=True):
 
 
-    fig, axes = plt.subplots(1, len(nets), sharey=True)
-    axes[0].set_ylabel("Relative error [a.u.]")
+    fig, axes = plt.subplots(1, len(nets), sharey=False)
+    if relative_error:
+        axes[0].set_ylabel("Relative error [a.u.]")
+    else:
+        axes[0].set_ylabel("Predicted height [m]")
 
 
     for net, ax , feeder_options in zip(nets, axes, list_of_feeder_options):
+        feeder_options["shuffle"] = False
         feeder = DataFeeder(dataset_path, **feeder_options)
+
+
         model = net.model
+            
+        res = net.resolution_on(feeder)
 
         predictions = model.predict(feeder).squeeze()
         true_vals = np.array([batch[1] for batch in track(feeder)]).reshape((-1))
-        res = np.std(true_vals - predictions)
         ## Set to relative errors
-        predictions /= true_vals
-        predictions -= 1
+        if relative_error:
+            predictions /= true_vals
+            predictions -= 1
+        
 
         # Plots points
         ax.scatter(true_vals, predictions, s=6.0, alpha=0.1, color="k")
@@ -92,59 +103,60 @@ def interpercentile_plot(nets, dataset_path, list_of_feeder_options):
         ax.set_xlabel("True height [m]")
 
         ax.set_xlim(640, 1010)
-        ax.set_ylim(0.75 - 1, 1.15 - 1)
+        # ax.set_ylim(-0.25, 0.25)
         ax.set_title(f"{net.path} (res. = {res :.1f} m)")
 
-claretta_feeder_options = {
-        "batch_size": 128,
-        "shuffle": False,
-        "input_fields": ["toa", "time_series"],
-        "target_field": "outcome",
-    }
-encoder_feeder_options = {
-        "batch_size": 128,
-        "shuffle": False,
-        "input_fields": "toa",
-        "target_field": "outcome",
-    }
-claretta = LstmEncoder(path="trained/claretta")
-encoder = ToaEncoder(path="trained/toa_encoder")
-interpercentile_plot([claretta, encoder], 
-                        "data_by_entry/test", 
-                        [claretta_feeder_options, encoder_feeder_options])
+if __name__ == "__main__":
+    claretta_feeder_options = {
+            "batch_size": 128,
+            "shuffle": False,
+            "input_fields": ["toa", "time_series"],
+            "target_field": "outcome",
+        }
+    encoder_feeder_options = {
+            "batch_size": 128,
+            "shuffle": False,
+            "input_fields": "toa",
+            "target_field": "outcome",
+        }
+    claretta = LstmEncoder(path="trained/claretta")
+    encoder = ToaEncoder(path="trained/toa_encoder")
+    interpercentile_plot([claretta, encoder], 
+                            "data_by_entry/test", 
+                            [claretta_feeder_options, encoder_feeder_options])
 
-plt.show()
-exit()
-## KDE
-data = np.stack((predictions, true_vals), axis=0)
-kern = gaussian_kde(data)
+    plt.show()
+    exit()
+    ## KDE
+    data = np.stack((predictions, true_vals), axis=0)
+    kern = gaussian_kde(data)
 
-x = np.linspace(650, 850, 200)
-y = x.copy()
+    x = np.linspace(650, 850, 200)
+    y = x.copy()
 
-X, Y = np.meshgrid(x, y)
-u = np.vstack([X.ravel(), Y.ravel()])
-Z = np.reshape(kern(u).T, X.shape)
-plt.contourf(X, Y, Z)
-plt.title("true vs estimated density of points")
-plt.xlabel("true")
-plt.ylabel("estimated")
+    X, Y = np.meshgrid(x, y)
+    u = np.vstack([X.ravel(), Y.ravel()])
+    Z = np.reshape(kern(u).T, X.shape)
+    plt.contourf(X, Y, Z)
+    plt.title("true vs estimated density of points")
+    plt.xlabel("true")
+    plt.ylabel("estimated")
 
-## Plot the conditional density
-## Since for a given datum omega=(time_of_arrival, time_series) correspond to two values
-## z_true(omega) and z_pred(omega)
-## plotting all z_true and z_pred gives the density distribution p(z_true, z_pred)
-## however we want to visualize the effectiveness of the prediction neglecting the distribution of
-## z_true (we must thus renormalize the number of predictions p(z_pred)d_omega with the number of true values
-## lying in d_omega = p(z_true)d_omega)
-## What we obtain is p(z_true, z_pred)/p(z_true) = p(z_pred | z_true) that is the conditional
-## distribution, answering to the question "How are the predicted values approximating z_true distributed for a given z_true?"
-plt.figure(2)
-true_kern = gaussian_kde(true_vals)
-Z_true = true_kern(x)
-Z_true = np.tile(Z_true, len(x)).reshape((-1,) + Z_true.shape)
-plt.contourf(X, Y, Z / Z_true)
-plt.title("Conditional density")
-plt.xlabel("true")
-plt.ylabel("estimated")
-plt.show()
+    ## Plot the conditional density
+    ## Since for a given datum omega=(time_of_arrival, time_series) correspond to two values
+    ## z_true(omega) and z_pred(omega)
+    ## plotting all z_true and z_pred gives the density distribution p(z_true, z_pred)
+    ## however we want to visualize the effectiveness of the prediction neglecting the distribution of
+    ## z_true (we must thus renormalize the number of predictions p(z_pred)d_omega with the number of true values
+    ## lying in d_omega = p(z_true)d_omega)
+    ## What we obtain is p(z_true, z_pred)/p(z_true) = p(z_pred | z_true) that is the conditional
+    ## distribution, answering to the question "How are the predicted values approximating z_true distributed for a given z_true?"
+    plt.figure(2)
+    true_kern = gaussian_kde(true_vals)
+    Z_true = true_kern(x)
+    Z_true = np.tile(Z_true, len(x)).reshape((-1,) + Z_true.shape)
+    plt.contourf(X, Y, Z / Z_true)
+    plt.title("Conditional density")
+    plt.xlabel("true")
+    plt.ylabel("estimated")
+    plt.show()
