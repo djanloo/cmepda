@@ -218,7 +218,9 @@ class LstmEncoder(LushlooNet):
     """
 
     def __init__(
-        self, optimizer="adam", encoder=None, lstm=None, **net_kwargs
+        self, optimizer="adam", encoder=None, lstm=None, 
+        train_encoder=True, train_lstm=True,
+        **net_kwargs
     ):
 
         super(LstmEncoder, self).__init__(**net_kwargs)
@@ -228,10 +230,11 @@ class LstmEncoder(LushlooNet):
 
         # Time of arrival branch
         self.encoder = ToaEncoder() if encoder is None else encoder
+        self.encoder.model.trainable = train_encoder
 
         # Time series branch
         self.lstm = TimeSeriesLSTM() if lstm is None else lstm
-
+        self.lstm.model.trainable = train_lstm
         # Concatenation:
         # Takes the second-last layer of the net
         conc = concatenate(
@@ -248,5 +251,5 @@ class LstmEncoder(LushlooNet):
         )
 
         self.model.compile(**self.compilation_kwargs)
-
+        self.model.summary()
         self._check_load()
