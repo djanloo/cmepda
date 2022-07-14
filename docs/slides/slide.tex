@@ -1,5 +1,6 @@
 \documentclass{beamer}
 \usepackage[utf8]{inputenc}
+\usepackage{graphicx}
 
 \usetheme{Madrid}
 \usecolortheme{default}
@@ -157,7 +158,8 @@ Questo lo fa la Lush
 
 \section{Neural Network building}
 
-
+    \centering
+    \includegraphics[width=0.6\textwidth]{model.pdf}
 %---------------------------------------------------------
 \begin{frame}{Overview on the network}
 
@@ -197,6 +199,11 @@ si fa vedere come abbiamo fatto noi
 \begin{frame}{Concatente + dense layers}
 
     
+\end{frame}
+
+
+\begin{frame}{Subnets train freezing}
+    \includegraphics[width=.8\linewidth]{freezetraining.pdf}
 \end{frame}
 
 %---------------------------------------------------------
