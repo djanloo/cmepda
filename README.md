@@ -7,7 +7,7 @@ The aim of this repo is to build the NN to process the data from (quote guys)
 
 ## Dataset
 ![anim](https://user-images.githubusercontent.com/89815653/178476373-edabd8f9-fc83-4bde-a9a4-f9ba623c6d95.gif)
-
+![toa](assets/toa.png)
 ## Model
 ![model](assets/model_2.png)
 
