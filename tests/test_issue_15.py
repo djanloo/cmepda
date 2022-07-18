@@ -29,17 +29,17 @@ val_feeder = DataFeeder("data_by_entry/validation", **encoder_feeder_options)
 test_feeder = DataFeeder("data_by_entry/test", **encoder_feeder_options)
 
 # initializing TimeSeries class
-enc = ToaEncoder(earlystopping=True, tensorboard=True)
+enc = ToaEncoder(path="trained/encoder_redesigned", earlystopping=True, tensorboard=True)
 
 # TRAIN ONCE
-# enc.train(
-#     x=train_feeder,
-#     epochs=EPOCHS,
-#     validation_data=val_feeder,
-#     batch_size=BATCH_SIZE,
-#     verbose=1,
-#     use_multiprocessing=False,
-# )
+enc.train(
+    x=train_feeder,
+    epochs=EPOCHS,
+    validation_data=val_feeder,
+    batch_size=BATCH_SIZE,
+    verbose=1,
+    use_multiprocessing=False,
+)
 
 # LSTM subnet
 lstm_feeder_options = {
