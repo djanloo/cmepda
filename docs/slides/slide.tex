@@ -117,33 +117,60 @@ Questo lo fa la Lush
 
 %---------------------------------------------------------
 \begin{frame}{DataFeeder class}
+    Ensures an easy way to train the subnets separately
 
+    \begin{itemize}
+        \item shuffles data randomly
+        \item input fields can be specified
+        \item can be extended to more complex training strategies
+    \end{itemize}
     
 \end{frame}
 
 %---------------------------------------------------------
-\begin{frame}{DataFeeder class}
+\begin{frame}{DataFeeder class}{Curriculum learning}
 
+    Using a pre-trained network data can be ``scored'' in ascending order of difficulty
+
+    (work in progress) This can lead to a learning speed-up and improvements in resolution
     
+    Caveat: this training strategy is not well suited (conceptually at least) for regression tasks, 
+    since it is not clear what a ``difficult'' sample would look like.
 \end{frame}
 
 %---------------------------------------------------------
 \begin{frame}{Data Augmentation}
-    Augmentation class e amici
+    Dataset has a lack of high events ($X > 850$m) so the network resolution is worse
+    for samples corresponding to this range
+
+    \begin{block}{Strategy}
+        Increase the number of samples conditionally on event heigth using the
+        symmetries of the problem
+    \end{block}
+
+    Data is augmented using
+    \begin{itemize}
+        \item flip up-down
+        \item flip left right
+        \item rotation of $90^{\circ}$ (x4)
+    \end{itemize}
     
+    It must me higlighted that only a subset of the available data undergoes this procedure.
+
+    Augmenting the whole dataset would leave the sample distribution unchanged and thus would not lead 
+    to improvements.
 \end{frame}
 
 \begin{frame}{Resolution}
 
-    The reference article suggest using the resolution:
+    The reference article suggests using the resolution:
     \begin{block}{resolution}
-        defined as the standard deviation of the distribution bla bla bla
+        defined as the standard deviation of the distribution given by the difference between the predictions and the actual values of $X_{max}$
     \end{block}
 
     We point out that 
     \[\sigma^2 = \frac{1}{N}\sum_i (\delta_i - \bar{\delta})^2\]
-    is a sensible
-    estimator only if $\bar{\delta} = 0$, for which the adopted resolution is equal 
+    is a sensible estimator of ``how much the net has gone wrong'' only if $\bar{\delta} = 0$, for which the adopted resolution is equal 
     to the $RMSE$ of the distribution
     \[ RMSE^2 = \frac{1}{N}\sum_i(x_i - \hat{x}_i)^2 \]
     Since (on a typical train) $\bar{\delta} \approx 10$m we preferred the RMSE.
@@ -157,13 +184,15 @@ Questo lo fa la Lush
     \includegraphics[width=0.6\textwidth]{model.pdf}
 %---------------------------------------------------------
 \begin{frame}{Overview on the network}
-
-    
+    The assumption that lead to this design is that from the time of arrival matrix
+    it is possible to infer some kind of ``homogeneous'' shower parameters (incidence angle, spread, etc.)
+    while the time series can be processed by a recurrent network.
 \end{frame}
 
 %---------------------------------------------------------
 \begin{frame}{Encoder for time of arrivals}
 
+    \includegraphics[width=\textwidth]{ENC_history.png}
     
 \end{frame}
 
@@ -176,8 +205,7 @@ si spiega che cos'è
 
 %---------------------------------------------------------
 \begin{frame}{LSTM for the time series}
-si fa vedere come abbiamo fatto noi
-    
+    \includegraphics[width=\textwidth]{LSTM_history.png}    
 \end{frame}
 
 \begin{frame}{Subnets performance}
