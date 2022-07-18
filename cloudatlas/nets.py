@@ -7,7 +7,7 @@ import numpy as np
 from os.path import exists, join
 
 import keras
-from keras.layers import LSTM, Dense, Input, Flatten, concatenate
+from keras.layers import LSTM, Dense, Input, Flatten, concatenate, LeakyReLU, Conv2D
 from keras.models import Model
 from keras.metrics import RootMeanSquaredError
 from keras.utils.vis_utils import plot_model
@@ -143,18 +143,21 @@ class ToaEncoder(LushlooNet):
         self.compilation_kwargs["optimizer"] = optimizer
 
         input_toa = Input(shape=(9, 9, 1), name="toa_input")
-        flat = Flatten(name="enc_flatten")(input_toa)
-        enc = Dense(16, activation="relu", name="enc_dense_1")(flat)
-        enc = Dense(9, activation="relu", name="enc_dense_2")(enc)
-        enc = Dense(4, activation="relu", name="enc_dense_3")(enc)
-        enc = Dense(4, activation="relu", name="enc_dense_4")(enc)
-
+        enc = Dense(512, activation="relu", name="enc_dense_d")(input_toa)
+        enc = Dense(256, activation="relu", name="enc_dense_a")(enc)
+        enc = Dense(128, activation="relu", name="enc_dense_0")(enc)
+        enc = Dense(64, activation="linear", name="enc_dense_2")(enc)
+        enc = Dense(32, activation="relu", name="enc_dense_3")(enc)
+        enc = Dense(16, activation="relu", name="enc_dense_4")(enc)
+        enc = Dense(4, activation="linear", name="enc_dense_5")(enc)
+        flat = Flatten(name="enc_flatten")(enc)
         # Now adds an output layer
         # This will be removed when used in LstmEncoder
-        enc = Dense(1, activation="linear", name="enc_out")(enc)
+        enc = Dense(1, activation="linear", name="enc_out")(flat)
 
         self.model = Model(inputs=input_toa, outputs=enc, name="ToAEncoder")
         self.model.compile(**self.compilation_kwargs)
+        self.model.summary()
         self._check_load()
 
 
