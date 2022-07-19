@@ -50,8 +50,10 @@ class TestSISO(unittest.TestCase):
         for i, record in enumerate(dataset):
             np.save(f"{FOLDER_SISO}/{constants.FILENAME.format(name=i)}", record)
 
-    def test_feeder(self):
-        jimbo = DataFeeder(FOLDER_SISO, **FEEDER_OPTS_SISO)
+        self.df = DataFeeder(FOLDER_SISO, **FEEDER_OPTS_SISO)
+
+    def test_feeder_getitem(self):
+        a = self.df[0]
 
     def test_zclearup(self):
         rmtree(FOLDER_SISO)
@@ -73,8 +75,10 @@ class TestMISO(unittest.TestCase):
         for i, record in enumerate(dataset):
             np.save(f"{FOLDER_MISO}/{constants.FILENAME.format(name=i)}", record)
 
-    def test_feeder(self):
-        jimbo = DataFeeder(FOLDER_MISO, **FEEDER_OPTS_MISO)
+        self.df = DataFeeder(FOLDER_MISO, **FEEDER_OPTS_MISO)
+
+    def test_feeder_getitem(self):
+        a = self.df[0]
 
     def test_zclearup(self):
         rmtree(FOLDER_MISO)

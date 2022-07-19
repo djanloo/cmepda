@@ -7,10 +7,10 @@ import unittest
 
 from context import utils
 
-class TestRemote(unittest.TestCase):
 
+class TestRemote(unittest.TestCase):
     def setUp(self):
         self.remote = utils.RemoteMonitor()
-    
+
     def test_message(self):
         self.remote.send("Testing RemoteMonitor class..")
