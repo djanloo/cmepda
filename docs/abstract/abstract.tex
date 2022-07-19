@@ -19,7 +19,7 @@ made of a 9x9 array of detectors. The dataset is given as 80 flattened 9x9 matri
 in which each entry is the time of first detected activity, relative to the most intense detector.
 The overall shape of the array is thus (80 + 1, 81).
 
-The first step is splitting the dataset into the different features: the whole project is based on a custom NumPy \textit{dtype} for storing event's attributes in a single object, sorted by \textit{toa}, \textit{time\_series} and \textit{outcome}.\\
+The first step is splitting the dataset into the different features: the whole project is based on a custom NumPy \textit{dtype} for storing events' attributes in a single object, sorted by \textit{toa}, \textit{time\_series} and \textit{outcome}.\\
 First sight of the dataset showed the need for data augmentation at high values of height, so we built the \textit{Augmentation} class to perform that: it consists of increasing the number of those data by applying rotations and symmetry-flips on the various matrices.\\
 Another important class is \textit{DataFeeder}, and the principle method gives back a \textit{tf.keras.utils.Sequence} 
 with whom we fed the network. It is a way to generate batches of data to avoid memory overload. Being a Keras subclass, it is automatically multiprocessed.\\
