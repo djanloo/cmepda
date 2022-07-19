@@ -3,7 +3,7 @@
 [![CircleCI](https://dl.circleci.com/status-badge/img/gh/djanloo/cmepda/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/djanloo/cmepda/tree/master)
 [![codecov](https://codecov.io/gh/djanloo/cmepda/branch/master/graph/badge.svg?token=WEFVA6UBDS)](https://codecov.io/gh/djanloo/cmepda)
 
-## Table of contents
+## Directories description
 - In [``cloudatlas``](cloudatlas/) directory can be found modules related to the network
 - In [`ppproc`](ppproc/) modules related to preprocessing
 - In [`tests`](tests/) are test modules
