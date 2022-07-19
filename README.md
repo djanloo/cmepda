@@ -7,7 +7,7 @@
 - In [``cloudatlas``](cloudatlas/) directory can be found modules related to the network
 - In [`ppproc`](ppproc/) modules related to preprocessing
 - In [`tests`](tests/) are test modules
-- In [`docs`](docs/) s can be found the abstract and the slides
+- In [`docs`](docs/) can be found the abstract and the slides
 
 # The project
 

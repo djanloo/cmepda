@@ -1,8 +1,8 @@
-PWD /Users/luciapapalini/Desktop/cmepda/abstract
+PWD /Users/luciapapalini/Desktop/cmepda/docs/abstract
 INPUT /usr/local/texlive/2022/texmf.cnf
 INPUT /usr/local/texlive/2022/texmf-dist/web2c/texmf.cnf
 INPUT /usr/local/texlive/2022/texmf-var/web2c/pdftex/pdflatex.fmt
-INPUT /Users/luciapapalini/Desktop/cmepda/abstract/abstract.tex
+INPUT /Users/luciapapalini/Desktop/cmepda/docs/abstract/abstract.tex
 OUTPUT abstract.log
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/local/texlive/2022/texmf-dist/tex/latex/base/article.cls
@@ -128,12 +128,7 @@ INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmti10.tfm
-INPUT ./figures/net_idea.pdf
-INPUT ./figures/net_idea.pdf
-INPUT figures/net_idea.pdf
-INPUT ./figures/net_idea.pdf
 OUTPUT abstract.pdf
-INPUT ./figures/net_idea.pdf
 INPUT /usr/local/texlive/2022/texmf-var/fonts/map/pdftex/updmap/pdftex.map
 INPUT abstract.aux
 INPUT /usr/local/texlive/2022/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb
