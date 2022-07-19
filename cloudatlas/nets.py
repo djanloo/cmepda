@@ -29,6 +29,9 @@ class LushlooNet:
     Attributes:
         path (:obj:`str`): the path of the folder.
         model (:obj:`keras.models.Model`)
+        tensorboard (bool, optional): specifies whether to use the TensorBoard callback
+        earlystopping (bool, optional): specifies whether to use the EarlyStopping callback
+
     """
 
     def __init__(
@@ -75,7 +78,7 @@ class LushlooNet:
 
     def train(self, **fit_kwargs):
         """Trains the model and saves history."""
-
+        
         # Sets the callbacks if nothing is specified
         fit_kwargs.setdefault("callbacks", self.callbacks)
 
@@ -131,7 +134,7 @@ class ToaEncoder(LushlooNet):
     Args:
         path (:obj:`str`): the folder where to save the model.
         optimizer (:obj:`str` or :obj:`keras.optimizers.Optimizer`): the optimizer for the training stage. Default is Adam(lr=0.001).
-
+        net_kwargs (optional): :class:`LushlooNet` keyword args
     """
 
     def __init__(self, optimizer="adam", **net_kwargs):
@@ -147,7 +150,7 @@ class ToaEncoder(LushlooNet):
         enc = Dense(128, activation="relu", name="enc_dense_c")(enc)
         enc = Dense(64, activation="relu", name="enc_dense_b")(enc)
         flat = Flatten(name="enc_flatten")(enc)
-        
+
         # Now adds an output layer
         # This will be removed when used in LstmEncoder
         enc = Dense(1, activation="linear", name="enc_out")(flat)
@@ -162,8 +165,8 @@ class TimeSeriesLSTM(LushlooNet):
     """The lstm net that processes time series matrices.
 
     Args:
-        path (:obj:`str`): the folder where to save the model.
         optimizer (:obj:`str` or :obj:`keras.optimizers.Optimizer`): the optimizer for the training stage. Default is Adam(lr=0.001).
+        net_kwargs (optional): :class:`LushlooNet` keyword args
     """
 
     def __init__(self, optimizer="adam", **net_kwargs):
@@ -207,8 +210,8 @@ class LstmEncoder(LushlooNet):
     mean squared error and the natural metric is the RMSE.
 
     Args:
-        path (:obj:`str`, optional): the folder where the trained model is saved into.
         optimizer (:obj:`str` or :obj:`keras.optimizers.Optimizer`): the optimizer for the training stage. Default is Adam(lr=0.001).
+        net_kwargs (optional): :class:`LushlooNet` keyword args
 
     Attributes:
         model (keras.models.Model): the (compiled) LstmEncoder network
