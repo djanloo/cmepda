@@ -28,9 +28,9 @@
      inkscape:deskcolor="#505050"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="0.64945686"
-     inkscape:cx="215.56474"
-     inkscape:cy="248.66933"
+     inkscape:zoom="1.1017874"
+     inkscape:cx="268.65437"
+     inkscape:cy="250.95586"
      inkscape:window-width="1322"
      inkscape:window-height="704"
      inkscape:window-x="44"
@@ -1617,7 +1617,8 @@
        y1="74.11484"
        x2="61.264608"
        y2="74.11484"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.4154318,0,0,1,-18.989507,0)" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient12260"
@@ -1626,7 +1627,8 @@
        y1="91.36999"
        x2="61.264608"
        y2="91.36999"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.0780351,0,0,1,-3.5670064,0)" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient12314"
@@ -2373,20 +2375,20 @@
        rx="1.5"
        ry="1.5" />
     <rect
-       style="fill:url(#linearGradient12208);fill-opacity:1;stroke:none;stroke-width:0.181636;paint-order:fill markers stroke;opacity:1"
+       style="opacity:1;fill:url(#linearGradient12208);fill-opacity:1;stroke:none;stroke-width:0.216096;paint-order:fill markers stroke"
        id="rect698-2"
-       width="31.108648"
+       width="44.032169"
        height="12.898168"
-       x="30.15596"
+       x="23.694199"
        y="67.665756"
        rx="1.5"
        ry="1.5" />
     <rect
-       style="fill:url(#linearGradient12262);fill-opacity:1;stroke:none;stroke-width:0.181636;paint-order:fill markers stroke;opacity:1"
+       style="opacity:1;fill:url(#linearGradient12262);fill-opacity:1;stroke:none;stroke-width:0.18859;paint-order:fill markers stroke"
        id="rect698-2-0"
-       width="31.108648"
+       width="33.536213"
        height="12.898168"
-       x="30.15596"
+       x="28.942177"
        y="84.920906"
        rx="1.5"
        ry="1.5" />
@@ -2434,15 +2436,15 @@
          y="41.140278">Flatten</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583;opacity:1;fill:#ffffff"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;opacity:1;fill:#ffffff;stroke-width:0.264583"
        x="36.434265"
        y="58.272266"
        id="text1653"><tspan
          sodipodi:role="line"
          id="tspan1651"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583;fill:#ffffff"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffffff;stroke-width:0.264583"
          x="36.434265"
-         y="58.272266">Dense 16</tspan></text>
+         y="58.272266">Dense 256</tspan></text>
     <rect
        style="fill:url(#linearGradient12370);fill-opacity:1;stroke:none;stroke-width:0.23848;paint-order:fill markers stroke;opacity:1"
        id="rect698-9-1"
@@ -2454,26 +2456,26 @@
        ry="1.5" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583;opacity:1;fill:#ffffff"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;opacity:1;fill:#ffffff;stroke-width:0.264583"
        x="70.038597"
        y="132.23279"
        id="text1653-8"><tspan
          sodipodi:role="line"
          id="tspan1651-5"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583;fill:#ffffff"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffffff;stroke-width:0.264583"
          x="70.038597"
-         y="132.23279">Dense 16</tspan></text>
+         y="132.23279">Dense 64</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583;opacity:1;fill:#ffffff"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;opacity:1;fill:#ffffff;stroke-width:0.264583"
        x="103.63007"
        y="76.172859"
        id="text1657"><tspan
          sodipodi:role="line"
          id="tspan1655"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583;fill:#ffffff"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffffff;stroke-width:0.264583"
          x="103.63007"
-         y="76.172859">Dense 16</tspan></text>
+         y="76.172859">Dense 64</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583;opacity:1;fill:#ffffff"
@@ -2487,26 +2489,26 @@
          y="58.395428">LSTM 64</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583;opacity:1;fill:#ffffff"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;opacity:1;fill:#ffffff;stroke-width:0.264583"
        x="37.655468"
        y="75.501839"
        id="text1665"><tspan
          sodipodi:role="line"
          id="tspan1663"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583;fill:#ffffff"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffffff;stroke-width:0.264583"
          x="37.655468"
-         y="75.501839">Dense 4</tspan></text>
+         y="75.501839">Dense 128</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583;opacity:1;fill:#ffffff"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;opacity:1;fill:#ffffff;stroke-width:0.264583"
        x="37.655468"
        y="92.731407"
        id="text1669"><tspan
          sodipodi:role="line"
          id="tspan1667"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583;fill:#ffffff"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffffff;stroke-width:0.264583"
          x="37.655468"
-         y="92.731407">Dense 4</tspan></text>
+         y="92.731407">Dense 64</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:0.264583;opacity:1;fill:#ffffff"
@@ -2650,28 +2652,28 @@
          y="70.555313">RELU</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#8f5902;stroke-width:0.264583;opacity:1"
-       x="-79.115227"
-       y="59.552944"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;opacity:1;fill:#8f5902;stroke-width:0.264583"
+       x="-79.089653"
+       y="65.307335"
        id="text4487-9"
        transform="rotate(-90)"><tspan
          sodipodi:role="line"
          id="tspan4485-7"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#8f5902;stroke-width:0.264583"
-         x="-79.115227"
-         y="59.552944">RELU</tspan></text>
+         x="-79.089653"
+         y="65.307335">RELU</tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#8f5902;stroke-width:0.264583;opacity:1"
-       x="-96.370377"
-       y="59.552944"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;opacity:1;fill:#8f5902;stroke-width:0.264583"
+       x="-96.319221"
+       y="60.670498"
        id="text4487-5"
        transform="rotate(-90)"><tspan
          sodipodi:role="line"
          id="tspan4485-3"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#8f5902;stroke-width:0.264583"
-         x="-96.370377"
-         y="59.552944">RELU</tspan></text>
+         x="-96.319221"
+         y="60.670498">RELU</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#8f5902;stroke-width:0.264583;opacity:1"
