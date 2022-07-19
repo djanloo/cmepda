@@ -26,7 +26,7 @@ The network we built is a Concatenation of an LSTM (Long Short Term Memory) netw
 ![model](assets/model_2.png)
 
 ## Results
-At the end of the training procedure our network reached a resolution (RMSE) of: 36.3 +- 0.4
+At the end of the training procedure our network reached a resolution (RMSE) of: 34.2 +- 0.4
 
 We augmented in the preprocessing phase the less represented data.
 
