@@ -1,4 +1,5 @@
 import os
+
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 from keras.utils.vis_utils import plot_model
@@ -29,7 +30,9 @@ val_feeder = DataFeeder("data_by_entry/validation", **encoder_feeder_options)
 test_feeder = DataFeeder("data_by_entry/test", **encoder_feeder_options)
 
 # initializing TimeSeries class
-enc = ToaEncoder(path="trained/encoder_redesigned", earlystopping=True, tensorboard=True)
+enc = ToaEncoder(
+    path="trained/encoder_redesigned", earlystopping=True, tensorboard=True
+)
 
 # TRAIN ONCE
 enc.train(
@@ -65,10 +68,11 @@ lstm = TimeSeriesLSTM(earlystopping=True, tensorboard=True)
 #     use_multiprocessing=False,
 # )
 
-stats.interpercentile_plot([enc, lstm], 
-                            "data_by_entry/test", 
-                            [encoder_feeder_options, lstm_feeder_options],
-                            relative_error=False )
+stats.interpercentile_plot(
+    [enc, lstm],
+    "data_by_entry/test",
+    [encoder_feeder_options, lstm_feeder_options],
+    relative_error=False,
+)
 
 plt.show()
-
