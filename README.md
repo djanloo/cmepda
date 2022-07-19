@@ -34,7 +34,7 @@ We augmented in the preprocessing phase the less represented data.
 ![freeze_train](assets/freezetraining.png)
 
 ## Table of contents
-- In cloudatlas directory can be found modules related to the network
-- In ppproc modules related to preprocessing
-- In test are test modules
-- In docs can be found the abstract and the slides
+- In [``cloudatlas``](cloudatlas/) directory can be found modules related to the network
+- In [`ppproc`](ppproc/) modules related to preprocessing
+- In [`tests`](tests/) are test modules
+- In [`docs`](docs/) s can be found the abstract and the slides
