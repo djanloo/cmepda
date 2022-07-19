@@ -22,7 +22,7 @@ The overall shape of the array is thus (80 + 1, 81).
 The first step is splitting the dataset into the different features: the whole project is based on a custom NumPy \textit{dtype} for storing events' attributes in a single object, sorted by \textit{toa}, \textit{time\_series} and \textit{outcome}.\\
 First sight of the dataset showed the need for data augmentation at high values of height, so we built the \textit{Augmentation} class to perform that: it consists of increasing the number of those data by applying rotations and symmetry-flips on the various matrices.\\
 Another important class is \textit{DataFeeder}, and the principle method gives back a \textit{tf.keras.utils.Sequence} 
-with whom we fed the network. It is a way to generate batches of data to avoid memory overload. Being a Keras subclass, it is automatically multiprocessed.\\
+with which we fed the network. It is a way to generate batches of data to avoid memory overload. Being a Keras subclass, it is automatically multiprocessed.\\
 %ALLUNGARE IL SUCCO
 The network we built is a Concatenation of an LSTM (Long Short Term Memory) network for the time series and an Encoder network for the time of arrival, ended with a series of dense layers that gives back a continuous output for the height of the shower. We built a class for each net module and another class to call them together: \textit{LushlooNet}.\\
 To ensure better performance from the network, we also wrote a module to perform the \textit{hyperparameters tuning} of the network.
