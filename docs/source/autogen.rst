@@ -6,7 +6,7 @@ Code description generated automatically from docstrings.
 Models
 ------
 
-.. automodule:: cloudatlas.net
+.. automodule:: cloudatlas.nets
 	:special-members: __init__
 	:members:
 
