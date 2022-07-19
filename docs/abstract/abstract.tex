@@ -15,9 +15,10 @@ In this project, we propose an example of using deep learning techniques to pred
 In particular, when this kind of cosmic ray enters the atmosphere, they produce a particle cascade 
 that can be identified with a set of water-Cherenkov or scintillator ground-based detectors. We aim to train a neural network to predict the height at which the shower formed by feeding it with data on the triggers of such detectors.\\
 The dataset on which we perform the training consists of a simulation of an Auger-like apparatus 
-made of a 9x9 array of detectors.  Data are organised as follows:
-%DESCRIVERE QUEI DATI DI MERDA
-\\
+made of a 9x9 array of detectors. The dataset is given as 80 flattened 9x9 matrices, that correponding to the time series part of the record, and another (flattened) matrix
+in which each entry is the time of first detected activity, relative to the most intense detector.
+The overall shape of the array is thus (80 + 1, 81).
+
 The first step is splitting the dataset into the different features: the whole project is based on a custom NumPy \textit{dtype} for storing event's attributes in a single (?) sorted by \textit{toa}, \textit{time\_series} and \textit{outcome}.\\
 First sight of the dataset showed the need for data augmentation at high values of height, so we built the \textit{Augmentation} class to perform that: it consists of increasing the number of those data by applying rotations and symmetry-flips on the various matrices.\\
 Another important class is \textit{DataFeeder}, and the principle method gives back a \textit{Sequence} 
