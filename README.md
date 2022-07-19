@@ -14,11 +14,11 @@ https://arxiv.org/pdf/2107.00656.pdf
 
 ## Dataset
 The dataset is organised as follows. Every single data is made of a 9x9 matrix, where every single element represents a detector. 
-###Timeseries
+### Timeseries
 In the case of timeseries the value related to each detector is the energy deposited by the passage of charged particle of the shower, and all together represents the evolution in time as the shower pass by.
 ![anim](https://user-images.githubusercontent.com/89815653/178476373-edabd8f9-fc83-4bde-a9a4-f9ba623c6d95.gif)
 
-###Time of arrivals
+### Time of arrivals
 In the case of time of arrivals the values of the matrix represents the first time at which each detector was lit.
 ![toa](assets/toa.png)
 ## Model
@@ -26,8 +26,12 @@ The network we built is a Concatenation of an LSTM (Long Short Term Memory) netw
 ![model](assets/model_2.png)
 
 ## Results
-At the end of the training procedure our network reached an accuracy (RMSE?) of: (?) We augmented in the preprocessing phase the less represented data.
+At the end of the training procedure our network reached a resolution (RMSE) of: 36.3 +- 0.4
+
+We augmented in the preprocessing phase the less represented data.
+
 ![interp](assets/comparison.png) 
+![freeze_train](assets/freezetraining.png)
 
 ## Table of contents
 - In cloudatlas directory can be found modules related to the network
