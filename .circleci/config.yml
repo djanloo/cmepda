@@ -18,7 +18,7 @@ jobs:
       - run:
           name: Code Coverage
           command: |
-            pipenv run pytest --cov-report xml --cov="cloudatlas/" tests/
+            pipenv run pytest --cov-report xml --cov="cloudatlas/" tests/general/
       - codecov/upload
 
 workflows:
