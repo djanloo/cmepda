@@ -24,7 +24,7 @@ First sight of the dataset showed the need for data augmentation at high values 
 Another important class is \textit{DataFeeder}, and the principle method gives back a \textit{tf.keras.utils.Sequence} 
 with whom we fed the network. It is a way to generate batches of data to avoid memory overload. Being a Keras subclass, it is automatically multiprocessed.\\
 %ALLUNGARE IL SUCCO
-The network we built is a Concatenation of an LSTM (Long Short Term Memory) network for the \textit{time series} and an Encoder network for the \textit{time of arrival}, ended with a series of dense layers that gives back a continuous output for the height of the shower. We built a class for each net module and another class to call them together: \textit{LushlooNet}.\\
+The network we built is a Concatenation of an LSTM (Long Short Term Memory) network for the time series and an Encoder network for the time of arrival, ended with a series of dense layers that gives back a continuous output for the height of the shower. We built a class for each net module and another class to call them together: \textit{LushlooNet}.\\
 To ensure better performance from the network, we also wrote a module to perform the \textit{hyperparameters tuning} of the network.
 
 
