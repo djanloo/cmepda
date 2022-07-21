@@ -51,7 +51,7 @@ class LushlooNet:
 
         # Callbacks
         self.callbacks = []
-        
+
         if tensorboard:
             ## TensorBoard callbacks
             ## Write TensorBoard logs to `./logs` directory
@@ -78,7 +78,7 @@ class LushlooNet:
 
     def train(self, **fit_kwargs):
         """Trains the model and saves history."""
-        
+
         # Sets the callbacks if nothing is specified
         fit_kwargs.setdefault("callbacks", self.callbacks)
 
@@ -212,6 +212,12 @@ class LstmEncoder(LushlooNet):
     Args:
         optimizer (:obj:`str` or :obj:`keras.optimizers.Optimizer`): the optimizer for the training stage. Default is Adam(lr=0.001).
         net_kwargs (optional): :class:`LushlooNet` keyword args
+        encoder (:obj:`keras.models.Model, optional): the encoder sub-network. If nothing is given, a new empty encoder
+            is created.
+        lstm (:obj:`keras.models.Model): the lstm sub-network. If nothing is given, a new empty lstm
+            is created.
+        train_encoder (bool, optional): specify whether to train or not the encoder, in case a pre trained one is given.
+        train_lstm (bool, optional): specify whether to train or not the lstm, in case a pre trained one is given.
 
     Attributes:
         model (keras.models.Model): the (compiled) LstmEncoder network
@@ -219,9 +225,13 @@ class LstmEncoder(LushlooNet):
     """
 
     def __init__(
-        self, optimizer="adam", encoder=None, lstm=None, 
-        train_encoder=True, train_lstm=True,
-        **net_kwargs
+        self,
+        optimizer="adam",
+        encoder=None,
+        lstm=None,
+        train_encoder=True,
+        train_lstm=True,
+        **net_kwargs,
     ):
 
         super(LstmEncoder, self).__init__(**net_kwargs)
@@ -231,24 +241,25 @@ class LstmEncoder(LushlooNet):
 
         # Time of arrival branch
         self.encoder = ToaEncoder() if encoder is None else encoder
-        self.encoder.model.trainable = train_encoder
+        self.encoder.model.trainable = train_encoder if encoder is not None else True
 
         # Time series branch
         self.lstm = TimeSeriesLSTM() if lstm is None else lstm
-        self.lstm.model.trainable = train_lstm
+        self.lstm.model.trainable = train_lstm if lstm is not None else True
         # Concatenation:
         # Takes the second-last layer of the net
         conc = concatenate(
             [self.encoder.model.layers[-2].output, self.lstm.model.layers[-2].output],
-            name="concatenate"
+            name="concatenate",
         )
         z = Dense(16, activation="relu", name="lstmenc_dense_1")(conc)
         z = Dense(4, activation="linear", name="lstmenc_dense_2")(z)
         z = Dense(1, activation="linear", name="lstmenc_out")(z)
 
         self.model = Model(
-            inputs=[self.encoder.model.input, self.lstm.model.input], outputs=z,
-            name="LstmEncoder"
+            inputs=[self.encoder.model.input, self.lstm.model.input],
+            outputs=z,
+            name="LstmEncoder",
         )
 
         self.model.compile(**self.compilation_kwargs)
