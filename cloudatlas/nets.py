@@ -212,9 +212,9 @@ class LstmEncoder(LushlooNet):
     Args:
         optimizer (:obj:`str` or :obj:`keras.optimizers.Optimizer`): the optimizer for the training stage. Default is Adam(lr=0.001).
         net_kwargs (optional): :class:`LushlooNet` keyword args
-        encoder (:obj:`keras.models.Model, optional): the encoder sub-network. If nothing is given, a new empty encoder
+        encoder (:obj:`keras.models.Model`, optional): the encoder sub-network. If nothing is given, a new empty encoder
             is created.
-        lstm (:obj:`keras.models.Model): the lstm sub-network. If nothing is given, a new empty lstm
+        lstm (:obj:`keras.models.Model`): the lstm sub-network. If nothing is given, a new empty lstm
             is created.
         train_encoder (bool, optional): specify whether to train or not the encoder, in case a pre trained one is given.
         train_lstm (bool, optional): specify whether to train or not the lstm, in case a pre trained one is given.
@@ -246,6 +246,7 @@ class LstmEncoder(LushlooNet):
         # Time series branch
         self.lstm = TimeSeriesLSTM() if lstm is None else lstm
         self.lstm.model.trainable = train_lstm if lstm is not None else True
+
         # Concatenation:
         # Takes the second-last layer of the net
         conc = concatenate(
