@@ -3,16 +3,13 @@
 The three proposed designs are a small encoder (ToaEncoder) a time series LSTM (TimeSeriesLSTM) 
 and a concatenation of the two (LstmEncoder).
 """
-import numpy as np
-from os.path import exists, join
+from os.path import exists 
 
 import keras
-from keras.layers import LSTM, Dense, Input, Flatten, concatenate, LeakyReLU, Conv2D
+from keras.layers import LSTM, Dense, Input, Flatten, concatenate
 from keras.models import Model
 from keras.metrics import RootMeanSquaredError
-from keras.utils.vis_utils import plot_model
-
-from rich.progress import track
+import numpy as np
 from rich import print
 
 import utils
