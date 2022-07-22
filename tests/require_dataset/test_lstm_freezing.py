@@ -22,6 +22,13 @@ from context import LstmEncoder , TimeSeriesLSTM
 EPOCHS = 50
 BATCH_SIZE = 128
 
+# Directories
+work_dir = os.getcwd()
+parent_dir = os.path.dirname(work_dir)  # I go up twice
+parent_dir = os.path.dirname(parent_dir)
+os.chdir(parent_dir)
+
+
 rcParams["font.family"] = "serif"
 rcParams["font.size"] = 10
 
