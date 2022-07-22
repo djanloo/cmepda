@@ -3,12 +3,11 @@ import os
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
-from keras.utils.vis_utils import plot_model
 import matplotlib.pyplot as plt
 from rich import print
 
-from context import FeederProf, DataFeeder
-from context import LstmEncoder, ToaEncoder, TimeSeriesLSTM
+from context import DataFeeder
+from context import ToaEncoder, TimeSeriesLSTM
 from context import stats
 
 # constants

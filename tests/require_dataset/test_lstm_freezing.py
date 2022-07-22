@@ -72,7 +72,7 @@ val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
 
 # Build the net
 lstmenc = LstmEncoder(
-    lstm=lstm, train_lstm=False  # Uses the lstm of line 44  # But then freezes it
+    lstm=lstm, train_lstm=False  # Uses the lstm of line 42  # But then freezes it
 )
 
 # Now train the net (lstm subnet excluded)
