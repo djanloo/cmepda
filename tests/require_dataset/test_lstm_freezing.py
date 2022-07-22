@@ -1,7 +1,8 @@
-"""Aim of this script is to estimate the improving due to the presence of the encoder
+"""Aim of this script is to estimate the improvement due to the presence of the encoder
 in the LstemEncoder network.
 
-To do so, it is necessary to pre train a lstm subnet and check it resolution.
+To do so, it is necessary to pre-train an lstm subnet and check its resolution.
+
 Then a complete net is built using the previously trained lstm subnet.
 Finally the complete net undergoes a train stage and resolution is estimated.
 """
@@ -10,14 +11,11 @@ import os
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
-from keras.utils.vis_utils import plot_model
-import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from rich import print
-import numpy as np
 
 from context import DataFeeder
-from context import LstmEncoder, ToaEncoder, TimeSeriesLSTM
+from context import LstmEncoder , TimeSeriesLSTM
 
 
 # constants
@@ -41,7 +39,9 @@ lstm_feeder_options = {
 lstm_train_feeder = DataFeeder("data_by_entry/train", **lstm_feeder_options)
 lstm_val_feeder = DataFeeder("data_by_entry/validation", **lstm_feeder_options)
 
-lstm = TimeSeriesLSTM(path="trained/test_freezing_lstm", earlystopping=True, tensorboard=True)
+lstm = TimeSeriesLSTM(
+    path="trained/test_freezing_lstm", earlystopping=True, tensorboard=True
+)
 lstm.train(
     x=lstm_train_feeder,
     epochs=EPOCHS,
@@ -71,9 +71,9 @@ train_feeder = DataFeeder("data_by_entry/train", **feeder_options)
 val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
 
 # Build the net
-lstmenc = LstmEncoder(lstm=lstm, # Uses the lstm of line 44
-                      train_lstm=False # But then freezes it
-                      )
+lstmenc = LstmEncoder(
+    lstm=lstm, train_lstm=False  # Uses the lstm of line 44  # But then freezes it
+)
 
 # Now train the net (lstm subnet excluded)
 lstmenc.train(
@@ -88,4 +88,3 @@ lstmenc.train(
 # Then checks resolution
 test_feeder = DataFeeder("data_by_entry/test", **feeder_options)
 print(f"LSTM + encoder res is {lstmenc.resolution_on(lstm_test_feeder)}")
-
