@@ -25,5 +25,5 @@ Utilities
 Augmentation
 -------
 
-.. automodule:: ppproc.Augment
+.. automodule:: ppproc.augmentation
 	:members:
