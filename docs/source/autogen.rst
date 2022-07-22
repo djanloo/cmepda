@@ -21,3 +21,9 @@ Utilities
 
 .. automodule:: cloudatlas.utils
 	:members:
+
+Augmentation
+-------
+
+.. automodule:: ppproc.Augment
+	:members:

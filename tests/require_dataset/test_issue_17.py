@@ -35,7 +35,7 @@ enc = ToaEncoder()
 lstm = TimeSeriesLSTM()
 lstmenc = LstmEncoder()
 
-lstmenc_notrain = LstmEncoder(
+lstmenc_notrain = TimeSeriesLSTM(
     path="trained/lstmenc_untrainable_subnets",
     earlystopping=True,
     tensorboard=True,

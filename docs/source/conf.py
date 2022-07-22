@@ -18,6 +18,7 @@ import mock
 # This has to be done for autodoc to work
 sys.path.insert(0, os.path.abspath("../../"))
 sys.path.insert(0, os.path.abspath("../../cloudatlas"))
+sys.path.insert(0, os.path.abspath("../../ppproc"))
 print(sys.path)
 
 autodoc_mock_imports = [

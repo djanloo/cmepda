@@ -120,9 +120,9 @@ class FeederProf(DataFeeder):
     Args:
         trained_model (:obj:`keras.models.Model`): the trained model used to score data.
         data_folder (:obj:`str`): th folder of the dataset.
-        difficulty_levels (int, optonal): the total number of difficulty levels. Default 5.
+        difficulty_levels (int, optional): the total number of difficulty levels. Default 5.
         n_of_epochs (int, optional): the total number of epochs of the training for which the FeederProf is used. Default 20.
-            The difficulty of the feeded data starts from level 0 and increases linearly by a factor epoch/n_of_epochs.
+            The difficulty of the fed data starts from level 0 and increases linearly by a factor epoch/n_of_epochs.
     """
 
     def __init__(
