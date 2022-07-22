@@ -1,6 +1,6 @@
 """Utility module"""
 import os
-import warnings
+from numpy import isin
 
 # Turn off keras warnings
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -26,7 +26,7 @@ class RemoteMonitor:
     def send(self, message):
         """Sends a message."""
         # Check wether it's a message or more than one
-        if hasattr(message, "__iter__"):
+        if isinstance(message, list):
             msg = message
         else:
             msg = [message]
@@ -36,4 +36,19 @@ class RemoteMonitor:
             print("An exception was raised while sending a message:")
             print(e)
 
+class RemoteStderr:
 
+    def __init__(self):
+        self.monitor = RemoteMonitor()
+
+    def write(self, data):
+        self.monitor.send(data)
+        print(data)
+
+
+if __name__ == "__main__":
+    import sys
+    import numpy as np
+    sys.stderr = RemoteStderr()
+
+    print(np.uniform(0,1))
