@@ -15,8 +15,10 @@ class Augment:
     a certain height threshold.
     
     Args:
-        prof (:obj:'FeederProf'): instance of FeederProf class who gives back data sorted by difficulty
-        N (int, optional):"""
+        prof (:obj:'FeederProf'): instance of FeederProf class who gives back data sorted by difficulty.
+        N (int, optional): number of data to augment
+        height_threshold (bool): if True augment the N data at higher height.
+        """
     def __init__(self, prof, N=10_000, height_threshold=False):
         self.data_indexes = prof.datum_indexes[-N:]
         self.dataset = np.empty(N, dtype=constants.funky_dtype)
@@ -49,6 +51,8 @@ class Augment:
                 self.dataset[j] = np.load(f"{self.directory}/{fname}")
 
     def augment_dataset(self):
+        """Effectively realize the augmentation on the initialized dataset.
+        Augmentation consists in rotation by 90°, horizontal flip, vertical flip, diagonal flip."""
         # Initialize a new record with the custom dtype
         new_record = np.empty(1, dtype=constants.funky_dtype)
 
@@ -93,6 +97,7 @@ class Augment:
                 index_record += 1
 
     def augment_matrix(self, matrix):
+        """Augmentation of a single matrix."""
         # Initialize a new record with the custom dtype
         new_rec_rot = np.empty([9, 9], dtype=np.float32)
         new_rec_flip_lr = np.empty([9, 9], dtype=np.float32)
