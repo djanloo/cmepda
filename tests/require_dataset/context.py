@@ -1,8 +1,6 @@
 """A context for importing modules.
 
-Inside pre-post-proc use
-
-    >>> from .context import ...
+    >>> from context import ...
 
 """
 import os
