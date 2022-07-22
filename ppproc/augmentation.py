@@ -9,6 +9,14 @@ from context import constants
 
 
 class Augment:
+    """Class for executing data augmentation.
+    
+    One can choose if augment the more difficult data to predict (given back by the class FeederProf) or data over
+    a certain height threshold.
+    
+    Args:
+        prof (:obj:'FeederProf'): instance of FeederProf class who gives back data sorted by difficulty
+        N (int, optional):"""
     def __init__(self, prof, N=10_000, height_threshold=False):
         self.data_indexes = prof.datum_indexes[-N:]
         self.dataset = np.empty(N, dtype=constants.funky_dtype)
