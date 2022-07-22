@@ -87,4 +87,4 @@ lstmenc.train(
 
 # Then checks resolution
 test_feeder = DataFeeder("data_by_entry/test", **feeder_options)
-print(f"LSTM + encoder res is {lstmenc.resolution_on(lstm_test_feeder)}")
+print(f"LSTM + encoder res is {lstmenc.resolution_on(test_feeder)}")
