@@ -72,7 +72,9 @@ val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
 
 # Build the net
 lstmenc = LstmEncoder(
-    lstm=lstm, train_lstm=False  # Uses the lstm of line 42  # But then freezes it
+    path="trained/test_lstm_freezing_lstmencoder",
+    lstm=lstm, train_lstm=False, # Uses the lstm of line 42  # But then freezes it
+    earlystopping=True, tensorboard=True,
 )
 
 # Now train the net (lstm subnet excluded)
@@ -82,7 +84,7 @@ lstmenc.train(
     validation_data=val_feeder,
     batch_size=BATCH_SIZE,
     verbose=1,
-    use_multiprocessing=False,
+    use_multiprocessing=True,
 )
 
 # Then checks resolution
