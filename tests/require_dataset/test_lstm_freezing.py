@@ -8,6 +8,7 @@ Finally the complete net undergoes a train stage and resolution is estimated.
 """
 
 import os
+import sys
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
@@ -15,8 +16,10 @@ from matplotlib import rcParams
 from rich import print
 
 from context import DataFeeder
-from context import LstmEncoder , TimeSeriesLSTM
+from context import LstmEncoder , TimeSeriesLSTM, utils 
 
+# Sends a message if something has gone wrong
+sys.stderr = utils.RemoteStderr()
 
 # constants
 EPOCHS = 50
