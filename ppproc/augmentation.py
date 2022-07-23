@@ -53,7 +53,7 @@ class Augment:
 
         # check if both are not None
         if prof is not None and height_threshold is not None:
-            raise ValueError("prof and height_threshold can't be both different from None!")
+            raise NotImplementedError("prof and height_threshold can't be both different from None!")
 
     def augment_dataset(self):
         """Effectively realize the augmentation on the initialized dataset.
