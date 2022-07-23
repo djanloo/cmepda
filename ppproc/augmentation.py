@@ -19,21 +19,22 @@ class Augment:
         N (int, optional): number of data to augment
         height_threshold (bool): if True augment the N data at higher height.
         """
-    def __init__(self, prof, N=10_000, height_threshold=False):
-        self.data_indexes = prof.datum_indexes[-N:]
+    def __init__(self, prof=None, N=10_000, height_threshold=None):
+        if prof is not None: 
+            self.data_indexes = prof.datum_indexes[-N:]
+            self.start_number = prof.data_len
+            self.directory = prof.folder
         self.dataset = np.empty(N, dtype=constants.funky_dtype)
         self.augmented_data = None
-        self.start_number = prof.data_len
-        self.directory = prof.folder
         self.N = N
-        self.height_threshold = height_threshold
 
         # useful
         dummy = np.empty(0, dtype=constants.funky_dtype)
         index_n = 0
 
         # augmentation by height
-        if height_threshold:
+        if height_threshold is not None:
+            self.height_threshold = height_threshold
             for fname in os.listdir(self.directory):
                 dummy = np.load(f"{self.directory}/{fname}")  # open all the datas and put it into dummy
                 if dummy['outcome'] > 850:  # check on the height value
