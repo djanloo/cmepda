@@ -18,4 +18,4 @@ from cloudatlas.nets import LstmEncoder, ToaEncoder, TimeSeriesLSTM
 import cloudatlas.constants as constants
 import cloudatlas.utils as utils
 import ppproc.stats as stats
-from ppproc.augment import Augment
+from ppproc.augmentation import Augment
