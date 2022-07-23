@@ -15,7 +15,7 @@ PROF_SAVEFILE = "prof_knowledge.npy"  # Must have format
 
 
 class DataFeeder(keras.utils.Sequence):
-    """Data generator that uses a `single-file` splitted dataset of numpy structured arrays.
+    """Data generator that uses a `single-file` split dataset of numpy structured arrays.
 
     This means that the single record must have fields. Multiple inputs are supported.
 

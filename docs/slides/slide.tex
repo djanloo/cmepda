@@ -3,6 +3,8 @@
 \usepackage{graphicx}
 \usepackage{listings} %for listings
 \usepackage{xcolor}
+\usepackage{siunitx}
+\usepackage{pgf-pie} 
 
 %colorini
 \definecolor{comments}{rgb}{0.57, 0.64, 0.69} %commenti
@@ -107,7 +109,7 @@
     \column{0.5\textwidth}
         \begin{figure}
             \centering
-            \includegraphics[width=\textwidth]{airshower.png}
+            \includegraphics[width=\textwidth]{figures/airshower.png}
             \label{fig:my_label}
         \end{figure}
         
@@ -120,18 +122,40 @@
 %---------------------------------------------------------
 \begin{frame}{Dataset, first glance}
 
-    The dataset is composed of $10^5$ simulated events:
+    \begin{columns}
+    
+    \column{0.5\textwidth}
+    \textbf{Dataset}: $10^5$ simulated events:
+    \vspace{5 pt}
 
     \begin{itemize}
-        \item $9 x 9$ grid of detectors
-        \item most intense detector at the center 
-        \item 80 frames of time series ($40$ $M$Hz sampling rate)
-        \item 1 frame of times of first arrival 
+        \item[\textbullet] $9 x 9$ grid of detectors
+        \item[\textbullet] most intense at center 
+        \item[\textbullet] 80 frames of time series ($40$ $\si{MHz}$ sampling rate)
+        \item[\textbullet] 1 frame of times of first arrival 
     \end{itemize}
+    \vspace{10 pt}
 
-    The single record shape is then $(80 + 1 , 81)$
+    Single record shape: $(80 + 1 , 81)$\\
+    \vspace{15 pt}
 
-    The \texttt{pd4ml} package splits by default in $70\%$ train $30\%$ test.
+    \texttt{pd4ml} package splits by default in $70\%$ train $30\%$ test
+    
+    
+    \column{0.5\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.8\textwidth]{figures/toa.png}
+            \label{fig:my_label}
+        \end{figure}
+        
+         \begin{figure}
+            \centering
+            \includegraphics[width=0.65\textwidth]{figures/ezgif.com-gif-maker.png}
+            \label{fig:my_label}
+        \end{figure}
+    
+    \end{columns}
 
 \end{frame}
 
@@ -141,17 +165,37 @@
 
 %---------------------------------------------------------
 \begin{frame}{Split the dataset}
-    Using a generator (\texttt{keras.utils.Sequence})
-    \begin{itemize}
-        \item inherit multiprocessing features
-        \item has default callbacks
-    \end{itemize}
-    The dataset is splitted \emph{record by record} for index shuffling
 
-    The effect of the high reading time from memory ($\approx 3 m$s) is mitigated
-    by \texttt{keras} multiprocessing
+    \begin{columns}
     
+    \column{0.6\textwidth}
+    Dataset was already split in test and train.\\
+    \vspace{10 pt}
+    We put it all back together, shuffled it and divided with the following percentage:
+    \begin{itemize}
+        \item[\textbullet] $70\%$ \textit{train}
+        \item[\textbullet] $20\%$ \textit{test}
+        \item[\textbullet] $10\%$ \textit{validation}
+        
+    \end{itemize}
+    \vspace{10 pt}
+
     For the design of the net it is convenient using \texttt{numpy} structured arrays
+    
+    
+    \column{0.4\textwidth}
+    \begin{tikzpicture} %PIE CHART
+    \pie[radius=2, rotate=90]{
+    10/Validation,
+    70/Train,
+    20/Test}
+    \end{tikzpicture}
+    
+    
+    \end{columns}
+
+    
+
 \end{frame}
 
 %---------------------------------------------------------
@@ -168,32 +212,48 @@
         ])
     \end{lstlisting}
     
-
-    Data is extracted: from a conceptually \emph{ihomogeneous} list 
-    (activity time series together with times of arrival) to
-    $(80 + 1, 81) \rightarrow [("toa", (9, 9, 1)), ("timeseries", (80, 9,9))]$
-
-    Data can be accessed depending on what is needed
+    All data relative to a single event is clustered in a single \texttt{numpy} object, transformation is:
+    
+    %Data is extracted: from a conceptually \emph{ihomogeneous} list 
+    %(activity time series together with times of arrival) to
+    \begin{equation*}
+        (80 + 1, 81)\,\,\, \longrightarrow \,\,\, [("toa", (9, 9, 1)), ("timeseries", (80, 9,9))]
+    \end{equation*}
+    Data can be accessed "as a dictionary", depending on what is needed.
 
 \end{frame}
 
 
 %---------------------------------------------------------
-\begin{frame}{DataFeeder class}
-    Ensures an easy way to train the subnets separately
-
+\begin{frame}{\texttt{DataFeeder} class}
+    Ensures an easy way to train the subnets separately %MA CHE VUOL DIRE?
+    Class \texttt{DataFeeder} main features:
     \begin{itemize}
-        \item shuffles data randomly
-        \item input fields can be specified
-        \item can be extended to more complex training strategies
+        \item[\textbullet] shuffles data randomly
+        \item[\textbullet] input fields can be specified
+        \item[\textbullet] can be extended to more complex training strategies
+        \item[\textbullet] returns a generator
+    \end{itemize}
+    
+    % QUESTO SI DICE A VOCE
+    %The effect of the high reading time from memory ($\approx 3 m$s) is mitigated
+    %by \texttt{keras} multiprocessing
+
+\vspace{20 pt}
+    %questa è la parte che c'era in "split the dataset", non c'entra con quello
+    Using a generator (\texttt{keras.utils.Sequence})
+    \begin{itemize}
+        \item[\textbullet] inherit multiprocessing features
+        \item[\textbullet] has default callbacks
+        \item[\textbullet] avoids memory overload
     \end{itemize}
     
 \end{frame}
 
 %---------------------------------------------------------
-\begin{frame}{DataFeeder class}{Curriculum learning}
-
-    Using a pre-trained network data can be ``scored'' in ascending order of difficulty
+\begin{frame}{\texttt{FeederProf(DataFeeder)} class}{Curriculum learning}
+    
+    Using a pre-trained network data can be ``scored'' and then sorted in ascending order of difficulty
 
     (work in progress) This can lead to a learning speed-up and improvements in resolution
     
@@ -203,25 +263,37 @@
 
 %---------------------------------------------------------
 \begin{frame}{Data Augmentation}
-    Dataset has a lack of high events ($X > 850$m) so the network resolution is worse
+%FORSE STA SLIDE LA SPOSETEREI DOPO
+    Dataset has a lack of high events ($X > 850\si{m}$) so a first network training showed a worse resolution
     for samples corresponding to this range
 
     \begin{block}{Strategy}
-        Increase the number of samples conditionally on event heigth using the
+        Increase the number of samples that overcome a certain heigth threshold using the
         symmetries of the problem
     \end{block}
 
-    Data is augmented using
+    \begin{columns}
+    \column{0.35\textwidth}
+        Data is augmented using
     \begin{itemize}
         \item flip up-down
-        \item flip left right
+        \item flip left-right
+        \item diagonal flip
         \item rotation of $90^{\circ}$
     \end{itemize}
+    \column{0.65\textwidth}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.7\textwidth]{figures/hetero1.png}
+    \end{figure}
+    \end{columns}
     
-    It must me higlighted that only a subset of the available data undergoes this procedure.
+    %CI METTEREI UN GRAFICHELLO DELLA DISTRIBUZIONE DEI DATI IN ALTEZZA
+    
+    %only a subset of the available data undergoes this procedure.
 
-    Augmenting the whole dataset would leave the sample distribution unchanged and thus would not lead 
-    to improvements.
+    %Augmenting the whole dataset would leave the sample distribution unchanged and thus would not lead 
+    %to improvements.
 \end{frame}
 
 \begin{frame}{Resolution}
@@ -244,7 +316,7 @@
 \section{Neural Network building}
 
     \centering
-    \includegraphics[width=0.6\textwidth]{model.pdf}
+    \includegraphics[width=0.6\textwidth]{figures/model.pdf}
 %---------------------------------------------------------
 \begin{frame}{Overview on the network}
     The assumption that lead to this design is that from the time of arrival matrix
@@ -255,24 +327,32 @@
 %---------------------------------------------------------
 \begin{frame}{Encoder for time of arrivals}
 
-    \includegraphics[width=\textwidth]{ENC_history.png}
+    \includegraphics[width=\textwidth]{figures/ENC_history.png}
     
 \end{frame}
 
 
 %---------------------------------------------------------
 \begin{frame}{LSTM}
-si spiega che cos'è
+    LSTM (\textit{Long Short Term Memory}) cell is a variant of a typical recurrent RNN cell.
+    It is able to learn long-term dependencies that brings along in a hidden state.
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.7\textwidth]{figures/LSTM_Cell.svg.png}
+        %\caption{Credits: Guillaume Chevalier}
+    \end{figure}
     
+    %maybe inserire grafici della sigma e del tanh
 \end{frame}
 
 %---------------------------------------------------------
 \begin{frame}{LSTM for the time series}
-    \includegraphics[width=\textwidth]{LSTM_history.png}    
+    \includegraphics[width=\textwidth]{figures/LSTM_history.png}    
 \end{frame}
 
 \begin{frame}{Subnets performance}
-    \includegraphics[width=\textwidth]{sub_net_train.pdf}
+    \includegraphics[width=\textwidth]{figures/sub_net_train.pdf}
 \end{frame}
 
 %---------------------------------------------------------
@@ -283,11 +363,11 @@ si spiega che cos'è
 
 
 \begin{frame}{Subnets train freezing}
-    \includegraphics[width=.8\linewidth]{freezetraining_2.pdf}
+    \includegraphics[width=.8\linewidth]{figures/freezetraining_2.pdf}
 \end{frame}
 
 \begin{frame}{Subnets train freezing}
-    \includegraphics[width=.8\linewidth]{freezetraining.pdf}
+    \includegraphics[width=.8\linewidth]{figures/freezetraining.pdf}
 \end{frame}
 
 %---------------------------------------------------------
