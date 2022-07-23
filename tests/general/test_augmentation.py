@@ -11,9 +11,6 @@ from context import FeederProf
 class TestAUG(unittest.TestCase):
     """Single input augmentation"""
 
-    def __init__(self):
-        self.augmented_mat = None
-
     def setUp(self):
         # matrix to test
         self.matrix = np.arange(81).reshape(9,9)
