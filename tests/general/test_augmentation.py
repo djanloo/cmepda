@@ -26,7 +26,7 @@ class TestAUG(unittest.TestCase):
         np.testing.assert_allclose(self.augmented_mat['flip_lr'], np.fliplr(self.matrix))
         
     def test_flip_ud(self):
-        np.testing.assert_allclose(self.augmented_mat['flip_ud'], np.flip_ud(self.matrix))
+        np.testing.assert_allclose(self.augmented_mat['flip_ud'], np.flipud(self.matrix))
 
     def test_flip_diag(self):
         np.testing.assert_allclose(self.augmented_mat['flip_diag'], np.transpose(self.matrix))
