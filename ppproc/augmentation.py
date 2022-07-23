@@ -46,10 +46,14 @@ class Augment:
                     continue
 
         # augmentation by difficulty
-        if not height_threshold:
+        if prof is not None and height_threshold is None:
             for j, idx in enumerate(self.data_indexes):
                 fname = constants.FILENAME.format(name=idx)
                 self.dataset[j] = np.load(f"{self.directory}/{fname}")
+
+        # check if both are not None
+        if prof is not None and height_threshold is not None:
+            raise ValueError("prof and height_threshold can't be both different from None!")
 
     def augment_dataset(self):
         """Effectively realize the augmentation on the initialized dataset.
