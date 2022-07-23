@@ -20,13 +20,13 @@ class TestAUG(unittest.TestCase):
         self.augmented_mat = aug.augment_matrix(self.matrix)
         
     def test_rot(self):
-        self.assertEqual(np.rot90(self.matrix), self.augmented_mat['rot'])
+        np.testing.assert_allclose(self.augmented_mat['rot'], np.rot90(self.matrix))
         
     def test_flip_lr(self):
-        self.assertEqual(np.fliplr(self.matrix), self.augmented_mat['flip_lr'])
+        np.testing.assert_allclose(self.augmented_mat['flip_lr'], np.fliplr(self.matrix))
         
     def test_flip_ud(self):
-        self.assertEqual(np.flipud(self.matrix), self.augmented_mat['flip_ud'])
-        
+        np.testing.assert_allclose(self.augmented_mat['flip_ud'], np.flip_ud(self.matrix))
+
     def test_flip_diag(self):
-        self.assertEqual(np.transpose(self.matrix), self.augmented_mat['flip_diag'])
+        np.testing.assert_allclose(self.augmented_mat['flip_diag'], np.transpose(self.matrix))
