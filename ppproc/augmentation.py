@@ -129,10 +129,11 @@ class Augment:
         return new_record
 
     @staticmethod
-    def rotate_matrix(matrix):
-        """Rotate the matrix of 90°."""
-        matrix = np.rot90(matrix)
-        return matrix
+    def rotate_matrix(matrix, angle=90):
+        """Rotate the matrix by 90°."""
+        if angle == 90:
+            matrix = np.rot90(matrix)
+            return matrix
 
         # TODO:evaluate if other rotations are needed
 
