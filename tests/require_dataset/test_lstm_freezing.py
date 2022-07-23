@@ -8,6 +8,7 @@ Finally the complete net undergoes a train stage and resolution is estimated.
 """
 
 import os
+import sys
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
@@ -15,8 +16,10 @@ from matplotlib import rcParams
 from rich import print
 
 from context import DataFeeder
-from context import LstmEncoder , TimeSeriesLSTM
+from context import LstmEncoder , TimeSeriesLSTM, utils 
 
+# Sends a message if something has gone wrong
+sys.stderr = utils.RemoteStderr()
 
 # constants
 EPOCHS = 50
@@ -79,7 +82,9 @@ val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
 
 # Build the net
 lstmenc = LstmEncoder(
-    lstm=lstm, train_lstm=False  # Uses the lstm of line 42  # But then freezes it
+    path="trained/test_lstm_freezing_lstmencoder",
+    lstm=lstm, train_lstm=False, # Uses the lstm of line 42  # But then freezes it
+    earlystopping=True, tensorboard=True,
 )
 
 # Now train the net (lstm subnet excluded)
@@ -89,7 +94,7 @@ lstmenc.train(
     validation_data=val_feeder,
     batch_size=BATCH_SIZE,
     verbose=1,
-    use_multiprocessing=False,
+    use_multiprocessing=True,
 )
 
 # Then checks resolution

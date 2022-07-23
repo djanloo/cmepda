@@ -92,7 +92,7 @@ class DataFeeder(keras.utils.Sequence):
         """Shuffles indexes after each epoch"""
         self.datum_indexes = np.arange(self.data_len)
         if self.shuffle:
-            print(f"[blue]Shuffled indexes[/blue] in DataFeederKeras({self.folder})")
+            print(f"[blue]Shuffled indexes[/blue] in DataFeeder({self.folder})")
             np.random.shuffle(self.datum_indexes)
 
     def data_generation(self, batch_datum_indexes):
