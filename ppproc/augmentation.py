@@ -12,12 +12,12 @@ class Augment:
     """Class for executing data augmentation.
     
     One can choose if augment the more difficult data to predict (given back by the class FeederProf) or data over
-    a certain height threshold.
+    a certain height threshold. 'prof' and 'height_threshold' can't be both different from None.
     
     Args:
         prof (:obj:'FeederProf'): instance of FeederProf class who gives back data sorted by difficulty.
         N (int, optional): number of data to augment
-        height_threshold (bool): if True augment the N data at higher height.
+        height_threshold (int): if given sets the threshold for augmenting data over that height, at a maximum of N data.
         """
     def __init__(self, prof=None, N=10_000, height_threshold=None):
         if prof is not None: 
@@ -37,7 +37,7 @@ class Augment:
             self.height_threshold = height_threshold
             for fname in os.listdir(self.directory):
                 dummy = np.load(f"{self.directory}/{fname}")  # open all the datas and put it into dummy
-                if dummy['outcome'] > 850:  # check on the height value
+                if dummy['outcome'] > self.height_threshold:  # check on the height value
                     self.dataset[index_n] = dummy  # put into dataset
                     index_n += 1
                     if index_n > self.N:  # breaks when we've got the right number of samples
