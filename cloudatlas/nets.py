@@ -62,7 +62,7 @@ class LushlooNet:
             ## EarlyStopping callback
             ## By default monitor = val_loss
             self.callbacks.append(
-                keras.callbacks.EarlyStopping(min_delta=0.1, patience=3)
+                keras.callbacks.EarlyStopping(min_delta=0.05, patience=3)
             )
 
         # If no callback is used
