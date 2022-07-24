@@ -11,17 +11,9 @@ import numpy as np
 from context import FeederProf, DataFeeder
 from context import LstmEncoder, ToaEncoder, TimeSeriesLSTM
 
-
 # constants
 EPOCHS = 50
 BATCH_SIZE = 128
-
-# Directories
-work_dir = os.getcwd()
-parent_dir = os.path.dirname(work_dir)  # I go up twice
-parent_dir = os.path.dirname(parent_dir)
-os.chdir(parent_dir)
-
 
 rcParams["font.family"] = "serif"
 rcParams["font.size"] = 10
@@ -38,12 +30,12 @@ train_feeder = DataFeeder("data_by_entry/train", **feeder_options)
 val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
 test_feeder = DataFeeder("data_by_entry/test", **feeder_options)
 
-enc = ToaEncoder()
-lstm = TimeSeriesLSTM()
-lstmenc = LstmEncoder()
+enc = ToaEncoder(path="trained/freezing/enc")
+lstm = TimeSeriesLSTM(path="trained/freezing/lst_2")
+lstmenc = LstmEncoder(path="lstmenc_train_sub")
 
-lstmenc_notrain = TimeSeriesLSTM(
-    path="trained/lstmenc_untrainable_subnets",
+lstmenc_notrain = LstmEncoder(
+    path="trained/lstmenc",
     earlystopping=True,
     tensorboard=True,
     encoder=enc,
@@ -58,6 +50,7 @@ b_notrain = lstmenc_notrain.model.get_layer(name="lstmenc_dense_1").get_weights(
 w_train = lstmenc.model.get_layer(name="lstmenc_dense_1").get_weights()[0]
 b_train = lstmenc.model.get_layer(name="lstmenc_dense_1").get_weights()[1]
 
+breakpoint()
 
 w1 = axes[0, 0].imshow(w_notrain)
 plt.colorbar(w1, ax=axes[0, 0])

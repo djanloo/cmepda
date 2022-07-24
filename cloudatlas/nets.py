@@ -145,8 +145,8 @@ class ToaEncoder(LushlooNet):
         input_toa = Input(shape=(9, 9, 1), name="toa_input")
         enc = Dense(256, activation="relu", name="enc_dense_d")(input_toa)
         enc = Dense(128, activation="relu", name="enc_dense_c")(enc)
-        enc = Dense(64, activation="relu", name="enc_dense_b")(enc)
         flat = Flatten(name="enc_flatten")(enc)
+        enc = Dense(64, activation="relu", name="enc_dense_b")(flat)
 
         # Now adds an output layer
         # This will be removed when used in LstmEncoder
@@ -175,8 +175,8 @@ class TimeSeriesLSTM(LushlooNet):
 
         input_ts = Input(shape=(80, 81), name="ts_input")
         lstm = LSTM(64, name="lstm_lstm")(input_ts)
+        # dense = Dense(64, activation="relu", name="lstm_dense")(lstm)
         dense = Dense(16, activation="relu", name="lstm_dense")(lstm)
-
         # Now adds an output layer
         # This will be removed when used in LstmEncoder
         dense = Dense(1, activation="linear", name="lstm_out")(dense)
