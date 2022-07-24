@@ -12,11 +12,13 @@ import sys
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
+from matplotlib import pyplot as plt
 from matplotlib import rcParams
 from rich import print
 
 from context import DataFeeder
-from context import LstmEncoder , TimeSeriesLSTM, utils 
+from context import LstmEncoder , TimeSeriesLSTM, utils
+from context import stats
 
 # Sends a message if something has gone wrong
 sys.stderr = utils.RemoteStderr()
@@ -26,10 +28,10 @@ EPOCHS = 50
 BATCH_SIZE = 128
 
 # Directories
-work_dir = os.getcwd()
-parent_dir = os.path.dirname(work_dir)  # I go up twice
-parent_dir = os.path.dirname(parent_dir)
-os.chdir(parent_dir)
+# work_dir = os.getcwd()
+# parent_dir = os.path.dirname(work_dir)  # I go up twice
+# parent_dir = os.path.dirname(parent_dir)
+# os.chdir(parent_dir)
 
 
 rcParams["font.family"] = "serif"
@@ -52,18 +54,18 @@ lstm_val_feeder = DataFeeder("data_by_entry/validation", **lstm_feeder_options)
 lstm = TimeSeriesLSTM(
     path="trained/test_freezing_lstm", earlystopping=True, tensorboard=True
 )
-lstm.train(
-    x=lstm_train_feeder,
-    epochs=EPOCHS,
-    validation_data=lstm_val_feeder,
-    batch_size=BATCH_SIZE,
-    verbose=1,
-    use_multiprocessing=False,
-)
+# lstm.train(
+#     x=lstm_train_feeder,
+#     epochs=EPOCHS,
+#     validation_data=lstm_val_feeder,
+#     batch_size=BATCH_SIZE,
+#     verbose=1,
+#     use_multiprocessing=False,
+# )
 
 # Resolution estimation
 lstm_test_feeder = DataFeeder("data_by_entry/test", **lstm_feeder_options)
-print(f"Only lstm res is {lstm.resolution_on(lstm_test_feeder)}")
+# print(f"Only lstm res is {lstm.resolution_on(lstm_test_feeder)}")
 
 
 #%% Part 2: build and check global network
@@ -88,15 +90,24 @@ lstmenc = LstmEncoder(
 )
 
 # Now train the net (lstm subnet excluded)
-lstmenc.train(
-    x=train_feeder,
-    epochs=EPOCHS,
-    validation_data=val_feeder,
-    batch_size=BATCH_SIZE,
-    verbose=1,
-    use_multiprocessing=True,
-)
+# lstmenc.train(
+#     x=train_feeder,
+#     epochs=EPOCHS,
+#     validation_data=val_feeder,
+#     batch_size=BATCH_SIZE,
+#     verbose=1,
+#     use_multiprocessing=True,
+# )
 
 # Then checks resolution
 test_feeder = DataFeeder("data_by_entry/test", **feeder_options)
-print(f"LSTM + encoder res is {lstmenc.resolution_on(test_feeder)}")
+# print(f"LSTM + encoder res is {lstmenc.resolution_on(test_feeder)}")
+
+stats.interpercentile_plot(
+    [lstm, lstmenc],
+    "data_by_entry/test",
+    [lstm_feeder_options, feeder_options],
+    relative_error=True,
+)
+
+plt.show()
