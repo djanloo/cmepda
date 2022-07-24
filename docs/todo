@@ -1,11 +1,23 @@
 # MISC
-Statistiche freezata lstm
-loss/rmse encoder
-loss/rmse lstm
-rifare i grafici weights/bias
+Statistiche freezata lstm  #P2
+loss/rmse encoder  #P2
+loss/rmse lstm  #P2
+rifare i grafici weights/bias  #P2
+statistiche per rete normale  #P1
+statiche per rete aumentata  #P1
+slide doc  # P3
+slide test  #P2
 
 
 # TRAINING
-training normale
-trainig normale (augmentation)
+training normale  #P1
+trainig normale (augmentation)  #P1
+
+
+# CURRICULUM
+figura per far vedere che si spostano  #P3
+
+# LAAT
+trainone  #P4
+hyperparamter  #P4
 
