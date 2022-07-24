@@ -26,7 +26,7 @@ class RemoteMonitor:
     def send(self, message):
         """Sends a message."""
         # Check wether it's a message or more than one
-        if isinstance(message, list):
+        if isinstance(message, list) and message:
             msg = message
         else:
             msg = [message]
