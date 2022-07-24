@@ -339,7 +339,7 @@
 
     \begin{figure}
         \centering
-        \includegraphics[width=0.7\textwidth]{figures/LSTM_Cell.svg.png}
+        \includegraphics[width=0.7\textwidth]{figures/LSTM_Cell.png}
         %\caption{Credits: Guillaume Chevalier}
     \end{figure}
     
@@ -348,11 +348,20 @@
 
 %---------------------------------------------------------
 \begin{frame}{LSTM for the time series}
-    \includegraphics[width=\textwidth]{figures/LSTM_history.png}    
-\end{frame}
-
-\begin{frame}{Subnets performance}
-    \includegraphics[width=\textwidth]{figures/sub_net_train.pdf}
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\textwidth]{figures/lstm_loss.png}
+            %\caption{Credits: Guillaume Chevalier}
+        \end{figure}
+        
+        \column{0.5\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\textwidth]{figures/lstm_rmse.png}
+        \end{figure}
+        \end{columns}
 \end{frame}
 
 %---------------------------------------------------------

@@ -8,6 +8,7 @@ from context import FeederProf
 from context import constants
 
 
+
 class Augment:
     """Class for executing data augmentation.
     
@@ -15,20 +16,30 @@ class Augment:
     a certain height threshold. 'prof' and 'height_threshold' can't be both different from None.
     
     Args:
+        dataset_dir (:path): path to the dataset to augment, if left None a prof should be given and will automatically find one
         prof (:obj:'FeederProf'): instance of FeederProf class who gives back data sorted by difficulty.
         N (int, optional): number of data to augment
         height_threshold (int): if given sets the threshold for augmenting data over that height, at a maximum of N data.
         """
-    def __init__(self, prof=None, N=10_000, height_threshold=None):
+    def __init__(self, dataset_dir=None, prof=None, N=10_000, height_threshold=None):
+        self.directory = dataset_dir
+        self.start_number = len(os.listdir(self.directory))
+
+        # if one have chosen to augment more difficult data
         if prof is not None: 
-            self.data_indexes = prof.datum_indexes[-N:]
-            self.start_number = prof.data_len
+            self.data_indexes = prof.datum_indexes[-N:]  # takes data-indexes of data sorted by difficulty
+            self.start_number = prof.data_len  #
             self.directory = prof.folder
-        self.dataset = np.empty(N, dtype=constants.funky_dtype)
+
+        # check if there's a directory
+        if self.directory is None:
+            raise NotImplementedError("A directory or a prof should be given!")
+
+        self.dataset = np.empty(N, dtype=constants.funky_dtype) # initialize an empty dataset of len N with right dtype
         self.augmented_data = None
         self.N = N
 
-        # useful
+        # useful stuff
         dummy = np.empty(0, dtype=constants.funky_dtype)
         index_n = 0
 
@@ -36,7 +47,7 @@ class Augment:
         if height_threshold is not None:
             self.height_threshold = height_threshold
             for fname in os.listdir(self.directory):
-                dummy = np.load(f"{self.directory}/{fname}")  # open all the datas and put it into dummy
+                dummy = np.load(f"{self.directory}/{fname}")  # open one data at once and put it into dummy
                 if dummy['outcome'] > self.height_threshold:  # check on the height value
                     self.dataset[index_n] = dummy  # put into dataset
                     index_n += 1
@@ -45,8 +56,13 @@ class Augment:
                 else:
                     continue
 
+        # check if there are lines left empty in self.dataset, if so remove them
+        if index_n < self.N:
+            lines_to_remove = self.N - index_n
+            self.dataset = np.delete(self.dataset, np.s_[lines_to_remove-1:-1])
+            
         # augmentation by difficulty
-        if prof is not None and height_threshold is None:
+        if prof is not None:
             for j, idx in enumerate(self.data_indexes):
                 fname = constants.FILENAME.format(name=idx)
                 self.dataset[j] = np.load(f"{self.directory}/{fname}")
@@ -69,11 +85,11 @@ class Augment:
         # so it should start saving files from index = len(files)
         index_record = self.start_number
 
-        for record in track(self.dataset, total=self.N):
+        for record in track(self.dataset, total=len(self.dataset)):
 
             # check on the height threshold
             if self.height_threshold:
-                if record["outcome"] < 850:
+                if record["outcome"] < self.height_threshold:
                     continue
 
             # chiamare augment
@@ -99,6 +115,7 @@ class Augment:
                 # Saving and updating index
                 fname = constants.FILENAME.format(name=index_record)
                 np.save(f"{self.directory}/{fname}", new_record)
+
                 index_record += 1
 
     def augment_matrix(self, matrix):
@@ -157,21 +174,13 @@ class Augment:
 
 
 if __name__ == "__main__":
-    feeder_options = {
-        "batch_size": 100,
-        "input_fields": ["toa", "time_series"],
-        "target_field": "outcome",
-    }
 
-    # Calling prof Albertino
-    prof_train = FeederProf(
-        "trained/albertino",
-        constants.DIR_DATA_BY_ENTRY_AUG + "/test",
-        **feeder_options,
-        n_of_epochs=1,
-    )
-    print(prof_train.data_len)
+    # directories
+    work_dir = os.getcwd()
+    parent_dir = os.path.dirname(work_dir)  # I go up
+    os.chdir(parent_dir)
 
+    print(os.getcwd())
     # initialize and run augmentation
-    aug = Augment(prof_train)
+    aug = Augment(dataset_dir="data_by_entry_height/train", height_threshold=850)
     aug.augment_dataset()

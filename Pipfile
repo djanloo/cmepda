@@ -20,6 +20,8 @@ jupyter = "*"
 jupyterthemes = "*"
 line-profiler = "*"
 keras-tuner = "*"
+ipykernel = "*"
+scipy = "*"
 
 [dev-packages]
 ipykernel = "*"

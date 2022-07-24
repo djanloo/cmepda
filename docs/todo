@@ -1,7 +1,7 @@
 # MISC
 Statistiche freezata lstm  #P2  (G)
 loss/rmse encoder  #P2  (L)
-loss/rmse lstm  #P2  (L)
+loss/rmse lstm  #P2  (L) [DONE!]
 rifare i grafici weights/bias  #P2  (G)
 statistiche per rete normale  #P1 (G)
 statiche per rete aumentata  #P1 (L)
