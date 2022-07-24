@@ -8,11 +8,12 @@ rcParams["font.family"] = "serif"
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--path', type=str, required=True)
+parser.add_argument('--what', type=str, required=True)
+
 args = parser.parse_args()
 
 history = np.load(f"{args.path}/history.npy", allow_pickle=True).item()
-for key in history.history:
-    plt.plot(history.history[key], label=key)
+plt.plot(history.history[args.what], label=args.what)
 
 plt.title(f"Model at {args.path}")
 plt.xlabel("Epoch")

@@ -1,6 +1,6 @@
 """Tests for subnets"""
 import os
-import multiprocessing as mp
+import sys 
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
@@ -8,8 +8,10 @@ import matplotlib.pyplot as plt
 from rich import print
 
 from context import DataFeeder
-from context import ToaEncoder, TimeSeriesLSTM
-from context import stats
+from context import ToaEncoder, TimeSeriesLSTM, LstmEncoder
+from context import stats, utils
+
+sys.stderr = utils.RemoteStderr()
 
 # constants
 EPOCHS = 50
@@ -35,16 +37,60 @@ lstm_feeder_options = {
     "input_fields": "time_series",
     "target_field": "outcome",
 }
-lstm = TimeSeriesLSTM(path="trained/freezing/lst", earlystopping=True, tensorboard=True)
+lstm = TimeSeriesLSTM(path="trained/freezing/lst_2", earlystopping=False, tensorboard=True)
 lstm_train_feeder = DataFeeder("data_by_entry/train", **lstm_feeder_options)
 lstm_val_feeder = DataFeeder("data_by_entry/validation", **lstm_feeder_options)
 
 
-# TRAIN
-# Use multiprocessing to train both at the same time
-# Used to multiprocess training
-def train_subnet(net, train_feeder, val_feeder):
-    net.train(
+# TRAIN 
+# lstm.train(
+#         x=lstm_train_feeder,
+#         epochs=EPOCHS,
+#         validation_data=lstm_val_feeder,
+#         batch_size=BATCH_SIZE,
+#         verbose=1,
+#         use_multiprocessing=False,
+#     )
+
+enc.train(
+        x=enc_train_feeder,
+        epochs=EPOCHS,
+        validation_data=enc_val_feeder,
+        batch_size=BATCH_SIZE,
+        verbose=1,
+        use_multiprocessing=False,
+    )
+
+
+# Test and stats
+# enc_test_feeder = DataFeeder("data_by_entry/test", **encoder_feeder_options)
+# lstm_test_feeder = DataFeeder("data_by_entry/test", **lstm_feeder_options)
+
+# stats.interpercentile_plot(
+#     [enc, lstm],
+#     "data_by_entry/test",
+#     [encoder_feeder_options, lstm_feeder_options],
+#     relative_error=False,
+# )
+
+# Combine the two
+feeder_options = {
+    "shuffle": True,
+    "batch_size": BATCH_SIZE,
+    "input_fields": ["toa","time_series"],
+    "target_field": "outcome",
+}
+lstmenc = LstmEncoder(
+    path="trained/freezing/lstmenc_freeze_sub", 
+    lstm=lstm, encoder=enc, 
+    train_encoder=False, 
+    train_lstm=False, 
+    earlystopping=True
+    )
+train_feeder = DataFeeder("data_by_entry/train", **feeder_options)
+val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
+
+lstmenc.train(
         x=train_feeder,
         epochs=EPOCHS,
         validation_data=val_feeder,
@@ -53,22 +99,19 @@ def train_subnet(net, train_feeder, val_feeder):
         use_multiprocessing=False,
     )
 
-pool = mp.Pool(processes=4)
-args = (
-    (enc, enc_train_feeder, enc_val_feeder),
-    (lstm, lstm_train_feeder, lstm_val_feeder),
-)
-pool.map(train_subnet, args)
+# Now make a train_sub network
+lstmenc_train_sub = LstmEncoder(path="trained/freezing/lstmenc_train_sub",
+    earlystopping=True,
+    tensorboard=True
+    )
 
-# Test and stats
-enc_test_feeder = DataFeeder("data_by_entry/test", **encoder_feeder_options)
-lstm_test_feeder = DataFeeder("data_by_entry/test", **lstm_feeder_options)
+lstmenc_train_sub.train(
+        x=train_feeder,
+        epochs=EPOCHS,
+        validation_data=val_feeder,
+        batch_size=BATCH_SIZE,
+        verbose=1,
+        use_multiprocessing=False,
+    )
 
-stats.interpercentile_plot(
-    [enc, lstm],
-    "data_by_entry/test",
-    [encoder_feeder_options, lstm_feeder_options],
-    relative_error=False,
-)
-
-plt.show()
+# plt.show()
