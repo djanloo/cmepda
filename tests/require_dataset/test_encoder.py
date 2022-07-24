@@ -52,7 +52,7 @@ encoder_train_feeder = DataFeeder("data_by_entry/train", **encoder_feeder_option
 encoder_val_feeder = DataFeeder("data_by_entry/validation", **encoder_feeder_options)
 
 enc = ToaEncoder(
-    path="trained/test_encoder", earlystopping=True, tensorboard=True
+    path="trained/test_encoder", earlystopping=False, tensorboard=True
 )
 
 enc.train(
