@@ -2,16 +2,16 @@
 Statistiche freezata lstm  #P2
 loss/rmse encoder  #P2
 loss/rmse lstm  #P2
-rifare i grafici weights/bias  #P2
-statistiche per rete normale  #P1
-statiche per rete aumentata  #P1
+rifare i grafici weights/bias  #P2  (G)
+statistiche per rete normale  #P1 (G)
+statiche per rete aumentata  #P1 (L)
 slide doc  # P3
 slide test  #P2
 
 
 # TRAINING
-training normale  #P1
-trainig normale (augmentation)  #P1
+training normale  #P1  (G)
+trainig normale (augmentation)  #P1  (L)
 
 
 # CURRICULUM
