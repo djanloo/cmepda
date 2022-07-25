@@ -143,14 +143,15 @@ class ToaEncoder(LushlooNet):
         self.compilation_kwargs["optimizer"] = optimizer
 
         input_toa = Input(shape=(9, 9, 1), name="toa_input")
-        enc = Dense(256, activation="relu", name="enc_dense_d")(input_toa)
-        enc = Dense(128, activation="relu", name="enc_dense_c")(enc)
+        enc = Dense(256, activation="relu", name="enc_dense_a")(input_toa)
+        enc = Dense(128, activation="relu", name="enc_dense_b")(enc)
+        enc = Dense(64, activation="relu", name="enc_dense_c")(enc)
+        enc = Dense(1, activation="relu", name="enc_dense_d")(enc)
         flat = Flatten(name="enc_flatten")(enc)
-        enc = Dense(64, activation="relu", name="enc_dense_b")(flat)
 
         # Now adds an output layer
         # This will be removed when used in LstmEncoder
-        enc = Dense(1, activation="linear", name="enc_out")(enc)
+        enc = Dense(1, activation="linear", name="enc_out")(flat)
 
         self.model = Model(inputs=input_toa, outputs=enc, name="ToAEncoder")
         self.model.compile(**self.compilation_kwargs)
