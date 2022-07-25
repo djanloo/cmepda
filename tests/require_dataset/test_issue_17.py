@@ -36,13 +36,9 @@ lstmenc_notrain = LstmEncoder(
     path="trained/lstmenc",
     earlystopping=True,
     tensorboard=True,
-    encoder=enc,
-    lstm=lstm,
 )
 lstmenc = LstmEncoder(path="lstmenc_train_sub")
 
-
-fig, axes = plt.subplots(2, 2)
 
 w_notrain = lstmenc_notrain.model.get_layer(name="lstmenc_dense_1").get_weights()[0]
 b_notrain = lstmenc_notrain.model.get_layer(name="lstmenc_dense_1").get_weights()[1]
@@ -50,29 +46,15 @@ b_notrain = lstmenc_notrain.model.get_layer(name="lstmenc_dense_1").get_weights(
 w_train = lstmenc.model.get_layer(name="lstmenc_dense_1").get_weights()[0]
 b_train = lstmenc.model.get_layer(name="lstmenc_dense_1").get_weights()[1]
 
-breakpoint()
+w_notrain = np.swapaxes(w_notrain, 0, 1)
+mean = np.mean(w_notrain, axis=0)
+plt.plot(mean)
+plt.title("Mean of the (16, 10_000) weight matrix")
 
-w1 = axes[0, 0].imshow(w_notrain)
-plt.colorbar(w1, ax=axes[0, 0])
-axes[0, 0].set_title("Freeze-sub weights ")
-axes[0, 0].axis("off")
-
-b1 = axes[0, 1].imshow([b_notrain])
-plt.colorbar(b1, ax=axes[0, 1])
-axes[0, 1].set_title("Freeze-sub biases")
-axes[0, 1].axis("off")
-
-w2 = axes[1, 0].imshow(w_train)
-plt.colorbar(w2, ax=axes[1, 0])
-axes[1, 0].set_title("Train-sub weights ")
-axes[1, 0].axis("off")
-
-b2 = axes[1, 1].imshow([b_train])
-plt.colorbar(b2, ax=axes[1, 1])
-axes[1, 1].set_title("Train-sub biases")
-axes[1, 1].axis("off")
-
-
+plt.figure(2)
+for row in w_notrain:
+    plt.plot(row, alpha=0.2)
+plt.title("Weights cell_by_cell")
 plt.show()
 # print(w)
 # print(b)
