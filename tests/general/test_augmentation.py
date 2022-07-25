@@ -16,7 +16,7 @@ class TestAUG(unittest.TestCase):
         self.matrix = np.arange(81).reshape(9,9)
 
         # initialize and run augmentation
-        aug = Augment()
+        aug = Augment(height_threshold=850)
         self.augmented_mat = aug.augment_matrix(self.matrix)
         
     def test_rot(self):
