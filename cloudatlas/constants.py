@@ -3,7 +3,8 @@ import numpy as np
 
 # directory with datas splitted by entries
 DIR_DATA_BY_ENTRY = "data_by_entry"
-DIR_DATA_BY_ENTRY_AUG = "data_by_entry_aug"
+DIR_DATA_BY_ENTRY_AUG = "data_by_entry_aug"  # dataset augmented by difficulty
+DIR_DATA_BY_ENTRY_HEIGHT = "data_by_entry_height"  #dataset augmented by height
 
 # custom numpy dtype
 funky_dtype = np.dtype(

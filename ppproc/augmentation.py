@@ -21,7 +21,7 @@ class Augment:
         N (int, optional): number of data to augment
         height_threshold (int): if given sets the threshold for augmenting data over that height, at a maximum of N data.
         """
-    def __init__(self, dataset_dir=None, prof=None, N=10_000, height_threshold=None):
+    def __init__(self, dataset_dir=None, prof=None, N=15_000, height_threshold=None, test_mode=False):
         self.directory = dataset_dir
         self.start_number = len(os.listdir(self.directory))
 
@@ -32,7 +32,7 @@ class Augment:
             self.directory = prof.folder
 
         # check if there's a directory
-        if self.directory is None:
+        if self.directory is None and test_mode is False:
             raise NotImplementedError("A directory or a prof should be given!")
 
         self.dataset = np.empty(N, dtype=constants.funky_dtype) # initialize an empty dataset of len N with right dtype
@@ -41,24 +41,27 @@ class Augment:
 
         # useful stuff
         dummy = np.empty(0, dtype=constants.funky_dtype)
-        index_n = 0
+        count_right_files = 0
 
         # augmentation by height
         if height_threshold is not None:
+            #assing height threshold
             self.height_threshold = height_threshold
-            for fname in os.listdir(self.directory):
+
+            # load dataset
+            for index, fname in enumerate(os.listdir(self.directory)):
                 dummy = np.load(f"{self.directory}/{fname}")  # open one data at once and put it into dummy
                 if dummy['outcome'] > self.height_threshold:  # check on the height value
-                    self.dataset[index_n] = dummy  # put into dataset
-                    index_n += 1
-                    if index_n > self.N:  # breaks when we've got the right number of samples
+                    self.dataset[count_right_files] = dummy  # put into dataset
+                    count_right_files += 1
+                    if count_right_files >= self.N:  # breaks when we've got the right number of samples
                         break
                 else:
                     continue
 
         # check if there are lines left empty in self.dataset, if so remove them
-        if index_n < self.N:
-            lines_to_remove = self.N - index_n
+        if count_right_files < self.N:
+            lines_to_remove = self.N - count_right_files
             self.dataset = np.delete(self.dataset, np.s_[lines_to_remove-1:-1])
             
         # augmentation by difficulty
@@ -68,8 +71,9 @@ class Augment:
                 self.dataset[j] = np.load(f"{self.directory}/{fname}")
 
         # check if both are not None
-        if prof is not None and height_threshold is not None:
-            raise NotImplementedError("prof and height_threshold can't be both different from None!")
+        if prof is not None and height_threshold is not None and test_mode is False:
+            raise NotImplementedError("prof and height_threshold can't be both different from None! "
+                                      "If running in test mode put test_mode=True")
 
     def augment_dataset(self):
         """Effectively realize the augmentation on the initialized dataset.
@@ -175,12 +179,6 @@ class Augment:
 
 if __name__ == "__main__":
 
-    # directories
-    work_dir = os.getcwd()
-    parent_dir = os.path.dirname(work_dir)  # I go up
-    os.chdir(parent_dir)
-
-    print(os.getcwd())
     # initialize and run augmentation
-    aug = Augment(dataset_dir="data_by_entry_height/train", height_threshold=850)
+    aug = Augment(dataset_dir="data_by_entry_height/validation", height_threshold=850)
     aug.augment_dataset()
