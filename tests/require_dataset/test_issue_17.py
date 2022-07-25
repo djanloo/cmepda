@@ -31,9 +31,7 @@ val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
 test_feeder = DataFeeder("data_by_entry/test", **feeder_options)
 
 enc = ToaEncoder(path="trained/freezing/enc")
-lstm = TimeSeriesLSTM(path="trained/freezing/lst_2")
-lstmenc = LstmEncoder(path="lstmenc_train_sub")
-
+lstm = TimeSeriesLSTM(path="trained/freezing/lst")
 lstmenc_notrain = LstmEncoder(
     path="trained/lstmenc",
     earlystopping=True,
@@ -41,6 +39,8 @@ lstmenc_notrain = LstmEncoder(
     encoder=enc,
     lstm=lstm,
 )
+lstmenc = LstmEncoder(path="lstmenc_train_sub")
+
 
 fig, axes = plt.subplots(2, 2)
 
