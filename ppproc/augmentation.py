@@ -21,7 +21,7 @@ class Augment:
         N (int, optional): number of data to augment
         height_threshold (int): if given sets the threshold for augmenting data over that height, at a maximum of N data.
         """
-    def __init__(self, dataset_dir=None, prof=None, N=10_000, height_threshold=None):
+    def __init__(self, dataset_dir=None, prof=None, N=15_000, height_threshold=None):
         self.directory = dataset_dir
         self.start_number = len(os.listdir(self.directory))
 
@@ -175,12 +175,6 @@ class Augment:
 
 if __name__ == "__main__":
 
-    # directories
-    work_dir = os.getcwd()
-    parent_dir = os.path.dirname(work_dir)  # I go up
-    os.chdir(parent_dir)
-
-    print(os.getcwd())
     # initialize and run augmentation
-    aug = Augment(dataset_dir="data_by_entry_height/train", height_threshold=850)
+    aug = Augment(dataset_dir="data_by_entry_height/validation", height_threshold=850)
     aug.augment_dataset()

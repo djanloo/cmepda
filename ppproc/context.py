@@ -17,3 +17,4 @@ from cloudatlas.datafeeders import DataFeeder, FeederProf
 from cloudatlas.nets import LstmEncoder, ToaEncoder, TimeSeriesLSTM
 import cloudatlas.constants as constants
 import cloudatlas.utils as utils
+from ppproc.augmentation import Augment
