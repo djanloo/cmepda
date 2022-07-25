@@ -38,7 +38,7 @@ def load_by_line(directory):
     for index, fname in track(enumerate(os.listdir(directory)),
                               description=f'Loading dataset from {directory}',
                               total=len(os.listdir(directory))):
-        entries_loaded[index] = np.load(f"{self.directory}/{fname}")
+        entries_loaded[index] = np.load(f"{directory}/{fname}")
 
     return entries_loaded
 
