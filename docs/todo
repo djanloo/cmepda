@@ -5,7 +5,7 @@ loss/rmse lstm  #P2  (L) [DONE!]
 rifare i grafici weights/bias  #P2  (G) [ERR]
 statistiche per rete normale  #P1 (G)
 statiche per rete aumentata  #P1 (L)
-slide doc  # P3  (L)
+slide doc  # P3  (L) [DONE!, ma siamo sicuri di lasciarcela?]
 slide test  #P2  (L)
 
 
@@ -17,7 +17,7 @@ trainig normale (augmentation)  #P1  (L)
 # CURRICULUM
 figura per far vedere che si spostano  #P3 (G)
 
-# LAAT
+# LAST
 trainone  #P4
 hyperparamter  #P4
 
