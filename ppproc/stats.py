@@ -18,14 +18,27 @@ rcParams["font.size"] = 10
 
 FILE = "true_vs_predictions.npy"
 
-def interpercentile_plot(nets, dataset_path, list_of_feeder_options, relative_error=True):
+def interpercentile_plot(nets, dataset_path, list_of_feeder_options, plot_type=None,
+    delta_quants = [75, 50 , 25]):
 
+    relative_error = False
+    normalize = False
 
     fig, axes = plt.subplots(1, len(nets), sharey=False)
-    if relative_error:
-        axes[0].set_ylabel("Relative error [a.u.]")
-    else:
+    
+    if plot_type is None:
+
         axes[0].set_ylabel("Predicted height [m]")
+
+    elif plot_type == "relative_error":
+
+        axes[0].set_ylabel("Relative error")
+        relative_error = True
+
+    elif plot_type == "normalized":
+
+        axes[0].set_ylabel("Normalized prediction [a.u.]")
+        normalize = True
 
 
     for net, ax , feeder_options in zip(nets, axes, list_of_feeder_options):
@@ -43,6 +56,9 @@ def interpercentile_plot(nets, dataset_path, list_of_feeder_options, relative_er
         if relative_error:
             predictions /= true_vals
             predictions -= 1
+        elif normalize:
+            predictions /= true_vals
+            ax.axhline(1)
         
 
         # Plots points
@@ -55,7 +71,6 @@ def interpercentile_plot(nets, dataset_path, list_of_feeder_options, relative_er
         # Then takes the values of predictions that fall into that interval
         # And computes the percentile of the sample
         vals = np.linspace(650, 1000, N)
-        delta_quants = [95, 80, 50, 25, 10]
         ups = np.zeros((len(delta_quants), N))
         downs = np.zeros((len(delta_quants), N))
         colormap = cm.get_cmap("plasma")
