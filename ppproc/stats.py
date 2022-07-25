@@ -58,7 +58,7 @@ def interpercentile_plot(nets, dataset_path, list_of_feeder_options, plot_type=N
             predictions -= 1
         elif normalize:
             predictions /= true_vals
-            ax.axhline(1)
+            ax.axhline(1, ls=":", color='k')
         
 
         # Plots points
