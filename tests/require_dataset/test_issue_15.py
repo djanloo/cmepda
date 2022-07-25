@@ -43,23 +43,23 @@ lstm_val_feeder = DataFeeder("data_by_entry/validation", **lstm_feeder_options)
 
 
 # TRAIN 
-# lstm.train(
-#         x=lstm_train_feeder,
-#         epochs=EPOCHS,
-#         validation_data=lstm_val_feeder,
-#         batch_size=BATCH_SIZE,
-#         verbose=1,
-#         use_multiprocessing=False,
-#     )
+lstm.train(
+        x=lstm_train_feeder,
+        epochs=EPOCHS,
+        validation_data=lstm_val_feeder,
+        batch_size=BATCH_SIZE,
+        verbose=1,
+        use_multiprocessing=False,
+    )
 
-# enc.train(
-#         x=enc_train_feeder,
-#         epochs=EPOCHS,
-#         validation_data=enc_val_feeder,
-#         batch_size=BATCH_SIZE,
-#         verbose=1,
-#         use_multiprocessing=False,
-#     )
+enc.train(
+        x=enc_train_feeder,
+        epochs=EPOCHS,
+        validation_data=enc_val_feeder,
+        batch_size=BATCH_SIZE,
+        verbose=1,
+        use_multiprocessing=False,
+    )
 
 
 # Test and stats

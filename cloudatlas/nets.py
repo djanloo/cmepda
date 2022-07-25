@@ -62,7 +62,7 @@ class LushlooNet:
             ## EarlyStopping callback
             ## By default monitor = val_loss
             self.callbacks.append(
-                keras.callbacks.EarlyStopping(min_delta=0.05, patience=3)
+                keras.callbacks.EarlyStopping(min_delta=0.05, patience=6)
             )
 
         # If no callback is used
@@ -150,7 +150,7 @@ class ToaEncoder(LushlooNet):
 
         # Now adds an output layer
         # This will be removed when used in LstmEncoder
-        enc = Dense(1, activation="linear", name="enc_out")(flat)
+        enc = Dense(1, activation="linear", name="enc_out")(enc)
 
         self.model = Model(inputs=input_toa, outputs=enc, name="ToAEncoder")
         self.model.compile(**self.compilation_kwargs)
