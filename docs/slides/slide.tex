@@ -408,9 +408,12 @@
     \vfill
     \begin{columns}
         \begin{column}{.5\textwidth}
+            Sort in ascending error and divide in equal-length groups that the ``prof'' feeds to the next network
             \includegraphics[width=\textwidth]{figures/curriculum_before.png}
         \end{column}
         \begin{column}{.5\textwidth}
+            The ``student'' network is trained increasing in difficulty but spends more time on 
+            hard samples
             \includegraphics[width=\textwidth]{figures/curriculum_after.png}
         \end{column}
     \end{columns}
@@ -427,7 +430,8 @@ Main tests:
     \item[\textbullet] \textbf{DataFeeders}: builds a fictitious dataset and checks whether \texttt{DataFeeders} work fine
     \item[\textbullet] \textbf{Augmentation}: tests if an augmented matrix is effectively ``rotate'', ``flipped'', etc.
 \end{itemize}
-    
+    \vfill
+    Some tests required a trained model so they were not executed in CI.
 \end{frame}
 %---------------------------------------------------------
 \begin{frame}{Code coverage}
