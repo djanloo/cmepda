@@ -250,16 +250,6 @@
     
 \end{frame}
 
-%---------------------------------------------------------
-\begin{frame}{\texttt{FeederProf(DataFeeder)} class}{Curriculum learning}
-    
-    Using a pre-trained network data can be ``scored'' and then sorted in ascending order of difficulty
-
-    (work in progress) This can lead to a learning speed-up and improvements in resolution
-    
-    Caveat: this training strategy is not well suited (conceptually at least) for regression tasks, 
-    since it is not clear what a ``difficult'' sample would look like.
-\end{frame}
 
 %---------------------------------------------------------
 \begin{frame}{Data Augmentation}
@@ -412,6 +402,7 @@
     \vfill
     Maybe useful on classification tasks, but for regressions..
 \end{frame}
+
 \begin{frame}{curriculum learning}
     Training over ``difficult'' data makes the net forget the easier samples
     \vfill
