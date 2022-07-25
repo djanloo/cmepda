@@ -32,7 +32,7 @@ class Augment:
             self.directory = prof.folder
 
         # check if there's a directory
-        if self.directory is None:
+        if self.directory is None and test_mode is False:
             raise NotImplementedError("A directory or a prof should be given!")
 
         self.dataset = np.empty(N, dtype=constants.funky_dtype) # initialize an empty dataset of len N with right dtype
