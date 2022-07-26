@@ -18,14 +18,21 @@ rcParams["font.size"] = 10
 
 FILE = "true_vs_predictions.npy"
 
-def interpercentile_plot(nets, dataset_path, list_of_feeder_options, plot_type=None,
-    delta_quants = [75, 50 , 25]):
+
+def interpercentile_plot(
+    nets,
+    dataset_path,
+    list_of_feeder_options,
+    plot_type=None,
+    delta_quants=[75, 50, 25],
+    titles=None,
+):
 
     relative_error = False
     normalize = False
 
     fig, axes = plt.subplots(1, len(nets), sharey=False)
-    
+
     if plot_type is None:
 
         axes[0].set_ylabel("Predicted height [m]")
@@ -40,14 +47,18 @@ def interpercentile_plot(nets, dataset_path, list_of_feeder_options, plot_type=N
         axes[0].set_ylabel("Normalized prediction [a.u.]")
         normalize = True
 
+    if titles is not None:
+        ax_titles = titles 
+    else:
+        ax_titles = [net.path for net in nets]
 
-    for net, ax , feeder_options in zip(nets, axes, list_of_feeder_options):
+    for net, ax, feeder_options , ax_title in zip(nets, axes, list_of_feeder_options, ax_titles):
+
         feeder_options["shuffle"] = False
         feeder = DataFeeder(dataset_path, **feeder_options)
 
-
         model = net.model
-            
+
         res = net.resolution_on(feeder)
 
         predictions = model.predict(feeder).squeeze()
@@ -58,8 +69,7 @@ def interpercentile_plot(nets, dataset_path, list_of_feeder_options, plot_type=N
             predictions -= 1
         elif normalize:
             predictions /= true_vals
-            ax.axhline(1, ls=":", color='k')
-        
+            ax.axhline(1, ls=":", color="k")
 
         # Plots points
         ax.scatter(true_vals, predictions, s=6.0, alpha=0.1, color="k")
@@ -77,7 +87,9 @@ def interpercentile_plot(nets, dataset_path, list_of_feeder_options, plot_type=N
 
         # Interval percentile estimation
         for i, delta_quant in enumerate(delta_quants):
-            for segment in track(range(N - 1), description=f"{delta_quant}-interpercentile:"):
+            for segment in track(
+                range(N - 1), description=f"{delta_quant}-interpercentile:"
+            ):
                 mask = (true_vals >= vals[segment]) & (true_vals < vals[segment + 1])
                 down, up = np.percentile(
                     predictions[mask], [50 - delta_quant / 2, 50 + delta_quant / 2]
@@ -103,7 +115,7 @@ def interpercentile_plot(nets, dataset_path, list_of_feeder_options, plot_type=N
                 color=colormap(1 - delta_quants[i] / 100.0),
                 alpha=0.5,
             )
-        # The central one connects ups and downs 
+        # The central one connects ups and downs
         # and must be done by hand
         ax.fill_between(
             vals[:-1],
@@ -119,26 +131,29 @@ def interpercentile_plot(nets, dataset_path, list_of_feeder_options, plot_type=N
 
         ax.set_xlim(640, 1010)
         # ax.set_ylim(-0.25, 0.25)
-        ax.set_title(f"{net.path} (res. = {res :.1f} m)")
+        ax.set_title(f"{ax_title} (res. = {res :.1f} m)")
+
 
 if __name__ == "__main__":
     claretta_feeder_options = {
-            "batch_size": 128,
-            "shuffle": False,
-            "input_fields": ["toa", "time_series"],
-            "target_field": "outcome",
-        }
+        "batch_size": 128,
+        "shuffle": False,
+        "input_fields": ["toa", "time_series"],
+        "target_field": "outcome",
+    }
     encoder_feeder_options = {
-            "batch_size": 128,
-            "shuffle": False,
-            "input_fields": "toa",
-            "target_field": "outcome",
-        }
+        "batch_size": 128,
+        "shuffle": False,
+        "input_fields": "toa",
+        "target_field": "outcome",
+    }
     claretta = LstmEncoder(path="trained/claretta")
     encoder = ToaEncoder(path="trained/toa_encoder")
-    interpercentile_plot([claretta, encoder], 
-                            "data_by_entry/test", 
-                            [claretta_feeder_options, encoder_feeder_options])
+    interpercentile_plot(
+        [claretta, encoder],
+        "data_by_entry/test",
+        [claretta_feeder_options, encoder_feeder_options],
+    )
 
     plt.show()
     exit()
