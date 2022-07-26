@@ -121,8 +121,12 @@ class LushlooNet:
                 self.model = keras.models.load_model(self.path)
             except OSError:
                 print("empty model folder: model was not loaded")
+                self.loaded = False
             else:
+                self.loaded = True
                 print("done!")
+        else:
+            self.loaded = False
 
 
 class ToaEncoder(LushlooNet):
@@ -229,6 +233,7 @@ class LstmEncoder(LushlooNet):
         lstm=None,
         train_encoder=True,
         train_lstm=True,
+        train_whole=True,
         **net_kwargs,
     ):
 
@@ -264,3 +269,35 @@ class LstmEncoder(LushlooNet):
         self.model.compile(**self.compilation_kwargs)
         self.model.summary()
         self._check_load()
+
+        # Set the net as untrainable only if it was loaded
+        if self.loaded:
+            self.model.trainable = train_whole
+
+class LinearProbe(LushlooNet):
+
+    def __init__(self, lstmencoder, **net_kwargs):
+
+        super(LinearProbe, self).__init__(**net_kwargs)
+
+        # Set as default adam
+        self.compilation_kwargs["optimizer"] = "adam"
+        
+        self.path = net_kwargs.get("path", "trained/LinearProbe")
+
+        self.lstmencoder = lstmencoder 
+        self.lstmencoder.model.trainable = False 
+
+        w = Dense(4, activation="relu")(self.lstmencoder.model.get_layer(name="lstmenc_out").output)
+        w = Dense(4, activation="relu")(w)
+        w = Dense(1)(w)
+
+        self.model = Model(
+                inputs=self.lstmencoder.model.input,
+                outputs=w,
+                name="LinearProbe",
+                )
+        print(f"[green]Net built correctly[/green]")
+
+        self.model.compile(**self.compilation_kwargs)
+        self.model.summary()
