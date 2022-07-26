@@ -349,6 +349,8 @@
 
 %---------------------------------------------------------
 \begin{frame}{LSTM for the time series}
+    We used a ``many to one'' configuration of the lstm layer, 
+    taking only the value of the last iteration and not the whole sequence of outputs or cell values 
     \begin{columns}
         \column{0.5\textwidth}
         \begin{figure}
@@ -365,15 +367,25 @@
         \end{columns}
 \end{frame}
 
-%---------------------------------------------------------
-%\begin{frame}{Concatente + dense layers}
-
-    
-%\end{frame}
+\begin{frame}{Subnets comparison}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{figures/subnet_comparison_final.png}
+    \end{figure}
+\end{frame}
 
 
 \begin{frame}{Subnets train freezing}
     \includegraphics[width=.8\linewidth]{figures/freezetraining_2.pdf}
+\end{frame}
+
+\begin{frame}{Freeze or not to freeze}
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=\linewidth]{figures/net_freeze_comparison.png}
+    \end{figure}
+
 \end{frame}
 
 \begin{frame}{Weights at concatenation layer}
@@ -389,8 +401,8 @@
     
 \end{frame}
 
-\begin{frame}{uncertainties}
-    
+\begin{frame}{Uncertainties}
+
 \end{frame}
 
 %---------------------------------------------------------
