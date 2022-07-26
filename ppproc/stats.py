@@ -87,6 +87,12 @@ def interpercentile_plot(
         downs = np.zeros((len(delta_quants), N))
         colormap = cm.get_cmap("plasma")
 
+        # TEXT FOR PEARSON COEFFICIENT
+        ax.text(0.2, 0.9,
+                f'Pearson c. = {pearson(true_vals, predictions)}',
+                fontsize=12.5,
+                bbox=dict(facecolor='white', edgecolor='black', boxstyle='round'))
+
         # Interval percentile estimation
         for i, delta_quant in enumerate(delta_quants):
             for segment in track(
@@ -142,4 +148,4 @@ def interpercentile_plot(
 def pearson(true, predicted):
     """Calculates correlation (Perason Coefficient) between predictions and true values."""
     rho = np.corrcoef(true, predicted)
-    return rho
+    return rho[0,1]
