@@ -31,24 +31,22 @@ test_feeder = DataFeeder("data_by_entry/test", **feeder_options)
 
 def build_model(hp):
     # Time of arrival branch
-    input_toa = Input(shape=(9, 9, 1), name="time_of_arrival")
-    flat = Flatten()(input_toa)
-    enc = Dense(9, activation="relu")(flat)
-    enc = Dense(hp.Int("units enc dense2", min_value=4, max_value=12, step=4),
-                activation=hp.Choice("activation 2", ["relu", "tanh"]))(enc)
-    enc = Dense(hp.Int("units enc dense3", min_value=4, max_value=12, step=4),
-                activation=hp.Choice("activation 3", ["relu", "tanh"]))(enc)
-    encoder = Model(inputs=input_toa, outputs=enc)
+    input_toa = Input(shape=(9, 9, 1), name="toa_input")
+    enc = Dense(256, activation="relu", name="enc_dense_a")(input_toa)
+    enc = Dense(128, activation="relu", name="enc_dense_b")(enc)
+    enc = Dense(64, activation="relu", name="enc_dense_c")(enc)
+    enc = Dense(1, activation="relu", name="enc_dense_d")(enc)
+    flat = Flatten(name="enc_flatten")(enc)
 
     # Time series branch
-    input_ts = Input(shape=(80, 81), name="time_series")
+    input_ts = Input(shape=(80, 81), name="ts_input")
     lstm = LSTM(hp.Int("units LSTM", min_value=32, max_value=96, step=32))(input_ts)
     dense = Dense(hp.Int("units lstm dense", min_value=16, max_value=24, step=4),
-                  activation=hp.Choice("activation lstm dense", ["relu", "tanh"]))(lstm)
-    long_short_term_memory = Model(inputs=input_ts, outputs=dense)
+                  activation="relu")(lstm)
+    long_s = Dense(1, activation="linear", name="lstm_out")(dense)
 
     # Concatenation
-    conc = concatenate([encoder.output, long_short_term_memory.output])
+    conc = concatenate([flat.output, long_short_term_memory.output])
     z = Dense(hp.Int("units conc 1", min_value=16, max_value=24, step=4),
               activation=hp.Choice("activation conc", ["relu", "tanh"]))(conc)
     z = Dense(4, activation="linear")(z)

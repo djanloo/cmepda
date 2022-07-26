@@ -3,7 +3,7 @@
 \usepackage{graphicx}
 \usepackage{listings} %for listings
 \usepackage{xcolor}
-\usepackage{siunitx}
+% \usepackage{siunitx}
 \usepackage{pgf-pie} 
 
 %colorini
@@ -110,6 +110,7 @@
         \begin{figure}
             \centering
             \includegraphics[width=\textwidth]{figures/airshower.png}
+            \label{fig:my_label}
         \end{figure}
         
     
@@ -145,16 +146,19 @@
         \begin{figure}
             \centering
             \includegraphics[width=0.8\textwidth]{figures/toa.png}
+            \label{fig:my_label}
         \end{figure}
         
          \begin{figure}
             \centering
             \includegraphics[width=0.65\textwidth]{figures/ezgif.com-gif-maker.png}
+            \label{fig:my_label}
         \end{figure}
     
     \end{columns}
 
 \end{frame}
+
 %---------------------------------------------------------
 
 \section{Preprocessing}
@@ -249,7 +253,7 @@
 
 %---------------------------------------------------------
 \begin{frame}{Data Augmentation}
-    %FORSE STA SLIDE LA SPOSETEREI DOPO
+%FORSE STA SLIDE LA SPOSETEREI DOPO
     Dataset has a lack of high events ($X > 850\si{m}$) so a first network training showed a worse resolution
     for samples corresponding to this range
 
@@ -300,10 +304,9 @@
 
 
 \section{Neural Network building}
-    \begin{figure}
-        \centering
-        \includegraphics[width=0.6\textwidth]{figures/model.pdf}
-    \end{figure}
+
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/model.pdf}
 %---------------------------------------------------------
 \begin{frame}{Overview on the network}
     The assumption that lead to this design is that from the time of arrival matrix
@@ -370,17 +373,13 @@
 
 
 \begin{frame}{Subnets train freezing}
-    \begin{figure}
-        \centering
-        \includegraphics[width=.8\linewidth]{figures/freezetraining_2.pdf}
-    \end{figure}
+    \includegraphics[width=.8\linewidth]{figures/freezetraining_2.pdf}
 \end{frame}
 
-\begin{frame}{Subnets train freezing}
-    \begin{figure}
-        \centering
-        \includegraphics[width=.8\linewidth]{figures/freezetraining.pdf}
-    \end{figure}
+\begin{frame}{Weights at concatenation layer}
+    Is the encoder really useful?
+    \vfill
+    \includegraphics[width=\linewidth]{figures/weights_comparison.png}
 \end{frame}
 
 %---------------------------------------------------------
@@ -395,34 +394,6 @@
 
     
 \end{frame}
-
-%---------------------------------------------------------
-
-\begin{frame}[fragile]{Augmented Dataset Network Performance}
-    The network with an augmented dataset reached:
-    \begin{itemize}
-        \item[\textbullet] \textbf{loss}$=1744.26$
-        \item[\textbullet] \textbf{RMSE}$=41.76$  
-    \end{itemize}
-
-    \begin{columns}
-        \column{0.5\textwidth}
-        \begin{figure}
-            \centering
-            \includegraphics[width=\textwidth]{figures/lstmenc_aug_loss.png}
-            %\caption{Credits: Guillaume Chevalier}
-        \end{figure}
-        
-        \column{0.5\textwidth}
-        \begin{figure}
-            \centering
-            \includegraphics[width=\textwidth]{figures/lstmenc_aug_rmse.png}
-        \end{figure}
-        \end{columns}
-    
-\end{frame}
-
-%---------------------------------------------------------
 
 \begin{frame}{Curriculum learning}
     \begin{itemize}
@@ -439,9 +410,12 @@
     \vfill
     \begin{columns}
         \begin{column}{.5\textwidth}
+            Sort in ascending error and divide in equal-length groups that the ``prof'' feeds to the next network
             \includegraphics[width=\textwidth]{figures/curriculum_before.png}
         \end{column}
         \begin{column}{.5\textwidth}
+            The ``student'' network is trained increasing in difficulty but spends more time on 
+            hard samples
             \includegraphics[width=\textwidth]{figures/curriculum_after.png}
         \end{column}
     \end{columns}
@@ -455,10 +429,11 @@ smaller dataset.\\
 Main tests:
 \begin{itemize}
     \item[\textbullet] \textbf{Net building}: checks if networks are correctly built
-    \item[\textbullet] \textbf{DataFeeders}: builds a fictitious dataset and checks whether \texttt{DataFeeders} works fine
-    \item[\textbullet] \textbf{Augmentation}: tests if an augmented matrix is effectively ``rotated'', ``flipped'', etc.
+    \item[\textbullet] \textbf{DataFeeders}: builds a fictitious dataset and checks whether \texttt{DataFeeders} work fine
+    \item[\textbullet] \textbf{Augmentation}: tests if an augmented matrix is effectively ``rotate'', ``flipped'', etc.
 \end{itemize}
-    
+    \vfill
+    Some tests required a trained model so they were not executed in CI.
 \end{frame}
 %---------------------------------------------------------
 \begin{frame}{Code coverage}

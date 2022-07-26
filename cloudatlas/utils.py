@@ -1,5 +1,6 @@
 """Utility module"""
 import os
+import sys
 from numpy import isin
 
 # Turn off keras warnings
@@ -37,13 +38,17 @@ class RemoteMonitor:
             print(e)
 
 class RemoteStderr:
-
+    """A wrapper for sys.stderr
+    
+    Output of errors is sent on telegram before being printed on screen
+    """
     def __init__(self):
+        self.old_stderr = sys.stderr
         self.monitor = RemoteMonitor()
 
     def write(self, data):
         self.monitor.send(data)
-        print(data)
+        self.old_stderr.write(data)
 
 
 if __name__ == "__main__":

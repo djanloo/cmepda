@@ -37,7 +37,7 @@ lstm_feeder_options = {
     "input_fields": "time_series",
     "target_field": "outcome",
 }
-lstm = TimeSeriesLSTM(path="trained/freezing/lst_2", earlystopping=False, tensorboard=True)
+lstm = TimeSeriesLSTM(path="trained/freezing/lstm", earlystopping=False, tensorboard=True)
 lstm_train_feeder = DataFeeder("data_by_entry/train", **lstm_feeder_options)
 lstm_val_feeder = DataFeeder("data_by_entry/validation", **lstm_feeder_options)
 
@@ -63,15 +63,18 @@ lstm_val_feeder = DataFeeder("data_by_entry/validation", **lstm_feeder_options)
 
 
 # Test and stats
-# enc_test_feeder = DataFeeder("data_by_entry/test", **encoder_feeder_options)
-# lstm_test_feeder = DataFeeder("data_by_entry/test", **lstm_feeder_options)
+enc_test_feeder = DataFeeder("data_by_entry/test", **encoder_feeder_options)
+lstm_test_feeder = DataFeeder("data_by_entry/test", **lstm_feeder_options)
 
-# stats.interpercentile_plot(
-#     [enc, lstm],
-#     "data_by_entry/test",
-#     [encoder_feeder_options, lstm_feeder_options],
-#     relative_error=False,
-# )
+stats.interpercentile_plot(
+    [enc, lstm],
+    "data_by_entry/test",
+    [encoder_feeder_options, lstm_feeder_options],
+    plot_type="normalized",
+)
+
+plt.plot()
+
 
 # Combine the two
 feeder_options = {
@@ -80,7 +83,7 @@ feeder_options = {
     "input_fields": ["toa","time_series"],
     "target_field": "outcome",
 }
-lstmenc = LstmEncoder(
+lstmenc_freeze_sub = LstmEncoder(
     path="trained/freezing/lstmenc_freeze_sub", 
     lstm=lstm, encoder=enc, 
     train_encoder=False, 
@@ -90,14 +93,15 @@ lstmenc = LstmEncoder(
 train_feeder = DataFeeder("data_by_entry/train", **feeder_options)
 val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
 
-lstmenc.train(
-        x=train_feeder,
-        epochs=EPOCHS,
-        validation_data=val_feeder,
-        batch_size=BATCH_SIZE,
-        verbose=1,
-        use_multiprocessing=False,
-    )
+# Train once
+# lstmenc_freeze_sub.train(
+#         x=train_feeder,
+#         epochs=EPOCHS,
+#         validation_data=val_feeder,
+#         batch_size=BATCH_SIZE,
+#         verbose=1,
+#         use_multiprocessing=False,
+#     )
 
 # Now make a train_sub network
 lstmenc_train_sub = LstmEncoder(path="trained/freezing/lstmenc_train_sub",
@@ -105,13 +109,21 @@ lstmenc_train_sub = LstmEncoder(path="trained/freezing/lstmenc_train_sub",
     tensorboard=True
     )
 
-lstmenc_train_sub.train(
-        x=train_feeder,
-        epochs=EPOCHS,
-        validation_data=val_feeder,
-        batch_size=BATCH_SIZE,
-        verbose=1,
-        use_multiprocessing=False,
-    )
+# Train once
+# lstmenc_train_sub.train(
+#         x=train_feeder,
+#         epochs=EPOCHS,
+#         validation_data=val_feeder,
+#         batch_size=BATCH_SIZE,
+#         verbose=1,
+#         use_multiprocessing=False,
+#     )
 
-# plt.show()
+stats.interpercentile_plot(
+    [lstmenc_freeze_sub, lstmenc_train_sub],
+    "data_by_entry/test",
+    [feeder_options, feeder_options],
+    plot_type="normalized",
+)
+
+plt.show()
