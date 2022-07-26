@@ -66,13 +66,13 @@ lstm_val_feeder = DataFeeder("data_by_entry/validation", **lstm_feeder_options)
 enc_test_feeder = DataFeeder("data_by_entry/test", **encoder_feeder_options)
 lstm_test_feeder = DataFeeder("data_by_entry/test", **lstm_feeder_options)
 
-stats.interpercentile_plot(
-    [enc, lstm],
-    "data_by_entry/test",
-    [encoder_feeder_options, lstm_feeder_options],
-    plot_type="normalized",
-    titles=["Encoder", "Lstm"],
-)
+# stats.interpercentile_plot(
+#     [enc, lstm],
+#     "data_by_entry/test",
+#     [encoder_feeder_options, lstm_feeder_options],
+#     plot_type="normalized",
+#     titles=["Encoder", "Lstm"],
+# )
 
 plt.plot()
 
@@ -85,7 +85,7 @@ feeder_options = {
     "target_field": "outcome",
 }
 lstmenc_freeze_sub = LstmEncoder(
-    path="trained/freezing/lstmenc_freeze_sub", 
+    path="trained/freezing/lstmenc_freeze_sub_test_more_output", 
     lstm=lstm, encoder=enc, 
     train_encoder=False, 
     train_lstm=False, 
@@ -122,7 +122,7 @@ lstmenc_train_sub = LstmEncoder(path="trained/freezing/lstmenc_train_sub",
 
 stats.interpercentile_plot(
     [lstmenc_freeze_sub, lstmenc_train_sub],
-    "data_by_entry/test",
+    "data_by_entry/train",
     [feeder_options, feeder_options],
     plot_type="normalized",
     titles=["Freeze-subnets", "Train-subnets"]

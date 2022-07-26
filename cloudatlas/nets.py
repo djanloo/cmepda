@@ -6,7 +6,7 @@ and a concatenation of the two (LstmEncoder).
 from os.path import exists 
 
 import keras
-from keras.layers import LSTM, Dense, Input, Flatten, concatenate
+from keras.layers import LSTM, Dense, Input, Flatten, concatenate, BatchNormalization
 from keras.models import Model
 from keras.metrics import RootMeanSquaredError
 import numpy as np
@@ -257,7 +257,8 @@ class LstmEncoder(LushlooNet):
             name="concatenate",
         )
         z = Dense(16, activation="relu", name="lstmenc_dense_1")(conc)
-        z = Dense(4, activation="linear", name="lstmenc_dense_2")(z)
+        z = Dense(16, activation="relu", name="lstmenc_dense_2")(z)
+        z = Dense(16, activation="relu", name="lstmenc_dense_3")(z)
         z = Dense(1, activation="linear", name="lstmenc_out")(z)
 
         self.model = Model(
@@ -287,8 +288,11 @@ class LinearProbe(LushlooNet):
 
         self.lstmencoder = lstmencoder 
         self.lstmencoder.model.trainable = False 
-
-        w = Dense(4, activation="relu")(self.lstmencoder.model.get_layer(name="lstmenc_out").output)
+        linear_probe_input = self.lstmencoder.model.get_layer(name="lstmenc_out").output
+        bb = BatchNormalization()(linear_probe_input)
+        w = Dense(4, activation="relu")(bb)
+        w = Dense(4, activation="relu")(w)
+        w = Dense(4, activation="relu")(w)
         w = Dense(4, activation="relu")(w)
         w = Dense(1)(w)
 
