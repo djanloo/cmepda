@@ -133,6 +133,12 @@ def interpercentile_plot(
         # ax.set_ylim(-0.25, 0.25)
         ax.set_title(f"{ax_title} (res. = {res :.1f} m)")
 
+def pearson(true, predicted):
+    """Calculates correlation (Perason Coefficient) between predictions and true values."""
+    rho = np.corrcoef(true, predicted)
+    return rho
+
+
 
 if __name__ == "__main__":
     claretta_feeder_options = {

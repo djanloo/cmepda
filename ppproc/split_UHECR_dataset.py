@@ -17,7 +17,7 @@ from context import constants
 
 THINNING = 1  # Thinning factor: takes one sample in every fixed number
 perc = [0.7, 0.2]  # percentage where to cut for train, test, validation data
-np.random.seed(42)  # seed
+np.random.seed(42)  # seed (try1: 42 ,try2: 666, try3: 75, tr4: 3112, try5: 1997)
 
 
 def save_by_line(array, directory):
