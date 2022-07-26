@@ -26,17 +26,19 @@ feeder_options = {
     "target_field": "outcome",
 }
 
+# call the feeders for the different scopes
 train_feeder = DataFeeder("data_by_entry_height/train", **feeder_options)
 val_feeder = DataFeeder("data_by_entry_height/validation", **feeder_options)
 test_feeder = DataFeeder("data_by_entry_height/test", **feeder_options)
 
-
+# initialize the LstmEncoder
 lstmenc = LstmEncoder(
     path="trained/lstmenc_aug",
     earlystopping=False,
     tensorboard=True
 )
 
+# Train the net
 lstmenc.train(
      x=train_feeder,
      epochs=EPOCHS,
@@ -48,4 +50,4 @@ lstmenc.train(
 
 # Resolution estimation
 encoder_test_feeder = DataFeeder("data_by_entry_height/test", **feeder_options)
-# print(f"Only lstm res is {lstm.resolution_on(lstm_test_feeder)}")
+print(f"Whole augmented net is {lstmenc.resolution_on(test_feeder)}")
