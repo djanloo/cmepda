@@ -1,22 +1,4 @@
-\frametitle{Split the dataset: \texttt {funky\_dtype}}
+\frametitle{Network's output}
 
 
-    \begin{lstlisting}[language=Python]
-    # custom numpy dtype
-    funky_dtype = np.dtype(
-        [
-            ("outcome", np.float64),
-            ("time_series", np.float32, (80, 81)),
-            ("toa", np.float32, (9, 9, 1)),
-        ])
-    \end{lstlisting}
-
-    All data relative to a single event is clustered in a single \texttt{numpy} object, transformation is:
-
-    %Data is extracted: from a conceptually \emph{ihomogeneous} list
-    %(activity time series together with times of arrival) to
-    \begin{equation*}
-        (80 + 1, 81)\,\,\, \longrightarrow \,\,\, [("toa", (9, 9, 1)), ("timeseries", (80, 9,9))]
-    \end{equation*}
-    Data can be accessed "as a dictionary", depending on what is needed.
 
