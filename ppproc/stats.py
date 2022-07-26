@@ -30,12 +30,14 @@ def interpercentile_plot(
 
     relative_error = False
     normalize = False
+    normal_plot = False
 
     fig, axes = plt.subplots(1, len(nets), sharey=False)
 
     if plot_type is None:
 
         axes[0].set_ylabel("Predicted height [m]")
+        normal_plot = True
 
     elif plot_type == "relative_error":
 
@@ -127,66 +129,12 @@ def interpercentile_plot(
         )
         ax.legend()
 
+        if normal_plot:
+            x_ = np.linspace(650, 1000, 4)
+            ax.plot(x_, x_, ls=":", color ='k')
+
         ax.set_xlabel("True height [m]")
 
         ax.set_xlim(640, 1010)
         # ax.set_ylim(-0.25, 0.25)
         ax.set_title(f"{ax_title} (res. = {res :.1f} m)")
-
-
-if __name__ == "__main__":
-    claretta_feeder_options = {
-        "batch_size": 128,
-        "shuffle": False,
-        "input_fields": ["toa", "time_series"],
-        "target_field": "outcome",
-    }
-    encoder_feeder_options = {
-        "batch_size": 128,
-        "shuffle": False,
-        "input_fields": "toa",
-        "target_field": "outcome",
-    }
-    claretta = LstmEncoder(path="trained/claretta")
-    encoder = ToaEncoder(path="trained/toa_encoder")
-    interpercentile_plot(
-        [claretta, encoder],
-        "data_by_entry/test",
-        [claretta_feeder_options, encoder_feeder_options],
-    )
-
-    plt.show()
-    exit()
-    ## KDE
-    data = np.stack((predictions, true_vals), axis=0)
-    kern = gaussian_kde(data)
-
-    x = np.linspace(650, 850, 200)
-    y = x.copy()
-
-    X, Y = np.meshgrid(x, y)
-    u = np.vstack([X.ravel(), Y.ravel()])
-    Z = np.reshape(kern(u).T, X.shape)
-    plt.contourf(X, Y, Z)
-    plt.title("true vs estimated density of points")
-    plt.xlabel("true")
-    plt.ylabel("estimated")
-
-    ## Plot the conditional density
-    ## Since for a given datum omega=(time_of_arrival, time_series) correspond to two values
-    ## z_true(omega) and z_pred(omega)
-    ## plotting all z_true and z_pred gives the density distribution p(z_true, z_pred)
-    ## however we want to visualize the effectiveness of the prediction neglecting the distribution of
-    ## z_true (we must thus renormalize the number of predictions p(z_pred)d_omega with the number of true values
-    ## lying in d_omega = p(z_true)d_omega)
-    ## What we obtain is p(z_true, z_pred)/p(z_true) = p(z_pred | z_true) that is the conditional
-    ## distribution, answering to the question "How are the predicted values approximating z_true distributed for a given z_true?"
-    plt.figure(2)
-    true_kern = gaussian_kde(true_vals)
-    Z_true = true_kern(x)
-    Z_true = np.tile(Z_true, len(x)).reshape((-1,) + Z_true.shape)
-    plt.contourf(X, Y, Z / Z_true)
-    plt.title("Conditional density")
-    plt.xlabel("true")
-    plt.ylabel("estimated")
-    plt.show()
