@@ -71,6 +71,7 @@ stats.interpercentile_plot(
     "data_by_entry/test",
     [encoder_feeder_options, lstm_feeder_options],
     plot_type="normalized",
+    titles=["Encoder", "Lstm"],
 )
 
 plt.plot()
@@ -124,6 +125,7 @@ stats.interpercentile_plot(
     "data_by_entry/test",
     [feeder_options, feeder_options],
     plot_type="normalized",
+    titles=["Freeze-subnets", "Train-subnets"]
 )
 
 plt.show()
