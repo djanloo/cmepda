@@ -1,4 +1,22 @@
-\frametitle{Network's output}
+\frametitle{Augmented Dataset Network Performance}
+The network with an augmented dataset reached:
+    \begin{itemize}
+        \item[\textbullet] \textbf{loss}$=1744.26$
+        \item[\textbullet] \textbf{RMSE}$=41.76$
+    \end{itemize}
 
+    \begin{columns}
+        \column{0.5\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\textwidth]{figures/lstmenc_aug_loss.png}
+            %\caption{Credits: Guillaume Chevalier}
+        \end{figure}
 
+        \column{0.5\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=\textwidth]{figures/lstmenc_aug_rmse.png}
+        \end{figure}
+        \end{columns}
 
