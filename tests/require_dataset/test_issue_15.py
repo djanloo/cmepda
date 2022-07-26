@@ -6,6 +6,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 import matplotlib.pyplot as plt
 from rich import print
+import numpy as np
 
 from context import DataFeeder
 from context import ToaEncoder, TimeSeriesLSTM, LstmEncoder
@@ -66,13 +67,13 @@ lstm_val_feeder = DataFeeder("data_by_entry/validation", **lstm_feeder_options)
 enc_test_feeder = DataFeeder("data_by_entry/test", **encoder_feeder_options)
 lstm_test_feeder = DataFeeder("data_by_entry/test", **lstm_feeder_options)
 
-# stats.interpercentile_plot(
-#     [enc, lstm],
-#     "data_by_entry/test",
-#     [encoder_feeder_options, lstm_feeder_options],
-#     plot_type="normalized",
-#     titles=["Encoder", "Lstm"],
-# )
+stats.interpercentile_plot(
+    [enc, lstm],
+    "data_by_entry/test",
+    [encoder_feeder_options, lstm_feeder_options],
+    plot_type=None,
+    titles=["Encoder", "Lstm"],
+)
 
 plt.plot()
 
@@ -122,10 +123,9 @@ lstmenc_train_sub = LstmEncoder(path="trained/freezing/lstmenc_train_sub",
 
 stats.interpercentile_plot(
     [lstmenc_freeze_sub, lstmenc_train_sub],
-    "data_by_entry/train",
+    "data_by_entry/test",
     [feeder_options, feeder_options],
-    plot_type="normalized",
+    plot_type=None,
     titles=["Freeze-subnets", "Train-subnets"]
 )
-
 plt.show()

@@ -27,20 +27,26 @@ except:
     train_feeder = DataFeeder("data_by_entry/train", **feeder_options)
     val_feeder = DataFeeder("data_by_entry/validation", **feeder_options)
 
-    x = lstmenc_freeze_sub.model.predict(train_feeder).squeeze()
-    y = np.array([batch[1] for batch in track(train_feeder)]).reshape(-1)
+    y = lstmenc_freeze_sub.model.predict(train_feeder).squeeze()
+    x = np.array([batch[1] for batch in track(train_feeder)]).reshape(-1)
 
     w = np.stack((x,y))
     np.save("w_deleteme.npy", w)
 
-plt.plot(x, y)
+plt.figure(1)
+plt.plot(x, y, ls="", marker=".", color = 'b', label="x = veri, y = predetti")
+# plt.plot(y, x/y, ls="", marker=".", color = 'r', label = "x = predetti, y = veri")
+
+
+
+
 
 input_layer = Input(shape=(1,))
 bb = BatchNormalization()(input_layer)
-dense = Dense(16, activation="relu")(input_layer)
-dense = Dense(16, activation="relu")(dense)
-dense = Dense(16, activation="relu")(dense)
-dense = Dense(16, activation="relu")(dense)
+dense = Dense(4, activation="relu")(input_layer)
+dense = Dense(4, activation="relu")(dense)
+dense = Dense(4, activation="relu")(dense)
+dense = Dense(4, activation="relu")(dense)
 
 dense = Dense(1)(dense)
 
@@ -50,7 +56,11 @@ model.compile(
             loss = "mean_squared_error",
             metrics = [RootMeanSquaredError()],
             )
-model.fit(x=x, y=y, epochs=200)
+model.summary()
+model.fit(x=x, y=y, epochs=10, batch_size = 128)
 x__ = np.linspace(np.min(x), np.max(x), 100)
+
 plt.plot(x__, model.predict(x__).squeeze(), color="red")
+print(f"RMSE is {np.sqrt(np.mean((x - y )**2))}")
+plt.legend()
 plt.show()
