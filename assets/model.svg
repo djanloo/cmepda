@@ -3,8 +3,8 @@
 
 <svg
    width="138.14143mm"
-   height="176.92429mm"
-   viewBox="0 0 138.14143 176.92428"
+   height="192.66269mm"
+   viewBox="0 0 138.14143 192.66268"
    version="1.1"
    id="svg5"
    inkscape:version="1.2 (56b05e47e7, 2022-06-09, custom)"
@@ -28,9 +28,9 @@
      inkscape:deskcolor="#505050"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="0.89183581"
-     inkscape:cx="219.77139"
-     inkscape:cy="323.49004"
+     inkscape:zoom="0.63046372"
+     inkscape:cx="168.13021"
+     inkscape:cy="444.91062"
      inkscape:window-width="1322"
      inkscape:window-height="704"
      inkscape:window-x="44"
@@ -1669,7 +1669,7 @@
        x2="85.314613"
        y2="161.99626"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(0,17.287607)" />
+       gradientTransform="translate(1.7601999e-7,33.026036)" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient12260"
@@ -1753,6 +1753,35 @@
        id="linearGradient3197"
        gradientUnits="userSpaceOnUse"
        gradientTransform="translate(1.3823242e-6,33.632248)"
+       x1="52.50135"
+       y1="130.82021"
+       x2="106.12787"
+       y2="130.82021" />
+    <marker
+       style="overflow:visible"
+       id="marker5377-6-0"
+       refX="3"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Arrow5"
+       markerWidth="5.8874264"
+       markerHeight="6.6094756"
+       viewBox="0 0 5.8874262 6.6094758"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="m 6,0 c -3,1 -7,3 -9,5 0,0 0,-4 2,-5 -2,-1 -2,-5 -2,-5 2,2 6,4 9,5 z"
+         id="path5375-0-6" />
+    </marker>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient12368"
+       id="linearGradient8765"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(2.7871094e-6,49.214112)"
        x1="52.50135"
        y1="130.82021"
        x2="106.12787"
@@ -2418,7 +2447,7 @@
        width="12"
        height="12"
        x="73.314613"
-       y="173.28387"
+       y="189.02228"
        rx="1.5"
        ry="1.5" />
     <rect
@@ -2823,10 +2852,42 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#8f5902;stroke-width:0.264583"
          x="-169.45287"
          y="104.28445">RELU</tspan></text>
+    <rect
+       style="fill:url(#linearGradient8765);fill-opacity:1;stroke:none;stroke-width:0.23848;paint-order:fill markers stroke"
+       id="rect698-9-1-6-1"
+       width="53.626522"
+       height="12.898168"
+       x="52.50135"
+       y="173.58524"
+       rx="1.5"
+       ry="1.5" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffffff;stroke-width:0.264583"
+       x="70.038597"
+       y="181.44691"
+       id="text1653-8-2-5"><tspan
+         sodipodi:role="line"
+         id="tspan1651-5-6-5"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffffff;stroke-width:0.264583"
+         x="70.038597"
+         y="181.44691">Dense 16</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88056px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#8f5902;stroke-width:0.264583"
+       x="-185.03473"
+       y="104.28445"
+       id="text4487-3-1-4"
+       transform="rotate(-90)"><tspan
+         sodipodi:role="line"
+         id="tspan4485-1-8-7"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#8f5902;stroke-width:0.264583"
+         x="-185.03473"
+         y="104.28445">RELU</tspan></text>
     <path
-       style="fill:#ffffff;stroke:#ffffff;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker5377-6)"
-       d="m 79.314609,170.90154 v 2.54532"
-       id="path5371-7" />
+       style="fill:#ffffff;stroke:#ffffff;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker5377-6-0)"
+       d="m 79.31461,186.48341 v 2.54532"
+       id="path5371-7-6" />
     <rect
        style="fill:url(#linearGradient10442);fill-opacity:1;stroke:none;stroke-width:0.23848;paint-order:fill markers stroke"
        id="rect698"
@@ -2851,5 +2912,9 @@
        style="fill:none;stroke:#ffffff;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker2716)"
        d="m 45.511601,114.51453 v 11.70073"
        id="path1929" />
+    <path
+       style="fill:#ffffff;stroke:#ffffff;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker5377-6)"
+       d="m 79.314609,170.90154 v 2.54532"
+       id="path5371-7" />
   </g>
 </svg>
