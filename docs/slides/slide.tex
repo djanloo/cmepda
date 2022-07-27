@@ -325,7 +325,7 @@
 
     \begin{figure}
         \centering
-        \includegraphics[width=0.85\textwidth]{figures/comparison_subnets_diagonal.png}
+        \includegraphics[width=\textwidth]{figures/comparison_subnets_diagonal.png}
     \end{figure}
     
 \end{frame}
@@ -421,15 +421,12 @@
 
 %---------------------------------------------------------
 \begin{frame}{Augmented dataset performance}
-    The network trained with an augmented dataset gave the following performance on test dataset (not augmented):
-    \begin{itemize}
-        \item[\textbullet] \textbf{loss}$=1744.27$
-        \item[\textbullet] \textbf{rmse}$=36.48$
-    \end{itemize}
+    The evolution during training of the RMSE:
+
 
         \begin{figure}
             \centering
-            \includegraphics[width=0.7\textwidth]{figures/lstmenc_aug_rmse.pdf}
+            \includegraphics[width=0.8\textwidth]{figures/lstmenc_aug_rmse.pdf}
         \end{figure}
 
 \end{frame}
@@ -472,12 +469,14 @@
 %---------------------------------------------------------
 
 \begin{frame}{Curriculum Learning Strategy}
+    Curriculum learning consists of:
     \begin{itemize}
-        \item Normal training
-        \item Use the trained NN to score the difficulty of samples
-        \item Schedule a training for another NN
+        \item Launching a normal training
+        \item Using the trained NN to score the difficulty of samples
+        \item Scheduling a training for another NN in order of difficulty
     \end{itemize}
-    We also tried to generalize \texttt{Augment} class to augment more difficult data.
+    \vfill
+    We also generalized \texttt{Augment} class to augment more difficult data.
     \vfill
     Maybe useful on classification tasks, but for regressions..
 \end{frame}
@@ -532,10 +531,11 @@ Main tests:
     
 
 %---------------------------------------------------------
-\begin{frame}{Danke e bibliography}
+\begin{frame}
 \centering
-Danke Schon
-
+\vfill
+Thank you!
+\vfill
     
 \end{frame}
 
