@@ -36,7 +36,7 @@ stats.interpercentile_plot(
     [feeder_options],
     plot_type=None,
     delta_perc=[75, 50 ,25],
-    titles=["Predictions v.s. true values"]
+    titles=["No augmentation"]
 )
 
 plt.show()

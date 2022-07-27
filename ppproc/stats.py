@@ -14,7 +14,7 @@ from context import DataFeeder
 
 
 rcParams["font.family"] = "serif"
-rcParams["font.size"] = 10
+rcParams["font.size"] = 18
 
 FILE = "true_vs_predictions.npy"
 
@@ -32,7 +32,7 @@ def interpercentile_plot(
     normalize = False
     normal_plot = False
 
-    fig, axes = plt.subplots(1, len(nets), sharey=False, figsize=(6,6))
+    fig, axes = plt.subplots(1, len(nets), sharey=False, figsize=(8,8))
     if len(nets) == 1:
         axes = [axes]
     if plot_type is None:
