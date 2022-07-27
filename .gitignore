@@ -37,6 +37,7 @@ trained/
 *.out
 *.snm
 *.toc
+*.vrb
 
 
 # Byte-compiled / optimized / DLL files
