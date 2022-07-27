@@ -28,12 +28,11 @@ def interpercentile_plot(
     titles=None,
 ):
 
-    global not_norm
     relative_error = False
     normalize = False
     normal_plot = False
 
-    fig, axes = plt.subplots(1, len(nets), sharey=False)
+    fig, axes = plt.subplots(1, len(nets), sharey=False, figsize=(6,6))
     if len(nets) == 1:
         axes = [axes]
     if plot_type is None:
@@ -51,9 +50,7 @@ def interpercentile_plot(
         axes[0].set_ylabel("Normalized prediction [a.u.]")
         normalize = True
 
-    # normal plot with NON normalized ax
-    elif plot_type == "not-normal":
-        not_norm = True
+
 
     if titles is not None:
         ax_titles = titles 
@@ -173,10 +170,3 @@ if __name__ == "__main__":
 
     # call same vanilla test dataset for both
     train_feeder = DataFeeder("data_by_entry/train", **feeder_options)
-
-    interpercentile_plot(
-        [lstmenc_vanilla, lstmenc_aug],
-        "data_by_entry/test",
-        [feeder_options, feeder_options],
-        plot_type="not-normal",
-    )
