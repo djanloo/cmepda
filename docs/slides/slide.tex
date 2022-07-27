@@ -124,7 +124,7 @@
 
     \begin{columns}
     
-    \column{0.5\textwidth}
+    \column{0.45\textwidth}
     \textbf{Dataset}: $10^5$ simulated events:
     \vspace{5 pt}
 
@@ -142,10 +142,10 @@
     \texttt{pd4ml} package splits by default in $70\%$ train $30\%$ test
     
     
-    \column{0.5\textwidth}
+    \column{0.55\textwidth}
         \begin{figure}
             \centering
-            \includegraphics[width=0.6\textwidth]{figures/times_of_arrival.pdf}
+            \includegraphics[width=0.45\textwidth]{figures/times_of_arrival.pdf}
         \end{figure}
         
          \begin{figure}
@@ -343,10 +343,17 @@
 \end{frame}
 
 %---------------------------------------------------------
-\begin{frame}{Uncertainties}
+\begin{frame}{Complete Network performance}
+    The network's output has a Pearson correlation coefficient of:
+    \begin{equation*}
+        \rho_{X,Y} = 0.77 \pm 0.02
+    \end{equation*}
+    \begin{figure}
+        \centering
+        \includegraphics[width=.7\textwidth]{figures/long_run_vanilla.png}
+    \end{figure}
     
 \end{frame}
-
 
 
 %---------------------------------------------------------
@@ -431,14 +438,14 @@
 
 %---------------------------------------------------------
 \begin{frame}{Augmented dataset performance}
-    The augmented-dataset-train gave a Pearson correlation coefficient of:
+    The augmented-dataset-train has a Pearson correlation coefficient of:
     \begin{equation*}
         \rho_{X,Y} = 0.80 \pm 0.02
     \end{equation*}
 
         \begin{figure}
             \centering
-            \includegraphics[width=0.85\textwidth]{figures/augmented_train.png}
+            \includegraphics[width=0.7\textwidth]{figures/augmented_train.png}
         \end{figure}
 
 \end{frame}
@@ -446,16 +453,18 @@
 
 %---------------------------------------------------------
 \begin{frame}{Comparison with vanilla network}
+    Here we show the comparison with the network trained on not-augmented dataset.
+    Augmentation brought a little improvement on the resolution.
 \begin{columns}
     \column{0.5\textwidth}
     \begin{figure}
         \centering
-            \includegraphics[width=0.85\textwidth]{figures/long_run_vanilla.png}
+            \includegraphics[width=0.95\textwidth]{figures/not_aug_scaled.png}
     \end{figure}
     \column{0.5\textwidth}
     \begin{figure}
         \centering
-        \includegraphics[width=0.85\textwidth]{figures/aug_scaled.png}
+        \includegraphics[width=0.97\textwidth]{figures/aug_scaled.png}
     \end{figure}
 
 \end{columns}
