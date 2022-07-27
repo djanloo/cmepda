@@ -224,13 +224,11 @@
 
 %---------------------------------------------------------
 \begin{frame}{\texttt{DataFeeder} class}
-    Ensures an easy way to train the subnets separately %MA CHE VUOL DIRE?
     Class \texttt{DataFeeder} main features:
     \begin{itemize}
-        \item[\textbullet] shuffles data randomly
-        \item[\textbullet] input fields can be specified
-        \item[\textbullet] can be extended to more complex training strategies
-        \item[\textbullet] returns a generator
+        \item[\textbullet] \textbf{shuffles} data randomly
+        \item[\textbullet] \textbf{input fields} can be specified
+        \item[\textbullet] can be extended to more complex \textbf{training strategies}
     \end{itemize}
     
     % QUESTO SI DICE A VOCE
@@ -239,9 +237,9 @@
 
 \vspace{20 pt}
     %questa è la parte che c'era in "split the dataset", non c'entra con quello
-    Using a generator (\texttt{keras.utils.Sequence})
+    Pros of using \texttt{keras.utils.Sequence} as parent class:
     \begin{itemize}
-        \item[\textbullet] inherit multiprocessing features
+        \item[\textbullet] inherits multiprocessing features
         \item[\textbullet] has default callbacks
         \item[\textbullet] avoids memory overload
     \end{itemize}
