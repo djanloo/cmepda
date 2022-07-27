@@ -3,7 +3,7 @@
 \usepackage{graphicx}
 \usepackage{listings} %for listings
 \usepackage{xcolor}
-\usepackage{siunitx}
+%\usepackage{siunitx}
 \usepackage{pgf-pie} 
 
 %colorini
@@ -131,7 +131,7 @@
     \begin{itemize}
         \item[\textbullet] $9 x 9$ grid of detectors
         \item[\textbullet] most intense at center 
-        \item[\textbullet] 80 frames of time series ($40$ $\si{MHz}$ sampling rate)
+        \item[\textbullet] 80 frames of time series ($40$MHz sampling rate)
         \item[\textbullet] 1 frame of times of first arrival 
     \end{itemize}
     \vspace{10 pt}
@@ -254,7 +254,7 @@
 %---------------------------------------------------------
 \begin{frame}{Data Augmentation}
 %FORSE STA SLIDE LA SPOSETEREI DOPO
-    Dataset has a lack of high events ($X > 850\si{m}$) so a first network training showed a worse resolution
+    Dataset has a lack of high events ($X > 850$m) so a first network training showed a worse resolution
     for samples corresponding to this range
 
     \begin{block}{Strategy}
@@ -400,6 +400,20 @@
         \begin{figure}
             \centering
             \includegraphics[width=0.7\textwidth]{figures/lstmenc_aug_rmse.pdf}
+        \end{figure}
+
+\end{frame}
+
+%---------------------------------------------------------
+\begin{frame}{Augmented dataset performance}
+    The augmented-dataset-train gave a Pearson correlation coefficient of:
+    \begin{equation*}
+        \rho_{X,Y} = 0.80 \pm 0.02
+    \end{equation*}
+
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.85\textwidth]{figures/augmented_train_stats.pdf}
         \end{figure}
 
 \end{frame}

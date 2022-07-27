@@ -84,8 +84,6 @@ def interpercentile_plot(
         elif normalize:
             predictions /= true_vals
             ax.axhline(1, ls=":", color="k")
-        elif not_norm:
-            pass
 
         # Plots points
         ax.scatter(true_vals, predictions, s=6.0, alpha=0.1, color="k")
