@@ -446,6 +446,7 @@
         \item Use the trained NN to score the difficulty of samples
         \item Schedule a training for another NN
     \end{itemize}
+    We also tried to generalize \texttt{Augment} class to augment more difficult data.
     \vfill
     Maybe useful on classification tasks, but for regressions..
 \end{frame}
@@ -475,7 +476,7 @@ Main tests:
 \begin{itemize}
     \item[\textbullet] \textbf{Net building}: checks if networks are correctly built
     \item[\textbullet] \textbf{DataFeeders}: builds a fictitious dataset and checks whether \texttt{DataFeeders} work fine
-    \item[\textbullet] \textbf{Augmentation}: tests if an augmented matrix is effectively ``rotate'', ``flipped'', etc.
+    \item[\textbullet] \textbf{Augmentation}: tests if an augmented matrix is effectively ``rotated'', ``flipped'', etc.
 \end{itemize}
     \vfill
     Some tests required a trained model so they were not executed in CI.
