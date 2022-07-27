@@ -27,7 +27,7 @@ def interpercentile_plot(
     delta_perc=[75, 50, 25],
     titles=None,
 ):
-
+    
     relative_error = False
     normalize = False
     normal_plot = False
@@ -97,13 +97,13 @@ def interpercentile_plot(
                 bbox=dict(facecolor='white', edgecolor='black', boxstyle='round'))
 
         # Interval percentile estimation
-        for i, delta_perc in enumerate(delta_perc):
+        for i, perc in enumerate(delta_perc):
             for segment in track(
-                range(N - 1), description=f"{delta_perc}-interpercentile:"
+                range(N - 1), description=f"{perc}-interpercentile:"
             ):
                 mask = (true_vals >= vals[segment]) & (true_vals < vals[segment + 1])
                 down, up = np.percentile(
-                    predictions[mask], [50 - delta_perc / 2, 50 + delta_perc / 2]
+                    predictions[mask], [50 - perc / 2, 50 + perc / 2]
                 )
                 m = np.mean(predictions[mask])
                 ups[i, segment] = up

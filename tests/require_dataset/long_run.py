@@ -35,6 +35,7 @@ stats.interpercentile_plot(
     "data_by_entry/test",
     [feeder_options],
     plot_type=None,
+    delta_perc=[75, 50 ,25],
     titles=["Predictions v.s. true values"]
 )
 
