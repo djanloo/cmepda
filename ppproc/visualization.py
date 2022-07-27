@@ -40,19 +40,20 @@ if __name__ == "__main__":
     toa = df[0][0][0]
     print(ts.shape)
 
-    fig, axes = plt.subplots(2,2)
+    plt.figure(1)
+    plt.imshow(toa[1])
+    plt.title("Times of arrival")
+    plt.axis("off")
+    plt.colorbar()
+
+    fig, axes = plt.subplots(3,3)
     c=0
     for row in axes:
         for col in row:
-            u=col.imshow(toa[c])
+            u=col.imshow(ts[c], vmin = 0, vmax=5)
             col.axis("off")
-            plt.colorbar(u,ax=col)
             c+=1
-    fig.suptitle("Times of arrival")
+    fig.suptitle("Time series")
     fig.tight_layout()
     plt.show()
-    # plt.figure(2)
-    # anim = ut.animate_time_series(ts)
-    # plt.axis('off')
-    # plt.title("Detector time series")
-    # anim.save("anim.gif")
+
