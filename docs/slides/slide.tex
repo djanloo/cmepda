@@ -124,7 +124,7 @@
 
     \begin{columns}
     
-    \column{0.5\textwidth}
+    \column{0.45\textwidth}
     \textbf{Dataset}: $10^5$ simulated events:
     \vspace{5 pt}
 
@@ -142,10 +142,10 @@
     \texttt{pd4ml} package splits by default in $70\%$ train $30\%$ test
     
     
-    \column{0.5\textwidth}
+    \column{0.55\textwidth}
         \begin{figure}
             \centering
-            \includegraphics[width=0.6\textwidth]{figures/times_of_arrival.pdf}
+            \includegraphics[width=0.45\textwidth]{figures/times_of_arrival.pdf}
         \end{figure}
         
          \begin{figure}
@@ -222,7 +222,7 @@
     %Data is extracted: from a conceptually \emph{ihomogeneous} list 
     %(activity time series together with times of arrival) to
     \begin{equation*}
-        (80 + 1, 81)\,\,\, \longrightarrow \,\,\, [("toa", (9, 9, 1)), ("timeseries", (80, 9,9))]
+        (80 + 1, 81)\,\,\, \longrightarrow \,\,\, [("toa", (9, 9, 1)), ("timeseries", (80, 81))]
     \end{equation*}
     Data can be accessed ``as a dictionary'', depending on what is needed.
 
@@ -263,8 +263,8 @@
     \end{block}
 
     We point out that 
-    \[\sigma^2 = \frac{1}{N}\sum_i (\delta_i - \bar{\delta})^2\]
-    is a sensible estimator of the average error on predictions only if $\bar{\delta} = 0$, for which the adopted resolution is equal 
+    \[\sigma^2 = \frac{1}{N-1}\sum_i (\delta_i - \bar{\delta})^2\]
+    (with $\delta=x_i - \hat{x}_i$) is a sensible estimator of the average error on predictions only if $\bar{\delta} = 0$, for which the adopted resolution is equal 
     to the $RMSE$ of the distribution
     \[ RMSE^2 = \frac{1}{N}\sum_i(x_i - \hat{x}_i)^2 \]
     Since (on a typical trained model) $\bar{\delta} \approx 10$m we preferred the RMSE.
@@ -332,7 +332,7 @@
 
     \begin{figure}
         \centering
-        \includegraphics[width=0.85\textwidth]{figures/comparison_subnets_diagonal.png}
+        \includegraphics[width=\textwidth]{figures/comparison_subnets_diagonal.png}
     \end{figure}
     
 \end{frame}
@@ -348,10 +348,17 @@
 \end{frame}
 
 %---------------------------------------------------------
-\begin{frame}{Uncertainties}
+\begin{frame}{Complete Network performance}
+    The network's output has a Pearson correlation coefficient of:
+    \begin{equation*}
+        \rho_{X,Y} = 0.77 \pm 0.02
+    \end{equation*}
+    \begin{figure}
+        \centering
+        \includegraphics[width=.7\textwidth]{figures/long_run_vanilla.png}
+    \end{figure}
     
 \end{frame}
-
 
 
 %---------------------------------------------------------
@@ -421,29 +428,26 @@
 
 %---------------------------------------------------------
 \begin{frame}{Augmented dataset performance}
-    The network trained with an augmented dataset gave the following performance on test dataset (not augmented):
-    \begin{itemize}
-        \item[\textbullet] \textbf{loss}$=1744.27$
-        \item[\textbullet] \textbf{rmse}$=36.48$
-    \end{itemize}
+    The evolution during training of the RMSE:
+
 
         \begin{figure}
             \centering
-            \includegraphics[width=0.7\textwidth]{figures/lstmenc_aug_rmse.pdf}
+            \includegraphics[width=0.8\textwidth]{figures/lstmenc_aug_rmse.pdf}
         \end{figure}
 
 \end{frame}
 
 %---------------------------------------------------------
 \begin{frame}{Augmented dataset performance}
-    The augmented-dataset-train gave a Pearson correlation coefficient of:
+    The augmented-dataset-train has a Pearson correlation coefficient of:
     \begin{equation*}
         \rho_{X,Y} = 0.80 \pm 0.02
     \end{equation*}
 
         \begin{figure}
             \centering
-            \includegraphics[width=0.85\textwidth]{figures/augmented_train.png}
+            \includegraphics[width=0.7\textwidth]{figures/augmented_train.png}
         \end{figure}
 
 \end{frame}
@@ -451,16 +455,18 @@
 
 %---------------------------------------------------------
 \begin{frame}{Comparison with vanilla network}
+    Here we show the comparison with the network trained on not-augmented dataset.
+    Augmentation brought a little improvement on the resolution.
 \begin{columns}
     \column{0.5\textwidth}
     \begin{figure}
         \centering
-            \includegraphics[width=0.85\textwidth]{figures/long_run_vanilla.png}
+            \includegraphics[width=0.95\textwidth]{figures/not_aug_scaled.png}
     \end{figure}
     \column{0.5\textwidth}
     \begin{figure}
         \centering
-        \includegraphics[width=0.85\textwidth]{figures/aug_scaled.png}
+        \includegraphics[width=0.97\textwidth]{figures/aug_scaled.png}
     \end{figure}
 
 \end{columns}
@@ -470,12 +476,12 @@
 %---------------------------------------------------------
 
 \begin{frame}{Curriculum Learning Strategy}
+    Curriculum learning consists of:
     \begin{itemize}
-        \item Normal training
-        \item Use the trained NN to score the difficulty of samples
-        \item Schedule a training for another NN
+        \item Launching a normal training
+        \item Using the trained NN to score the difficulty of samples
+        \item Scheduling a training for another NN in order of difficulty
     \end{itemize}
-    We also tried to generalize \texttt{Augment} class to augment more difficult data.
     \vfill
     Maybe useful on classification tasks, but for regressions..
 \end{frame}
@@ -485,11 +491,11 @@
     \vfill
     \begin{columns}
         \begin{column}{.5\textwidth}
-            Sort in ascending error and divide in equal-length groups that the ``prof'' feeds to the next network
+            Sort in ascending error and divide in equal-length groups that the ``\textbf{prof}'' feeds to the next network
             \includegraphics[width=\textwidth]{figures/curriculum_before.png}
         \end{column}
         \begin{column}{.5\textwidth}
-            The ``student'' network is trained increasing in difficulty but spends more time on 
+            The ``\textbf{student}'' network is trained increasing in difficulty but spends more time on 
             hard samples
             \includegraphics[width=\textwidth]{figures/curriculum_after.png}
         \end{column}
@@ -530,10 +536,11 @@ Main tests:
     
 
 %---------------------------------------------------------
-\begin{frame}{Danke e bibliography}
+\begin{frame}
 \centering
-Danke Schon
-
+\vfill
+Thank you!
+\vfill
     
 \end{frame}
 
