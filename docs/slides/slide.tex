@@ -145,12 +145,12 @@
     \column{0.5\textwidth}
         \begin{figure}
             \centering
-            \includegraphics[width=0.8\textwidth]{figures/toa.png}
+            \includegraphics[width=0.6\textwidth]{figures/times_of_arrival.pdf}
         \end{figure}
         
          \begin{figure}
             \centering
-            \includegraphics[width=0.65\textwidth]{figures/ezgif.com-gif-maker.png}
+            \includegraphics[width=0.65\textwidth]{figures/time_series.pdf}
         \end{figure}
     
     \end{columns}
@@ -268,16 +268,22 @@
 
 
 \section{Neural Network building}
+
+\begin{frame}
+
     \begin{figure}
         \centering
-        \includegraphics[width=0.4\textwidth]{figures/model.pdf}
+        \includegraphics[width=0.5\textwidth]{figures/model.pdf}
     \end{figure}
-%---------------------------------------------------------
-\begin{frame}{Overview on the network}
-    The assumption that lead to this design is that from the time of arrival matrix
-    it is possible to infer some kind of ``homogeneous'' shower parameters (incidence angle, spread, etc.)
-    while the time series can be processed by a recurrent network.
+
 \end{frame}
+%---------------------------------------------------------
+
+% \begin{frame}{Overview on the network}
+%     The assumption that lead to this design is that from the time of arrival matrix
+%     it is possible to infer some kind of ``homogeneous'' shower parameters (incidence angle, spread, etc.)
+%     while the time series can be processed by a recurrent network.
+% \end{frame}
 
 %---------------------------------------------------------
 \begin{frame}{Encoder for the time of arrival}
@@ -317,10 +323,14 @@
 \end{frame}
 
 %---------------------------------------------------------
-%\begin{frame}{Concatente + dense layers}
+\begin{frame}{Subnets comparison}
 
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.85\textwidth]{figures/comparison_subnets_diagonal.png}
+    \end{figure}
     
-%\end{frame}
+\end{frame}
 
 %---------------------------------------------------------
 \begin{frame}{Complete Network performance}
