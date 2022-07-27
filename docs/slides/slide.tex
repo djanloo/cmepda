@@ -3,7 +3,7 @@
 \usepackage{graphicx}
 \usepackage{listings} %for listings
 \usepackage{xcolor}
-\usepackage{siunitx}
+% \usepackage{siunitx}
 \usepackage{pgf-pie} 
 
 %colorini
@@ -131,7 +131,7 @@
     \begin{itemize}
         \item[\textbullet] $9 x 9$ grid of detectors
         \item[\textbullet] most intense at center 
-        \item[\textbullet] 80 frames of time series ($40$ $\si{MHz}$ sampling rate)
+        \item[\textbullet] 80 frames of time series ($40$ Mhz sampling rate)
         \item[\textbullet] 1 frame of times of first arrival 
     \end{itemize}
     \vspace{10 pt}
@@ -255,7 +255,7 @@
 %---------------------------------------------------------
 \begin{frame}{Data Augmentation}
 %FORSE STA SLIDE LA SPOSETEREI DOPO
-    Dataset has a lack of high events ($X > 850\si{m}$) so a first network training showed a worse resolution
+    Dataset has a lack of high events ($X > 850$m) so a first network training showed a worse resolution
     for samples corresponding to this range
 
     \begin{block}{Strategy}
