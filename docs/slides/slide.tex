@@ -225,24 +225,25 @@
 
 %---------------------------------------------------------
 \begin{frame}{\texttt{DataFeeder} class}
-    Ensures an easy way to train the subnets separately %MA CHE VUOL DIRE?
     Class \texttt{DataFeeder} main features:
+    \vfill
     \begin{itemize}
-        \item[\textbullet] shuffles data randomly
-        \item[\textbullet] input fields can be specified
-        \item[\textbullet] can be extended to more complex training strategies
-        \item[\textbullet] returns a generator
+        \item[\textbullet] \textbf{shuffles} data randomly
+        \item[\textbullet] \textbf{input fields} can be specified 
+        \item[\textbullet] can be extended to more complex \textbf{training strategies}
     \end{itemize}
     
     % QUESTO SI DICE A VOCE
     %The effect of the high reading time from memory ($\approx 3 m$s) is mitigated
     %by \texttt{keras} multiprocessing
 
-\vspace{20 pt}
+    \vfill
+
     %questa è la parte che c'era in "split the dataset", non c'entra con quello
-    Using a generator (\texttt{keras.utils.Sequence})
+    Pros of using \texttt{keras.utils.Sequence}:
+    \vfill
     \begin{itemize}
-        \item[\textbullet] inherit multiprocessing features
+        \item[\textbullet] inherited multiprocessing features
         \item[\textbullet] has default callbacks
         \item[\textbullet] avoids memory overload
     \end{itemize}
@@ -250,9 +251,11 @@
 \end{frame}
 
 \begin{frame}{Data generation}
-    \begin{itemize}
-        \item Da
-    \end{itemize}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.8\textwidth]{figures/data_generation.pdf}
+    \end{figure}
+
 \end{frame}
 
 
@@ -265,18 +268,19 @@
 
     We point out that 
     \[\sigma^2 = \frac{1}{N}\sum_i (\delta_i - \bar{\delta})^2\]
-    is a sensible estimator of the average error on predictions only if $\bar{\delta} = 0$, for which the adopted resolution is equal 
+    (with $\delta = x_i - \hat{x}_i$) is a sensible estimator of the average error on predictions only if $\bar{\delta} = 0$, for which the adopted resolution is equal 
     to the $RMSE$ of the distribution
     \[ RMSE^2 = \frac{1}{N}\sum_i(x_i - \hat{x}_i)^2 \]
     Since (on a typical trained model) $\bar{\delta} \approx 10$m we preferred the RMSE.
 \end{frame}
 
 
-\section{Neural Network building}
+\begin{frame}{Neural Network}
     \begin{figure}
         \centering
-        \includegraphics[width=0.6\textwidth]{figures/model.pdf}
+        \includegraphics[width=0.4\textwidth]{figures/model.pdf}
     \end{figure}
+\end{frame}
 %---------------------------------------------------------
 \begin{frame}{Overview on the network}
     The assumption that lead to this design is that from the time of arrival matrix
@@ -369,19 +373,15 @@
 %---------------------------------------------------------
 
 \begin{frame}{Weights at concatenation layer}
+    \centering
     Is the encoder really useful?
     \vfill
     \includegraphics[width=\linewidth]{figures/weights_comparison.png}
 \end{frame}
 
-%---------------------------------------------------------
-\begin{frame}[fragile]{Network's output}
 
 
-    
-\end{frame}
-
-\begin{frame}{uncertainties}
+\begin{frame}{Uncertainties}
     
 \end{frame}
 
@@ -420,7 +420,7 @@
 \end{frame}
 
 \begin{frame}{curriculum learning}
-    Training over ``difficult'' data makes the net forget the easier samples
+    Training over ``difficult'' data makes the net \textbf{forget} easier samples
     \vfill
     \begin{columns}
         \begin{column}{.5\textwidth}

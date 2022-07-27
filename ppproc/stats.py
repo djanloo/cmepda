@@ -24,7 +24,7 @@ def interpercentile_plot(
     dataset_path,
     list_of_feeder_options,
     plot_type=None,
-    delta_quants=[75, 50, 25],
+    delta_perc=[75, 50, 25],
     titles=None,
 ):
 
@@ -84,8 +84,8 @@ def interpercentile_plot(
         # Then takes the values of predictions that fall into that interval
         # And computes the percentile of the sample
         vals = np.linspace(650, 1000, N)
-        ups = np.zeros((len(delta_quants), N))
-        downs = np.zeros((len(delta_quants), N))
+        ups = np.zeros((len(delta_perc), N))
+        downs = np.zeros((len(delta_perc), N))
         colormap = cm.get_cmap("plasma")
         print(f"correlation {pearson(true_vals, predictions)}")
         # TEXT FOR PEARSON COEFFICIENT
@@ -95,33 +95,33 @@ def interpercentile_plot(
                 bbox=dict(facecolor='white', edgecolor='black', boxstyle='round'))
 
         # Interval percentile estimation
-        for i, delta_quant in enumerate(delta_quants):
+        for i, delta_perc in enumerate(delta_perc):
             for segment in track(
-                range(N - 1), description=f"{delta_quant}-interpercentile:"
+                range(N - 1), description=f"{delta_perc}-interpercentile:"
             ):
                 mask = (true_vals >= vals[segment]) & (true_vals < vals[segment + 1])
                 down, up = np.percentile(
-                    predictions[mask], [50 - delta_quant / 2, 50 + delta_quant / 2]
+                    predictions[mask], [50 - delta_perc / 2, 50 + delta_perc / 2]
                 )
                 m = np.mean(predictions[mask])
                 ups[i, segment] = up
                 downs[i, segment] = down
 
         # Fill each band
-        for i in range(len(delta_quants) - 1):
+        for i in range(len(delta_perc) - 1):
             ax.fill_between(
                 vals[:-1],
                 downs[i, :-1],
                 downs[i + 1, :-1],
-                color=colormap(1 - delta_quants[i] / 100.0),
+                color=colormap(1 - delta_perc[i] / 100.0),
                 alpha=0.5,
-                label=f"{delta_quants[i]}",
+                label=f"{delta_perc[i]}",
             )
             ax.fill_between(
                 vals[:-1],
                 ups[i, :-1],
                 ups[i + 1, :-1],
-                color=colormap(1 - delta_quants[i] / 100.0),
+                color=colormap(1 - delta_perc[i] / 100.0),
                 alpha=0.5,
             )
         # The central one connects ups and downs
@@ -130,8 +130,8 @@ def interpercentile_plot(
             vals[:-1],
             ups[-1, :-1],
             downs[-1, :-1],
-            label=f"{delta_quants[-1]}",
-            color=colormap(1 - delta_quants[-1] / 100.0),
+            label=f"{delta_perc[-1]}",
+            color=colormap(1 - delta_perc[-1] / 100.0),
             alpha=0.5,
         )
         ax.legend()
