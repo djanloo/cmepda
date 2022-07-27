@@ -18,6 +18,12 @@ rcParams["font.size"] = 10
 
 FILE = "true_vs_predictions.npy"
 
+# get directory
+curr_dir = os.getcwd()
+parent_dir = os.path.dirname(curr_dir)  # I go up
+parent_dir = os.path.dirname(parent_dir)  # Twice
+os.chdir(parent_dir)
+print(parent_dir)
 
 def interpercentile_plot(
     nets,
@@ -28,6 +34,7 @@ def interpercentile_plot(
     titles=None,
 ):
 
+    global not_norm
     relative_error = False
     normalize = False
     normal_plot = False
@@ -49,6 +56,10 @@ def interpercentile_plot(
 
         axes[0].set_ylabel("Normalized prediction [a.u.]")
         normalize = True
+
+    # normal plot with NON normalized ax
+    elif plot_type == "not-normal":
+        not_norm = True
 
     if titles is not None:
         ax_titles = titles 
@@ -73,6 +84,8 @@ def interpercentile_plot(
         elif normalize:
             predictions /= true_vals
             ax.axhline(1, ls=":", color="k")
+        elif not_norm:
+            pass
 
         # Plots points
         ax.scatter(true_vals, predictions, s=6.0, alpha=0.1, color="k")
@@ -150,3 +163,28 @@ def pearson(true, predicted):
     """Calculates correlation (Perason Coefficient) between predictions and true values."""
     rho = np.corrcoef(true, predicted)
     return rho[0,1]
+
+if __name__ == "__main__":
+    # Call the nets
+    lstmenc_vanilla = LstmEncoder(path="trained/lstmenc_train_sub")
+    lstmenc_aug = LstmEncoder(path="trained/lstmenc_aug")
+
+    BATCH_SIZE = 128
+
+    # Feeder options for both
+    feeder_options = {
+        "shuffle": True,
+        "batch_size": BATCH_SIZE,
+        "input_fields": ["toa", "time_series"],
+        "target_field": "outcome",
+    }
+
+    # call same vanilla test dataset for both
+    train_feeder = DataFeeder("data_by_entry/train", **feeder_options)
+
+    interpercentile_plot(
+        [lstmenc_vanilla, lstmenc_aug],
+        "data_by_entry/test",
+        [feeder_options, feeder_options],
+        plot_type="not-normal",
+    )

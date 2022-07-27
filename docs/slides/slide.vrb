@@ -18,5 +18,5 @@
     \begin{equation*}
         (80 + 1, 81)\,\,\, \longrightarrow \,\,\, [("toa", (9, 9, 1)), ("timeseries", (80, 9,9))]
     \end{equation*}
-    Data can be accessed ``as a dictionary'', depending on what is needed.
+    Data can be accessed "as a dictionary", depending on what is needed.
 

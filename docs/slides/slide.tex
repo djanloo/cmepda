@@ -112,6 +112,7 @@
             \includegraphics[width=\textwidth]{figures/airshower.png}
             \label{fig:my_label}
         \end{figure}
+        
     
     \end{columns}
 \end{frame}
@@ -218,7 +219,7 @@
     \begin{equation*}
         (80 + 1, 81)\,\,\, \longrightarrow \,\,\, [("toa", (9, 9, 1)), ("timeseries", (80, 9,9))]
     \end{equation*}
-    Data can be accessed ``as a dictionary'', depending on what is needed.
+    Data can be accessed "as a dictionary", depending on what is needed.
 
 \end{frame}
 
@@ -250,14 +251,48 @@
     
 \end{frame}
 
+
+%---------------------------------------------------------
+\begin{frame}{Data Augmentation}
+%FORSE STA SLIDE LA SPOSETEREI DOPO
+    Dataset has a lack of high events ($X > 850\si{m}$) so a first network training showed a worse resolution
+    for samples corresponding to this range
+
+    \begin{block}{Strategy}
+        Increase the number of samples that overcome a certain heigth threshold using the
+        symmetries of the problem
+    \end{block}
+
+    \begin{columns}
+    \column{0.35\textwidth}
+        Data is augmented using
+    \begin{itemize}
+        \item flip up-down
+        \item flip left-right
+        \item diagonal flip
+        \item rotation of $90^{\circ}$
+    \end{itemize}
+    \column{0.65\textwidth}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.7\textwidth]{figures/hetero1.png}
+    \end{figure}
+    \end{columns}
+    
+    %CI METTEREI UN GRAFICHELLO DELLA DISTRIBUZIONE DEI DATI IN ALTEZZA
+    
+    %only a subset of the available data undergoes this procedure.
+
+    %Augmenting the whole dataset would leave the sample distribution unchanged and thus would not lead 
+    %to improvements.
+\end{frame}
+
 \begin{frame}{Data generation}
     \begin{figure}
         \centering
         \includegraphics[width=0.8\textwidth]{figures/data_generation.pdf}
     \end{figure}
-
 \end{frame}
-
 
 \begin{frame}{Resolution}
 
@@ -292,7 +327,7 @@
 \begin{frame}{Encoder for the time of arrival}
     \begin{figure}
         \centering
-        \includegraphics[width=0.7\textwidth]{figures/enc_loss.png}
+        \includegraphics[width=0.85\textwidth]{figures/encoder_rmse.pdf}
         %\caption{Credits: Guillaume Chevalier}
     \end{figure}
         
@@ -318,46 +353,13 @@
 
     \begin{figure}
         \centering
-        \includegraphics[width=0.7\textwidth]{figures/lstm_rmse.png}
+        \includegraphics[width=0.85\textwidth]{figures/lstm_rmse.pdf}
     \end{figure}
 
 \end{frame}
 
 %---------------------------------------------------------
-\begin{frame}{Data Augmentation}
-    %FORSE STA SLIDE LA SPOSETEREI DOPO
-        Dataset has a lack of high events ($X > 850\si{m}$) so a first network training showed a worse resolution
-        for samples corresponding to this range
-    
-        \begin{block}{Strategy}
-            Increase the number of samples that overcome a certain heigth threshold using the
-            symmetries of the problem
-        \end{block}
-    
-        \begin{columns}
-        \column{0.35\textwidth}
-            Data is augmented using
-        \begin{itemize}
-            \item flip up-down
-            \item flip left-right
-            \item diagonal flip
-            \item rotation of $90^{\circ}$
-        \end{itemize}
-        \column{0.65\textwidth}
-        \begin{figure}
-            \centering
-            \includegraphics[width=0.7\textwidth]{figures/hetero1.png}
-        \end{figure}
-        \end{columns}
-        
-        %CI METTEREI UN GRAFICHELLO DELLA DISTRIBUZIONE DEI DATI IN ALTEZZA
-        
-        %only a subset of the available data undergoes this procedure.
-    
-        %Augmenting the whole dataset would leave the sample distribution unchanged and thus would not lead 
-        %to improvements.
-    \end{frame}
-
+%\begin{frame}{Concatente + dense layers}
 
     
 %\end{frame}
@@ -366,7 +368,7 @@
 \begin{frame}{Subnets train freezing}
     \begin{figure}
         \centering
-        \includegraphics[width=\linewidth]{figures/comparison_freeze_diagonal.png}
+        \includegraphics[width=.8\linewidth]{figures/freezetraining_2.pdf}
     \end{figure}
 \end{frame}
 
@@ -393,20 +395,19 @@
 
 %---------------------------------------------------------
 \begin{frame}{Augmented dataset performance}
-    The network trained with an augmented dataset gave the following performance on test dataset:
+    The network trained with an augmented dataset gave the following performance on test dataset (not augmented):
     \begin{itemize}
         \item[\textbullet] \textbf{loss}$=1744.27$
-        \item[\textbullet] \textbf{loss}$=41.76$
+        \item[\textbullet] \textbf{rmse}$=36.48$
     \end{itemize}
 
         \begin{figure}
             \centering
-            \includegraphics[width=0.7\textwidth]{figures/lstmenc_aug_rmse.png}
+            \includegraphics[width=0.7\textwidth]{figures/lstmenc_aug_rmse.pdf}
         \end{figure}
 
 \end{frame}
 
-%---------------------------------------------------------
 
 
 \begin{frame}{Curriculum learning}
