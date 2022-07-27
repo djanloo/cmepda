@@ -42,7 +42,6 @@ At the end of the training procedure our network reached a resolution (RMSE) of:
 
 We augmented in the preprocessing phase the less represented data.
 
-![interp](assets/comparison.png) 
-![freeze_train](assets/freezetraining.png)
+![interp](https://github.com/djanloo/cmepda/blob/master/docs/slides/figures/long_run_vanilla.png) 
 
 
