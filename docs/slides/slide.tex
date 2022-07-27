@@ -215,7 +215,7 @@
     %Data is extracted: from a conceptually \emph{ihomogeneous} list 
     %(activity time series together with times of arrival) to
     \begin{equation*}
-        (80 + 1, 81)\,\,\, \longrightarrow \,\,\, [("toa", (9, 9, 1)), ("timeseries", (80, 9,9))]
+        (80 + 1, 81)\,\,\, \longrightarrow \,\,\, [("toa", (9, 9, 1)), ("timeseries", (80, 81))]
     \end{equation*}
     Data can be accessed "as a dictionary", depending on what is needed.
 
@@ -256,8 +256,8 @@
     \end{block}
 
     We point out that 
-    \[\sigma^2 = \frac{1}{N}\sum_i (\delta_i - \bar{\delta})^2\]
-    is a sensible estimator of the average error on predictions only if $\bar{\delta} = 0$, for which the adopted resolution is equal 
+    \[\sigma^2 = \frac{1}{N-1}\sum_i (\delta_i - \bar{\delta})^2\]
+    (with $\delta=x_i - \hat{x}_i$) is a sensible estimator of the average error on predictions only if $\bar{\delta} = 0$, for which the adopted resolution is equal 
     to the $RMSE$ of the distribution
     \[ RMSE^2 = \frac{1}{N}\sum_i(x_i - \hat{x}_i)^2 \]
     Since (on a typical trained model) $\bar{\delta} \approx 10$m we preferred the RMSE.
@@ -476,8 +476,6 @@
         \item Scheduling a training for another NN in order of difficulty
     \end{itemize}
     \vfill
-    We also generalized \texttt{Augment} class to augment more difficult data.
-    \vfill
     Maybe useful on classification tasks, but for regressions..
 \end{frame}
 
@@ -486,11 +484,11 @@
     \vfill
     \begin{columns}
         \begin{column}{.5\textwidth}
-            Sort in ascending error and divide in equal-length groups that the ``prof'' feeds to the next network
+            Sort in ascending error and divide in equal-length groups that the ``\textbf{prof}'' feeds to the next network
             \includegraphics[width=\textwidth]{figures/curriculum_before.png}
         \end{column}
         \begin{column}{.5\textwidth}
-            The ``student'' network is trained increasing in difficulty but spends more time on 
+            The ``\textbf{student}'' network is trained increasing in difficulty but spends more time on 
             hard samples
             \includegraphics[width=\textwidth]{figures/curriculum_after.png}
         \end{column}
