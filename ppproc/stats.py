@@ -33,7 +33,8 @@ def interpercentile_plot(
     normal_plot = False
 
     fig, axes = plt.subplots(1, len(nets), sharey=False)
-
+    if len(nets) == 1:
+        axes = [axes]
     if plot_type is None:
 
         axes[0].set_ylabel("Predicted height [m]")
