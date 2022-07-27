@@ -6,6 +6,7 @@
 %\usepackage{siunitx}
 \usepackage{pgf-pie} 
 
+
 %colorini
 \definecolor{comments}{rgb}{0.57, 0.64, 0.69} %commenti
 \definecolor{codegray}{rgb}{0.5,0.5,0.5} %codice normale
@@ -110,7 +111,6 @@
         \begin{figure}
             \centering
             \includegraphics[width=\textwidth]{figures/airshower.png}
-            \label{fig:my_label}
         \end{figure}
         
     
@@ -145,13 +145,12 @@
     \column{0.5\textwidth}
         \begin{figure}
             \centering
-            \includegraphics[width=0.8\textwidth]{figures/times_of_arrival.pdf}
-            \label{fig:my_label}
+            \includegraphics[width=0.8\textwidth]{figures/toa.png}
         \end{figure}
         
          \begin{figure}
             \centering
-            \includegraphics[width=0.65\textwidth]{figures/time_series.pdf}
+            \includegraphics[width=0.65\textwidth]{figures/ezgif.com-gif-maker.png}
         \end{figure}
     
     \end{columns}
@@ -238,7 +237,7 @@
     %The effect of the high reading time from memory ($\approx 3 m$s) is mitigated
     %by \texttt{keras} multiprocessing
 
-    \vfill    
+\vspace{20 pt}
     %questa è la parte che c'era in "split the dataset", non c'entra con quello
     Using a generator (\texttt{keras.utils.Sequence})
     \begin{itemize}
@@ -249,41 +248,7 @@
     
 \end{frame}
 
-
-%---------------------------------------------------------
-\begin{frame}{Data Augmentation}
-%FORSE STA SLIDE LA SPOSETEREI DOPO
-    Dataset has a lack of high events ($X > 850$m) so a first network training showed a worse resolution
-    for samples corresponding to this range
-
-    \begin{block}{Strategy}
-        Increase the number of samples that overcome a certain heigth threshold using the
-        symmetries of the problem
-    \end{block}
-
-    \begin{columns}
-    \column{0.35\textwidth}
-        Data is augmented using
-    \begin{itemize}
-        \item flip up-down
-        \item flip left-right
-        \item diagonal flip
-        \item rotation of $90^{\circ}$
-    \end{itemize}
-    \column{0.65\textwidth}
-    \begin{figure}
-        \centering
-        \includegraphics[width=0.7\textwidth]{figures/long_run_vanilla.png}
-    \end{figure}
-    \end{columns}
-    
-    %CI METTEREI UN GRAFICHELLO DELLA DISTRIBUZIONE DEI DATI IN ALTEZZA
-    
-    %only a subset of the available data undergoes this procedure.
-
-    %Augmenting the whole dataset would leave the sample distribution unchanged and thus would not lead 
-    %to improvements.
-\end{frame}
+%----------------------------------------------------------
 
 \begin{frame}{Resolution}
 
@@ -305,7 +270,7 @@
 \section{Neural Network building}
     \begin{figure}
         \centering
-        \includegraphics[width=0.6\textwidth]{figures/model.pdf}
+        \includegraphics[width=0.4\textwidth]{figures/model.pdf}
     \end{figure}
 %---------------------------------------------------------
 \begin{frame}{Overview on the network}
@@ -355,8 +320,36 @@
     
 %\end{frame}
 
+\begin{frame}{Network's output}
 
-\begin{frame}{Subnets train freezing}
+\end{frame}
+%---------------------------------------------------------
+\begin{frame}{Uncertainties}
+    
+\end{frame}
+
+%---------------------------------------------------------
+\begin{frame}{Whole Network performance}
+
+    
+\end{frame}
+
+%---------------------------------------------------------
+\begin{frame}{Strategies for Performance Improving}
+    We tried 3 strategies to improve network's performance:
+        \begin{enumerate}
+            \item \textbf{Transfer Learning}
+            \item \textbf{Data Augmentation}
+            \item \textbf{Curriculum Learning}  
+        \end{enumerate}
+
+    
+\end{frame}
+
+%---------------------------------------------------------
+
+
+\begin{frame}{Transfer Learning Strategy}
     \begin{figure}
         \centering
         \includegraphics[width=.7\linewidth]{figures/freezetraining_2.pdf}
@@ -372,18 +365,39 @@
 \end{frame}
 
 %---------------------------------------------------------
-\begin{frame}{Network's output}
-
-
-\begin{frame}{Uncertainties}
+\begin{frame}{Data Augmentation Strategy}
+    %FORSE STA SLIDE LA SPOSETEREI DOPO
+        Dataset has a lack of high events ($X > 850$m) so a first network training showed a worse resolution
+        for samples corresponding to this range
     
-\end{frame}
-
-%---------------------------------------------------------
-\begin{frame}{Whole Network performance}
-
+        \begin{block}{Strategy}
+            Increase the number of samples that overcome a certain heigth threshold using the
+            symmetries of the problem
+        \end{block}
     
-\end{frame}
+        \begin{columns}
+        \column{0.35\textwidth}
+            Data is augmented using
+        \begin{itemize}
+            \item flip up-down
+            \item flip left-right
+            \item diagonal flip
+            \item rotation of $90^{\circ}$
+        \end{itemize}
+        \column{0.65\textwidth}
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.7\textwidth]{figures/long_run_vanilla.png}
+        \end{figure}
+        \end{columns}
+        
+        %CI METTEREI UN GRAFICHELLO DELLA DISTRIBUZIONE DEI DATI IN ALTEZZA
+        
+        %only a subset of the available data undergoes this procedure.
+    
+        %Augmenting the whole dataset would leave the sample distribution unchanged and thus would not lead 
+        %to improvements.
+    \end{frame}
 
 %---------------------------------------------------------
 \begin{frame}{Augmented dataset performance}
@@ -435,7 +449,7 @@
 
 %---------------------------------------------------------
 
-\begin{frame}{Curriculum learning}
+\begin{frame}{Curriculum Learning Strategy}
     \begin{itemize}
         \item Normal training
         \item Use the trained NN to score the difficulty of samples
