@@ -67,13 +67,13 @@ lstm_val_feeder = DataFeeder("data_by_entry/validation", **lstm_feeder_options)
 enc_test_feeder = DataFeeder("data_by_entry/test", **encoder_feeder_options)
 lstm_test_feeder = DataFeeder("data_by_entry/test", **lstm_feeder_options)
 
-stats.interpercentile_plot(
-    [enc, lstm],
-    "data_by_entry/test",
-    [encoder_feeder_options, lstm_feeder_options],
-    plot_type=None,
-    titles=["Encoder", "Lstm"],
-)
+# stats.interpercentile_plot(
+#     [enc, lstm],
+#     "data_by_entry/test",
+#     [encoder_feeder_options, lstm_feeder_options],
+#     plot_type=None,
+#     titles=["Encoder", "Lstm"],
+# )
 
 plt.plot()
 

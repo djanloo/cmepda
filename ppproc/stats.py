@@ -87,7 +87,7 @@ def interpercentile_plot(
         ups = np.zeros((len(delta_quants), N))
         downs = np.zeros((len(delta_quants), N))
         colormap = cm.get_cmap("plasma")
-
+        print(f"correlation {pearson(true_vals, predictions)}")
         # TEXT FOR PEARSON COEFFICIENT
         ax.text(0.2, 0.9,
                 f'Pearson c. = {pearson(true_vals, predictions)}',
