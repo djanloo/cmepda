@@ -18,12 +18,6 @@ rcParams["font.size"] = 10
 
 FILE = "true_vs_predictions.npy"
 
-# get directory
-curr_dir = os.getcwd()
-parent_dir = os.path.dirname(curr_dir)  # I go up
-parent_dir = os.path.dirname(parent_dir)  # Twice
-os.chdir(parent_dir)
-print(parent_dir)
 
 def interpercentile_plot(
     nets,
@@ -84,8 +78,6 @@ def interpercentile_plot(
         elif normalize:
             predictions /= true_vals
             ax.axhline(1, ls=":", color="k")
-        elif not_norm:
-            pass
 
         # Plots points
         ax.scatter(true_vals, predictions, s=6.0, alpha=0.1, color="k")

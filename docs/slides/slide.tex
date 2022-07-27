@@ -3,7 +3,7 @@
 \usepackage{graphicx}
 \usepackage{listings} %for listings
 \usepackage{xcolor}
-% \usepackage{siunitx}
+%\usepackage{siunitx}
 \usepackage{pgf-pie} 
 
 
@@ -132,7 +132,7 @@
     \begin{itemize}
         \item[\textbullet] $9 x 9$ grid of detectors
         \item[\textbullet] most intense at center 
-        \item[\textbullet] 80 frames of time series ($40$ Mhz sampling rate)
+        \item[\textbullet] 80 frames of time series ($40$MHz sampling rate)
         \item[\textbullet] 1 frame of times of first arrival 
     \end{itemize}
     \vspace{10 pt}
@@ -218,7 +218,7 @@
     %Data is extracted: from a conceptually \emph{ihomogeneous} list 
     %(activity time series together with times of arrival) to
     \begin{equation*}
-        (80 + 1, 81)\,\,\, \longrightarrow \,\,\, [("toa", (9, 9, 1)), ("timeseries", (80, 81))]
+        (80 + 1, 81)\,\,\, \longrightarrow \,\,\, [("toa", (9, 9, 1)), ("timeseries", (80, 9,9))]
     \end{equation*}
     Data can be accessed "as a dictionary", depending on what is needed.
 
@@ -227,25 +227,24 @@
 
 %---------------------------------------------------------
 \begin{frame}{\texttt{DataFeeder} class}
+    Ensures an easy way to train the subnets separately %MA CHE VUOL DIRE?
     Class \texttt{DataFeeder} main features:
-    \vfill
     \begin{itemize}
-        \item[\textbullet] \textbf{shuffles} data randomly
-        \item[\textbullet] \textbf{input fields} can be specified 
-        \item[\textbullet] can be extended to more complex \textbf{training strategies}
+        \item[\textbullet] shuffles data randomly
+        \item[\textbullet] input fields can be specified
+        \item[\textbullet] can be extended to more complex training strategies
+        \item[\textbullet] returns a generator
     \end{itemize}
     
     % QUESTO SI DICE A VOCE
     %The effect of the high reading time from memory ($\approx 3 m$s) is mitigated
     %by \texttt{keras} multiprocessing
 
-    \vfill
-
+\vspace{20 pt}
     %questa è la parte che c'era in "split the dataset", non c'entra con quello
-    Pros of using \texttt{keras.utils.Sequence}:
-    \vfill
+    Using a generator (\texttt{keras.utils.Sequence})
     \begin{itemize}
-        \item[\textbullet] inherited multiprocessing features
+        \item[\textbullet] inherit multiprocessing features
         \item[\textbullet] has default callbacks
         \item[\textbullet] avoids memory overload
     \end{itemize}
@@ -288,13 +287,6 @@
     %to improvements.
 \end{frame}
 
-\begin{frame}{Data generation}
-    \begin{figure}
-        \centering
-        \includegraphics[width=0.8\textwidth]{figures/data_generation.pdf}
-    \end{figure}
-\end{frame}
-
 \begin{frame}{Resolution}
 
     The reference article suggests using the resolution:
@@ -304,19 +296,19 @@
 
     We point out that 
     \[\sigma^2 = \frac{1}{N}\sum_i (\delta_i - \bar{\delta})^2\]
-    (with $\delta = x_i - \hat{x}_i$) is a sensible estimator of the average error on predictions only if $\bar{\delta} = 0$, for which the adopted resolution is equal 
+    is a sensible estimator of the average error on predictions only if $\bar{\delta} = 0$, for which the adopted resolution is equal 
     to the $RMSE$ of the distribution
     \[ RMSE^2 = \frac{1}{N}\sum_i(x_i - \hat{x}_i)^2 \]
     Since (on a typical trained model) $\bar{\delta} \approx 10$m we preferred the RMSE.
 \end{frame}
 
 
-\begin{frame}{Neural Network}
+
+\section{Neural Network building}
     \begin{figure}
         \centering
-        \includegraphics[width=0.4\textwidth]{figures/model.pdf}
+        \includegraphics[width=0.6\textwidth]{figures/model.pdf}
     \end{figure}
-\end{frame}
 %---------------------------------------------------------
 \begin{frame}{Overview on the network}
     The assumption that lead to this design is that from the time of arrival matrix
@@ -376,11 +368,13 @@
 %---------------------------------------------------------
 
 \begin{frame}{Weights at concatenation layer}
-    \centering
     Is the encoder really useful?
     \vfill
     \includegraphics[width=\linewidth]{figures/weights_comparison.png}
 \end{frame}
+
+%---------------------------------------------------------
+\begin{frame}[fragile]{Network's output}
 
 
 \begin{frame}{Uncertainties}
@@ -408,6 +402,40 @@
 
 \end{frame}
 
+%---------------------------------------------------------
+\begin{frame}{Augmented dataset performance}
+    The augmented-dataset-train gave a Pearson correlation coefficient of:
+    \begin{equation*}
+        \rho_{X,Y} = 0.80 \pm 0.02
+    \end{equation*}
+
+        \begin{figure}
+            \centering
+            \includegraphics[width=0.85\textwidth]{figures/augmented_train_stats.pdf}
+        \end{figure}
+
+\end{frame}
+
+
+%---------------------------------------------------------
+\begin{frame}{Comparison with vanilla network}
+\begin{columns}
+    \column{0.5\textwidth}
+    \begin{figure}
+        \centering
+            \includegraphics[width=0.85\textwidth]{figures/long_run_vanilla.png}
+    \end{figure}
+    \column{0.5\textwidth}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.85\textwidth]{figures/augmented_train.png}
+    \end{figure}
+
+\end{columns}
+\end{frame}
+
+
+%---------------------------------------------------------
 
 \begin{frame}{Curriculum learning}
     \begin{itemize}
@@ -419,8 +447,8 @@
     Maybe useful on classification tasks, but for regressions..
 \end{frame}
 
-\begin{frame}{curriculum learning}
-    Training over ``difficult'' data makes the net \textbf{forget} easier samples
+\begin{frame}{Curriculum learning}
+    Training over ``difficult'' data makes the net forget the easier samples
     \vfill
     \begin{columns}
         \begin{column}{.5\textwidth}
