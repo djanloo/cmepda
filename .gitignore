@@ -39,6 +39,9 @@ trained/
 *.toc
 *.vrb
 
+# Slides
+docs/slides/slide.pdf
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
