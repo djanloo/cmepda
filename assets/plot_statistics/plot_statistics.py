@@ -23,6 +23,7 @@ stats.interpercentile_plot(
     [lstmenc_aug],
     "data_by_entry/test",
     [feeder_options],
+    titles=['Augmentation']
 )
 
 plt.show()
