@@ -12,7 +12,7 @@ from context import FeederProf, DataFeeder
 from context import LstmEncoder, ToaEncoder, TimeSeriesLSTM
 
 # constants
-EPOCHS = 50
+EPOCHS = 100
 BATCH_SIZE = 128
 
 rcParams["font.family"] = "serif"
