@@ -106,7 +106,7 @@ class Augment:
             # ts_list_of_dict is a list of dictionaries, we want a dictionary of lists
             ts_dict_of_list = {
                 k: [el[k] for el in ts_list_of_dict] for k in ts_list_of_dict[0]
-            }  # 30L thx
+            }
 
             for key in aug_types:
                 # assegnate new_record
